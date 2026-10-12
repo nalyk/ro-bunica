@@ -140,6 +140,28 @@ function ops.preloadSounds(): { string }
 	return failed
 end
 
+-- Fața și bula Bunicii din ograda dată (verificare vizuală)
+function ops.bunicaVisuals(plotIndex: number): { [string]: any }
+	local plot = Workspace:WaitForChild("Village"):FindFirstChild("Plot" .. plotIndex)
+	local rig = plot and plot:FindFirstChild("Bunica")
+	local head = rig and rig:FindFirstChild("Head")
+	return {
+		face = head ~= nil and head:FindFirstChild("BunicaFace") ~= nil,
+		bubble = head ~= nil and head:FindFirstChild("BunicaBubble") ~= nil,
+	}
+end
+
+-- Cadru fix de cameră spre un punct, pentru capturi (revine singur)
+function ops.lookAt(target: Vector3, from: Vector3, seconds: number): boolean
+	local camera = Workspace.CurrentCamera
+	camera.CameraType = Enum.CameraType.Scriptable
+	camera.CFrame = CFrame.lookAt(from, target)
+	task.delay(seconds, function()
+		camera.CameraType = Enum.CameraType.Custom
+	end)
+	return true
+end
+
 function ops.openShop(): number
 	local ShopPanel = (require :: any)(controllers:WaitForChild("ShopPanel"))
 	ShopPanel.toggle()

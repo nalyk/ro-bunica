@@ -46,6 +46,7 @@ type Projectile = {
 	last: Vector3,
 	pierces: boolean, -- făcălețul lovește tot ce prinde pe traiectorie
 	alreadyHit: { [Actor]: boolean },
+	hits: number,
 }
 
 local TARGET_RADIUS = 2.5
@@ -130,6 +131,7 @@ function SlipperService.launch(
 		last = origin,
 		pierces = kind == "RollingPin",
 		alreadyHit = {},
+		hits = 0,
 	}
 	table.insert(projectiles, projectile)
 	Net.get("Projectile"):FireAllClients({
@@ -155,8 +157,16 @@ end
 
 SlipperService.knockbackFor = knockbackFor
 
+local missCallbacks: { (Owner, Actor) -> () } = {}
+
+-- Apelat când un papuc aruncat de un actor nu nimerește pe nimeni.
+function SlipperService.onMiss(callback: (Owner, Actor) -> ())
+	table.insert(missCallbacks, callback)
+end
+
 local function applyHit(projectile: Projectile, victim: Actor, root: BasePart)
 	projectile.alreadyHit[victim] = true
+	projectile.hits += 1
 	local params = projectile.params
 	local distance = (root.Position - projectile.origin).Magnitude
 	RaidService.onHit(
@@ -248,6 +258,12 @@ local function step(dt: number)
 		projectile.last = position
 		if finished then
 			table.remove(projectiles, index)
+			local thrower = projectile.thrower
+			if projectile.hits == 0 and thrower then
+				for _, callback in missCallbacks do
+					task.spawn(callback, projectile.owner, thrower)
+				end
+			end
 		end
 	end
 end

@@ -43,13 +43,12 @@ local function focusOn(name: string)
 	local away = root.Position - target.Position
 	local flat = Vector3.new(away.X, 0, away.Z)
 	local back = if flat.Magnitude > 0.1 then flat.Unit else Vector3.zAxis
-	local previousType = camera.CameraType
 	camera.CameraType = Enum.CameraType.Scriptable
 	TweenService:Create(camera, TweenInfo.new(0.4, Enum.EasingStyle.Quad), {
 		CFrame = CFrame.lookAt(root.Position + back * 12 + Vector3.new(0, 7, 0), target.Position),
 	}):Play()
 	task.delay(1.2, function()
-		camera.CameraType = previousType
+		camera.CameraType = Enum.CameraType.Custom
 	end)
 end
 

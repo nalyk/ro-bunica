@@ -178,13 +178,17 @@ local function hitStop(heavy: boolean)
 	if not camera then
 		return
 	end
-	local previousType = camera.CameraType
+	-- O secvență cinematică (reluare, tutorial) ține deja camera: nu ne amestecăm
+	if camera.CameraType ~= Enum.CameraType.Custom then
+		return
+	end
 	local frozen = camera.CFrame
 	local fov = camera.FieldOfView
 	camera.CameraType = Enum.CameraType.Scriptable
 	camera.CFrame = frozen
 	task.delay(Juice.hitStopSeconds * (if heavy then 1.5 else 1), function()
-		camera.CameraType = previousType
+		-- Revenim mereu la camera normală, nu la „starea anterioară” (poate fi a altui efect)
+		camera.CameraType = Enum.CameraType.Custom
 		camera.FieldOfView = fov - Juice.fovPunch * (if heavy then 1.4 else 1)
 		TweenService
 			:Create(
@@ -245,7 +249,6 @@ local function onReplay(best: { [string]: any })
 		TextColor3 = UI.colors.linen,
 		Parent = banner,
 	})
-	local previousType = camera.CameraType
 	camera.CameraType = Enum.CameraType.Scriptable
 	local duration = math.max(best.duration, 0.3)
 	local started = os.clock()
@@ -266,7 +269,7 @@ local function onReplay(best: { [string]: any })
 			task.delay(1.2, function()
 				part:Destroy()
 				banner:Destroy()
-				camera.CameraType = previousType
+				camera.CameraType = Enum.CameraType.Custom
 			end)
 		end
 	end)

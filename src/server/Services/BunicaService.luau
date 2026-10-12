@@ -13,6 +13,9 @@ local RateLimiter = require(Shared.Domain.RateLimiter)
 local PlotService = require(script.Parent.PlotService)
 local RaidService = require(script.Parent.RaidService)
 local SlipperService = require(script.Parent.SlipperService)
+local DayNightService = require(script.Parent.DayNightService)
+local BunicaLines = require(Shared.Config.BunicaLines)
+local LinePicker = require(Shared.Domain.LinePicker)
 local Actors = require(script.Parent.Parent.Actors)
 
 type Actor = Actors.Actor
@@ -33,6 +36,9 @@ type Bunica = {
 	lastAlarmAt: number,
 	hadIntruders: boolean,
 	lastHitAt: { [Actor]: number },
+	lastLine: string?,
+	lastLineAt: number,
+	signatureSaid: boolean, -- replica semnătură, o dată pe noapte
 }
 
 local TICK = 0.2
@@ -122,13 +128,58 @@ local function buildRig(home: CFrame): Bunica
 		lastAlarmAt = -math.huge,
 		hadIntruders = false,
 		lastHitAt = {},
+		lastLine = nil,
+		lastLineAt = -math.huge,
+		signatureSaid = false,
 	}
 end
 
+-- Bunica spune o replică: clientul afișează bula (și vocea, când există) la schimbarea lui LineSeq.
+local function say(bunica: Bunica, event: string, force: boolean?)
+	local t = os.clock()
+	if not force and t - bunica.lastLineAt < BunicaLines.minGapSeconds then
+		return
+	end
+	local lines = BunicaLines.events[event]
+	local line = if lines then LinePicker.pick(lines, bunica.lastLine, math.random) else nil
+	if not line then
+		return
+	end
+	bunica.lastLine = line
+	bunica.lastLineAt = t
+	bunica.rig:SetAttribute("Line", line)
+	bunica.rig:SetAttribute("LineSeq", ((bunica.rig:GetAttribute("LineSeq") :: number?) or 0) + 1)
+end
+
+-- O stare scurtă peste starea de bază (de exemplu „Celebrate”), citită de animatorul de pe client.
+local function setMood(bunica: Bunica, mood: string, seconds: number)
+	bunica.rig:SetAttribute("Mood", mood)
+	local seq = ((bunica.rig:GetAttribute("MoodSeq") :: number?) or 0) + 1
+	bunica.rig:SetAttribute("MoodSeq", seq)
+	task.delay(seconds, function()
+		if bunica.rig:GetAttribute("MoodSeq") == seq then
+			bunica.rig:SetAttribute("Mood", "")
+		end
+	end)
+end
+
 local function setState(bunica: Bunica, state: BunicaState)
-	if bunica.rig:GetAttribute("State") ~= state then
+	local previous = bunica.rig:GetAttribute("State")
+	if previous ~= state then
 		bunica.rig:SetAttribute("State", state)
 		bunica.stateLabel.Text = STATE_ICONS[state]
+		if state == "Suspicious" then
+			say(bunica, "Spot")
+		elseif state == "Awake" then
+			if not bunica.signatureSaid then
+				bunica.signatureSaid = true
+				say(bunica, "Signature", true)
+			else
+				say(bunica, "Wake")
+			end
+		elseif state == "Rage" then
+			say(bunica, "Rage", true)
+		end
 	end
 end
 
@@ -336,6 +387,38 @@ function BunicaService.start()
 		end
 	end)
 	Net.get("Rage").OnServerEvent:Connect(onRage)
+
+	-- Bunica reacționează la ce se întâmplă în ograda ei
+	RaidService.onActorHit(function(_victim, source)
+		local bunica = bunicas[source.owner.plot.index]
+		if bunica then
+			setMood(bunica, "Celebrate", BunicaLines.celebrateSeconds)
+			say(bunica, "Hit", true)
+		end
+	end)
+	SlipperService.onMiss(function(owner, thrower)
+		local bunica = bunicas[owner.plot.index]
+		if bunica and owner.actor == thrower and math.random() < BunicaLines.missChance then
+			say(bunica, "Miss")
+		end
+	end)
+	PlotService.onOwnerAdded(function(owner)
+		local bunica = bunicas[owner.plot.index]
+		if bunica and owner.kind == "Player" then
+			task.delay(3, say, bunica, "Welcome", true)
+		end
+	end)
+	DayNightService.onPhaseChanged(function(phase)
+		for _, plot in PlotService.plots do
+			local bunica = bunicas[plot.index]
+			if bunica then
+				bunica.signatureSaid = false
+				if phase == "Day" and plot.owner and plot.owner.kind == "Player" then
+					say(bunica, "Dawn", true)
+				end
+			end
+		end
+	end)
 	Players.PlayerRemoving:Connect(function(player)
 		rageLimiter:forget(player.UserId)
 	end)

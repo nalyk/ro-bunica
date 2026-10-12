@@ -139,7 +139,14 @@ Bara **Nervi** se umple la fiecare lovitură reușită și se golește la răsă
 | Făcăleț | 50 Nervi | proiectil greu, lovește în zonă (8 studs), aruncă mai departe |
 | Furia Bunicii | 100 Nervi | Bunica iese de pe prispă 8 s și urmărește singură hoții |
 
-### Bunica (personaj, apărare de bază)
+### Bunica (vedeta jocului)
+
+- **Replici scrise de mână** pe evenimente (`Config/BunicaLines`, texte în `Strings`): când vede un hoț („Cine-i acolo?”), când se trezește, când nimerește („Na-ți papucul!”), când ratează nepotul („Mai ochește, puișor!”), la Furie, la bun venit și dimineața. Replica semnătură, o dată pe noapte: **„Fugi, că vine Bunica!”**. Apar ca bule de dialog; fiecare replică are loc pentru vocea înregistrată (`voice[cheie] = soundId`).
+- **Fața desenată** pe cap: ochelari rotunzi, sprâncene, gură și pleoape care se schimbă după stare; obraji rumeni.
+- **Animații procedurale** pe articulații, calculate pe client: doarme și respiră, își pune mâna la frunte când e bănuitoare, stă cu mâinile în șold când veghează, își ia avânt și aruncă, țopăie când nimerește, dă din brațe la Furie. Se trezește strănutând.
+- **Fără LLM:** replicile sunt fixe (generarea de text Roblox e doar în engleză și scade rating-ul jocului).
+
+### Bunica (apărare de bază)
 
 Bunica e personaj, nu doar o armă. Are fața, vocea și reacțiile ei: doarme, devine bănuitoare („?”), se trezește, sărbătorește când nimerești și se supără când ratezi.
 

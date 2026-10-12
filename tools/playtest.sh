@@ -38,8 +38,15 @@ if [ -z "${WIN:-}" ]; then
 fi
 sleep 15
 xdotool windowactivate --sync "$WIN" 2>/dev/null
-# Dialogul „Opening…” rămâne blocat sub Wine și acoperă centrul ecranului: îl închidem cu Cancel
-xdotool mousemove 1168 498 click 1; sleep 1
+# Sub Wine rămân blocate peste viewport dialogul „Opening…” (646×130) și câteva ferestre goale
+# de 100×100 (pătratul negru din centru). Le ascundem la nivel X11; Studio nu e afectat.
+for w in $(xdotool search --name "Roblox" 2>/dev/null); do
+	geometry=$(xdotool getwindowgeometry "$w" 2>/dev/null | awk '/Geometry/ {print $2}')
+	case "$geometry" in
+		646x130 | 100x100) xdotool windowunmap "$w" 2>/dev/null ;;
+	esac
+done
+sleep 1
 xdotool mousemove 900 500 click 1; sleep 1
 xdotool key F5
 START=$(date +%s)

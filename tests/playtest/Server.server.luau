@@ -361,9 +361,12 @@ step("10. Botul fură de la jucător și e lovit de papucul jucătorului", funct
 		"jucătorul nu a primit alarma"
 	)
 	local nerviBefore = SlipperService.nervi(myActor)
+	local bunicaRig = me.plot.geometry.model:FindFirstChild("Bunica") :: Model
+	local lineSeqBefore = (bunicaRig:GetAttribute("LineSeq") :: number?) or 0
 	call("throwAt", "HotBot")
 	task.wait(0.25)
 	log("SNAP noapte-lovitura")
+
 	check(
 		waitFor(function()
 			return not RaidService.isCarrying(bot)
@@ -388,6 +391,24 @@ step("10. Botul fură de la jucător și e lovit de papucul jucătorului", funct
 	check(
 		seen.counters.Hit >= 1 and seen.counters.Projectile >= 1,
 		"clientul nu a văzut proiectilul și lovitura"
+	)
+	-- Bunica sărbătorește cu bulă de dialog: prim-plan pentru captură
+	local rig = me.plot.geometry.model:FindFirstChild("Bunica") :: Model
+	local head = rig:FindFirstChild("Head") :: BasePart
+	task.wait(0.5) -- lasă înghețarea camerei de la lovitură să se termine
+	call("lookAt", head.Position, (head.CFrame * CFrame.new(0, 1, -7)).Position, 2.5)
+	task.wait(0.6)
+	log("SNAP bunica-sarbatoreste")
+	local visuals = call("bunicaVisuals", me.plot.index)
+	check(visuals.face, "Bunica nu are fața desenată")
+	check(
+		((rig:GetAttribute("LineSeq") :: number?) or 0) > lineSeqBefore,
+		"Bunica nu a spus nimic la lovitură"
+	)
+	local line = rig:GetAttribute("Line")
+	check(
+		type(line) == "string" and string.find(line, "bunica.hit", 1, true) ~= nil,
+		"replica nu e de lovitură"
 	)
 end)
 

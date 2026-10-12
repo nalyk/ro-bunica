@@ -26,6 +26,7 @@ local nerviFill: Frame
 local pinButton: TextButton
 local rageButton: TextButton
 local seedBar: Frame
+local familyLabel: TextLabel
 
 local function buildTop(screen: ScreenGui)
 	local money = UI.frame({
@@ -68,12 +69,44 @@ local function buildTop(screen: ScreenGui)
 	})
 end
 
+local function buildFamily(screen: ScreenGui)
+	familyLabel = UI.label({
+		AnchorPoint = Vector2.new(0, 0),
+		Position = UDim2.fromOffset(12, 60),
+		Size = UDim2.fromOffset(260, 26),
+		Text = "",
+		TextXAlignment = Enum.TextXAlignment.Left,
+		TextColor3 = UI.colors.linen,
+		TextStrokeTransparency = 0.3,
+		Parent = screen,
+	})
+end
+
+-- Membrii familiei: jucătorii cu același FamilyId (pus de server)
+local function renderFamily()
+	local me = game:GetService("Players").LocalPlayer
+	local id = me:GetAttribute("FamilyId")
+	if id == nil then
+		familyLabel.Text = ""
+		return
+	end
+	local names = {}
+	for _, player in game:GetService("Players"):GetPlayers() do
+		if player ~= me and player:GetAttribute("FamilyId") == id then
+			table.insert(names, player.DisplayName)
+		end
+	end
+	familyLabel.Text = if #names > 0
+		then "👪 " .. ClientState.t("ui.family", { table.concat(names, ", ") })
+		else ""
+end
+
 local function buildLeft(screen: ScreenGui)
 	local column = Instance.new("Frame")
 	column.BackgroundTransparency = 1
 	column.AnchorPoint = Vector2.new(0, 0.5)
 	column.Position = UDim2.new(0, 10, 0.5, 0)
-	column.Size = UDim2.fromOffset(110, 130)
+	column.Size = UDim2.fromOffset(110, 200)
 	column.Parent = screen
 	UI.list(column, Enum.FillDirection.Vertical, 8)
 	UI.button(
@@ -84,6 +117,14 @@ local function buildLeft(screen: ScreenGui)
 		{ Size = UDim2.fromOffset(110, 56), Text = "🧺 " .. ClientState.t("ui.cellar"), Parent = column },
 		CellarPanel.toggle
 	)
+	UI.button({
+		Size = UDim2.fromOffset(110, 56),
+		Text = "💃 " .. ClientState.t("ui.hora"),
+		BackgroundColor3 = UI.colors.night,
+		Parent = column,
+	}, function()
+		Net.get("Hora"):FireServer()
+	end)
 end
 
 local function buildDefense(screen: ScreenGui)
@@ -195,6 +236,7 @@ local function tickTimers()
 		weatherLabel.Text = ""
 	end
 
+	renderFamily()
 	local maxAmmo = ClientState.state.maxAmmo or Defense.slipper.maxAmmo
 	local ammo = SlipperController.predictedAmmo()
 	-- Text, nu emoji: 🩴 nu există în fontul Roblox (verificat în Studio)
@@ -205,6 +247,7 @@ function HudController.start()
 	local screen = UI.screen()
 	buildTop(screen)
 	buildLeft(screen)
+	buildFamily(screen)
 	buildDefense(screen)
 
 	seedBar = Instance.new("Frame")

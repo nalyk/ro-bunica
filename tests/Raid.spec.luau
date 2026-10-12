@@ -28,6 +28,7 @@ describe("Raid.canSteal", function()
 	local cases = {
 		{ "NotNight", { phase = "Day" } },
 		{ "OwnPlot", { isOwnPlot = true } },
+		{ "Family", { sameFamily = true } },
 		{ "AlreadyCarrying", { thiefCarrying = true } },
 		{ "Stunned", { thiefStunned = true } },
 		{ "NotDisplayed", { creatureOnPedestal = false } },

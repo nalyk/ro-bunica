@@ -202,7 +202,12 @@ Trecerea în noapte e un moment de 3 secunde: cerul trece la indigo, ferestrele 
 
 Jucătorul nu poate fi jefuit pe toată această secvență (scutul de 20 de minute).
 
-## 12. Social și creștere (CCU)
+## 12. Familia și Hora
+
+- **Familia:** prietenii Roblox de pe același server formează automat o familie (maximum 4) și primesc ogrăzi alăturate. Membrii nu-și fură între ei („Nu furi de la familie!”), apără cu papucul orice ogradă din familie, iar Bunica îi consideră „ai casei” când lipsește proprietarul. Tăblițele ogrăzilor iau culoarea familiei, iar HUD-ul arată „Familia: …”. Fiecare jucător își păstrează propriile creaturi și propriul profil.
+- **Hora:** vatra satului e un cerc brodat cu o fântână în mijloc, pe drum, între ogrăzile din centru. Butonul „Horă” pornește dansul lângă fântână. 3 sau mai mulți jucători care dansează împreună 4 s cheamă Culesul de aur (de 3 ori mai probabil) sau Curcubeul pentru tot serverul. Cooldown: 20 de minute. Anunț: „3 jucători au dansat hora și au chemat…”.
+
+## 12b. Social și creștere (CCU)
 
 - **Bonus de prieten:** +10% lei pentru fiecare prieten Roblox de pe același server, maximum +50%.
 - **Anunțuri pe server** pentru eclozări legendare, mutații rare, furturi mari și lovituri spectaculoase. Toată lumea vede momentul.

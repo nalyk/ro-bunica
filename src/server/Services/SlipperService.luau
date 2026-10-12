@@ -19,6 +19,7 @@ local DayNightService = require(script.Parent.DayNightService)
 local RaidService = require(script.Parent.RaidService)
 local Messenger = require(script.Parent.Messenger)
 local Actors = require(script.Parent.Parent.Actors)
+local FamilyService = require(script.Parent.FamilyService)
 
 type Actor = Actors.Actor
 
@@ -47,6 +48,7 @@ type Projectile = {
 	pierces: boolean, -- făcălețul lovește tot ce prinde pe traiectorie
 	alreadyHit: { [Actor]: boolean },
 	hits: number,
+	defends: { Owner }, -- ogrăzile apărate: a aruncătorului și ale familiei lui
 }
 
 local TARGET_RADIUS = 2.5
@@ -132,6 +134,7 @@ function SlipperService.launch(
 		pierces = kind == "RollingPin",
 		alreadyHit = {},
 		hits = 0,
+		defends = if thrower then FamilyService.familyOwners(owner) else { owner },
 	}
 	table.insert(projectiles, projectile)
 	Net.get("Projectile"):FireAllClients({
@@ -164,26 +167,26 @@ function SlipperService.onMiss(callback: (Owner, Actor) -> ())
 	table.insert(missCallbacks, callback)
 end
 
-local function applyHit(projectile: Projectile, victim: Actor, root: BasePart)
+local function applyHit(projectile: Projectile, victim: Actor, root: BasePart, defended: Owner)
 	projectile.alreadyHit[victim] = true
 	projectile.hits += 1
 	local params = projectile.params
 	local distance = (root.Position - projectile.origin).Magnitude
 	RaidService.onHit(
 		victim,
-		knockbackFor(projectile.owner, root.Position, params.knockbackSpeed),
+		knockbackFor(defended, root.Position, params.knockbackSpeed),
 		params.stunSeconds,
 		{
 			kind = projectile.kind,
 			thrower = projectile.thrower,
-			owner = projectile.owner,
+			owner = defended,
 			distance = distance,
 		}
 	)
 	local thrower = projectile.thrower
 	if thrower then
 		addNervi(thrower, Defense.nervi.perHit)
-		projectile.owner.profile.stats.defends += 1
+		projectile.owner.profile.stats.defends += 1 -- statistica e a celui care aruncă
 		Messenger.notify(thrower.player, "notify.Defended", { victim.name })
 		if not bestThrow or distance > bestThrow.distance then
 			bestThrow = {
@@ -205,7 +208,7 @@ local function applyHit(projectile: Projectile, victim: Actor, root: BasePart)
 		victimUserId = victim.id,
 		throwerUserId = if thrower then thrower.id else 0,
 		distance = distance,
-		plotIndex = projectile.owner.plot.index,
+		plotIndex = defended.plot.index,
 	})
 end
 
@@ -234,7 +237,18 @@ local function step(dt: number)
 		)
 		local finished = projectile.age >= projectile.params.maxLifetime or position.Y < -5
 		for _, actor in Actors.all() do
-			if projectile.alreadyHit[actor] or not RaidService.isIntruder(actor, projectile.owner) then
+			if projectile.alreadyHit[actor] then
+				continue
+			end
+			-- Prima ogradă apărată în care actorul e intrus
+			local defended: Owner? = nil
+			for _, candidate in projectile.defends do
+				if RaidService.isIntruder(actor, candidate) then
+					defended = candidate
+					break
+				end
+			end
+			if not defended then
 				continue
 			end
 			local root = Actors.root(actor)
@@ -248,7 +262,7 @@ local function step(dt: number)
 					TARGET_RADIUS
 				)
 			then
-				applyHit(projectile, actor, root)
+				applyHit(projectile, actor, root, defended)
 				if not projectile.pierces then
 					finished = true
 					break

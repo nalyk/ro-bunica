@@ -140,6 +140,24 @@ function ops.preloadSounds(): { string }
 	return failed
 end
 
+-- Ce tip au articulațiile numite RightShoulder (Motor6D sau AnimationConstraint)
+function ops.jointInfo(plotIndex: number): { string }
+	local result = {}
+	local plot = Workspace:WaitForChild("Village"):FindFirstChild("Plot" .. plotIndex)
+	local rig = plot and plot:FindFirstChild("Bunica")
+	for _, model in { rig, character() } do
+		if model then
+			for _, descendant in model:GetDescendants() do
+				if descendant.Name == "RightShoulder" then
+					table.insert(result, model.Name .. ": " .. descendant.ClassName)
+				end
+			end
+		end
+	end
+
+	return result
+end
+
 -- Fața și bula Bunicii din ograda dată (verificare vizuală)
 function ops.bunicaVisuals(plotIndex: number): { [string]: any }
 	local plot = Workspace:WaitForChild("Village"):FindFirstChild("Plot" .. plotIndex)

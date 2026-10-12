@@ -72,6 +72,11 @@ return {
 	["juice.BunicaSlipper"] = "PLEOSC!",
 	["juice.Rage"] = "HAȚ!",
 	["replay.title"] = "Lovitura nopții: {1}",
+	-- Familia și Hora
+	["ui.hora"] = "Horă",
+	["ui.family"] = "Familia: {1}",
+	["hora.goToWell"] = "Hora se joacă la fântâna din mijlocul satului!",
+	["notify.Family"] = "Nu furi de la familie!",
 	-- Bunica (replici scrise de mână)
 	["bunica.spot.1"] = "Cine-i acolo?",
 	["bunica.spot.2"] = "Ia uite-l pe ăsta...",
@@ -116,4 +121,5 @@ return {
 	["announce.Night"] = "Se lasă noaptea. Bunica e de pază!",
 	["announce.Day"] = "S-a făcut ziuă.",
 	["announce.BestThrow"] = "Lovitura nopții: {1}, de la {2} studs!",
+	["announce.Hora"] = "{1} jucători au dansat hora și au chemat {2}!",
 }

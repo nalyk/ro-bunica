@@ -26,6 +26,9 @@ local DayNightService = services.DayNightService
 local BunicaService = services.BunicaService
 local SlipperService = services.SlipperService
 local TutorialService = services.TutorialService
+local HoraService = services.HoraService
+local Hora = require(Shared.Config.Hora)
+local GameState = require(Shared.GameState)
 
 local function log(message: string)
 	print("[PLAYTEST] " .. message)
@@ -141,6 +144,13 @@ local function roadPoint(plot: any): Vector3
 	return (plot.geometry.cframe * CFrame.new(0, 3, -World.plotSize.Z / 2 - 8)).Position
 end
 
+-- Iese din ograda proprie pe poartă (agentul de test nu trebuie să meargă în gard)
+local function leaveHome(plot: any)
+	local cf = plot.geometry.cframe
+	call("walkTo", (cf * CFrame.new(0, 3, -World.plotSize.Z / 2 + 5)).Position, 3)
+	call("walkTo", (cf * CFrame.new(0, 3, -World.plotSize.Z / 2 - 6)).Position, 3)
+end
+
 local function nearestNpcPlots(home: any): { any }
 	local list = {}
 	for _, plot in PlotService.plots do
@@ -172,6 +182,7 @@ DayNightService.forcePhase("Day")
 local me = PlotService.getOwner(player)
 local myActor = Actors.forPlayer(player)
 log("ograda jucătorului: " .. me.plot.index)
+log("articulații: " .. table.concat(call("jointInfo", me.plot.index), " | "))
 
 step("1. Sămânța de start eclozează pe un piedestal", function()
 	check(
@@ -497,13 +508,14 @@ step("14. Mută în beci și înapoi pe piedestal", function()
 end)
 
 step("15. Bunica apără singură cât jucătorul e plecat", function()
-	BunicaService.setEnabled(true)
 	me.shieldUntil = 0
+	leaveHome(me.plot)
 	call("walkTo", roadPoint(npcPlots[3] or victimPlot))
 	local key = firstPedestal(me) :: string
 	botWalk(approach(me, key))
 	RaidService.tryStart(bot, me, key)
 	check(RaidService.isCarrying(bot), "botul nu a putut începe furtul")
+	BunicaService.setEnabled(true) -- abia acum: altfel îl prinde înainte să apuce creatura
 	local rig = me.plot.geometry.model:FindFirstChild("Bunica") :: Model
 	local sawAwake = false
 	local hit = waitFor(function()
@@ -526,6 +538,33 @@ step("15b. La răsărit se reia lovitura nopții", function()
 		"clientul nu a primit reluarea loviturii nopții"
 	)
 	task.wait(4) -- lasă reluarea să se termine (capturi)
+end)
+
+step("15c. Hora: jucătorul dansează la fântână cu doi vecini și cheamă o vreme rară", function()
+	HoraService.resetCooldown()
+	local dancers = {}
+	for i = 1, 2 do
+		local angle = i * math.pi
+		local position = Hora.center + Vector3.new(math.cos(angle) * 6, 3, math.sin(angle) * 6)
+		local dancer = Actors.createBot("Dansator" .. i, CFrame.new(position))
+		HoraService.setDancing(dancer, 30)
+		table.insert(dancers, dancer)
+	end
+	local distance = call("walkTo", Hora.center + Vector3.new(0, 3, 6), 3)
+	check(distance < 6, "jucătorul nu a ajuns la fântână (rămas " .. math.floor(distance) .. ")")
+	call("fire", "Hora")
+	task.wait(1)
+	log("SNAP hora")
+	check(
+		waitFor(function()
+			local weather = GameState.get("Weather")
+			return weather == "GoldHarvest" or weather == "Rainbow"
+		end, 8),
+		"Hora nu a chemat vremea rară"
+	)
+	for _, dancer in dancers do
+		Actors.removeBot(dancer)
+	end
 end)
 
 step("16. Fără erori de script (server și client)", function()

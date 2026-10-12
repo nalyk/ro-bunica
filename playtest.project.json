@@ -3,21 +3,40 @@
   "tree": {
     "$className": "DataModel",
     "ReplicatedStorage": {
-      "Shared": { "$path": "src/shared" },
-      "PlaytestShared": { "$path": "tests/playtest/Shared" }
+      "Shared": {
+        "$path": "src/shared"
+      },
+      "PlaytestShared": {
+        "$path": "tests/playtest/Shared"
+      }
     },
     "ServerScriptService": {
-      "Server": { "$path": "src/server" },
-      "Playtest": { "$path": "tests/playtest/Server.server.luau" }
+      "Server": {
+        "$path": "src/server"
+      },
+      "Playtest": {
+        "$path": "tests/playtest/Server.server.luau"
+      }
     },
     "StarterPlayer": {
       "StarterPlayerScripts": {
-        "Client": { "$path": "src/client" },
-        "PlaytestClient": { "$path": "tests/playtest/Client.client.luau" }
+        "Client": {
+          "$path": "src/client"
+        },
+        "PlaytestClient": {
+          "$path": "tests/playtest/Client.client.luau"
+        }
       }
     },
     "Players": {
-      "$properties": { "CharacterAutoLoads": true }
+      "$properties": {
+        "CharacterAutoLoads": true
+      }
+    },
+    "Lighting": {
+      "$properties": {
+        "Technology": "ShadowMap"
+      }
     }
   }
 }

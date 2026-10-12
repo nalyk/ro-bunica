@@ -1,6 +1,6 @@
 --!strict
 -- Bunica pe client: fața desenată (ochelari rotunzi, sprâncene, gură), animații procedurale pe articulații
--- și bula de dialog. Tot ce e aici e local (Motor6D.Transform nu se replică), deci nu costă rețea.
+-- și bula de dialog. Pozele se aplică local pe C0 (modificările de pe client nu se replică), deci nu costă rețea.
 
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
@@ -11,6 +11,7 @@ local BunicaLines = require(Shared.Config.BunicaLines)
 local Sounds = require(Shared.Config.Sounds)
 local ClientState = require(script.Parent.ClientState)
 local Sfx = require(script.Parent.Sfx)
+local Joints = require(script.Parent.Joints)
 
 local BunicaController = {}
 
@@ -25,7 +26,9 @@ type Face = {
 
 type Rig = {
 	model: Model,
-	joints: { [string]: Motor6D },
+	joints: { [string]: Joints.Joint }, -- Motor6D sau AnimationConstraint, prin Joints
+	missing: number, -- articulații încă nesosite (StreamingEnabled)
+	current: { [string]: CFrame }, -- poza curentă, pentru tranziții moi
 	face: Face?,
 	throwUntil: number,
 	phase: number,
@@ -285,15 +288,13 @@ local function track(model: Model)
 		return
 	end
 	local joints = {}
-	for _, descendant in model:GetDescendants() do
-		if descendant:IsA("Motor6D") and table.find(JOINTS, descendant.Name) then
-			joints[descendant.Name] = descendant
-		end
-	end
-	local head = model:WaitForChild("Head", 10) :: BasePart?
+	local missing = Joints.collect(model, JOINTS, joints)
+	local head = model:FindFirstChild("Head") :: BasePart?
 	local rig: Rig = {
 		model = model,
 		joints = joints,
+		current = {},
+		missing = missing,
 		face = if head then buildFace(head) else nil,
 		throwUntil = 0,
 		phase = math.random() * 10,
@@ -320,6 +321,17 @@ local function track(model: Model)
 	model.Destroying:Connect(function()
 		rigs[model] = nil
 	end)
+end
+
+-- Cu StreamingEnabled, părțile modelului pot sosi după el: completăm articulațiile lipsă
+local function refreshJoints(rig: Rig)
+	rig.missing = Joints.collect(rig.model, JOINTS, rig.joints)
+	if not rig.face then
+		local head = rig.model:FindFirstChild("Head") :: BasePart?
+		if head then
+			rig.face = buildFace(head)
+		end
+	end
 end
 
 local function currentMood(model: Model): string
@@ -353,13 +365,21 @@ function BunicaController.start()
 				lastMoods[model] = mood
 				applyExpression(rig.face, mood)
 			end
+			if rig.missing > 0 or not rig.face then
+				refreshJoints(rig)
+			end
 			local throwing = t < rig.throwUntil
 			local target =
 				pose(if model:GetAttribute("Windup") == true then "Awake" else mood, t + rig.phase, throwing)
 			for name, joint in rig.joints do
 				local goal = target[name] or CFrame.identity
-				-- tranziții moi între poze
-				joint.Transform = joint.Transform:Lerp(goal, if throwing then 0.6 else 0.2)
+				-- tranziții moi între poze, aplicate peste cadrul de bază al articulației
+				local blended = (rig.current[name] or CFrame.identity):Lerp(
+					goal,
+					if throwing then 0.6 else 0.2
+				)
+				rig.current[name] = blended
+				joint.set(blended)
 			end
 		end
 	end)

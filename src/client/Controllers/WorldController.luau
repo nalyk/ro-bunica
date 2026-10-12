@@ -303,6 +303,18 @@ function WorldController.start()
 		end
 	end
 
+	village.DescendantAdded:Connect(function(descendant: Instance)
+		if
+			descendant:IsA("BasePart")
+			and descendant:GetAttribute("BedKey")
+			and not plantModels[descendant]
+		then
+			if not descendant:FindFirstChild("PlantPrompt") then
+				onBed(descendant)
+			end
+		end
+	end)
+
 	ProximityPromptService.PromptShown:Connect(function(prompt)
 		setupStealPrompt(prompt)
 	end)

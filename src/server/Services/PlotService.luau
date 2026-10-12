@@ -11,6 +11,8 @@ local Inventory = require(Shared.Domain.Inventory)
 local Growth = require(Shared.Domain.Growth)
 local WorldBuilder = require(script.Parent.Parent.World.WorldBuilder)
 local DataService = require(script.Parent.DataService)
+local Family = require(Shared.Domain.Family)
+local Friends = require(script.Parent.Parent.Social.Friends)
 local Actors = require(script.Parent.Parent.Actors)
 
 type Profile = DataTemplate.Profile
@@ -167,22 +169,30 @@ local function moveCharacterHome(player: Player, character: Model)
 end
 
 local function onProfileLoaded(player: Player, profile: Profile)
-	-- Prima ogradă liberă; altfel una de NPC, pe care NPC-ul o eliberează
-	local chosen: Plot? = nil
+	-- Ogrăzile disponibile: libere sau ale vecinilor NPC (fără bot). Alegem lângă prieteni, dacă sunt.
+	local candidates: { Plot } = {}
 	for _, plot in PlotService.plots do
 		if plot.owner == nil then
-			chosen = plot
-			break
+			table.insert(candidates, plot)
 		end
 	end
-	if not chosen then
-		for _, plot in PlotService.plots do
-			if plot.owner and plot.owner.kind == "Npc" then
-				chosen = plot
-				break
-			end
+	for _, plot in PlotService.plots do
+		if plot.owner and plot.owner.kind == "Npc" and plot.owner.actor == nil then
+			table.insert(candidates, plot)
 		end
 	end
+	local friendPositions = {}
+	for other, otherOwner in ownersByPlayer do
+		if other ~= player and Friends.areFriends(player, other) then
+			table.insert(friendPositions, otherOwner.plot.geometry.cframe.Position)
+		end
+	end
+	local positions = {}
+	for _, plot in candidates do
+		table.insert(positions, plot.geometry.cframe.Position)
+	end
+	local choice = Family.choosePlot(positions, friendPositions)
+	local chosen: Plot? = if choice then candidates[choice] else nil
 	if not chosen then
 		player:Kick("Serverul e plin.")
 		return

@@ -13,10 +13,12 @@ local RateLimiter = require(Shared.Domain.RateLimiter)
 local PlotService = require(script.Parent.PlotService)
 local RaidService = require(script.Parent.RaidService)
 local SlipperService = require(script.Parent.SlipperService)
+local FamilyService = require(script.Parent.FamilyService)
 local DayNightService = require(script.Parent.DayNightService)
 local BunicaLines = require(Shared.Config.BunicaLines)
 local LinePicker = require(Shared.Domain.LinePicker)
 local Actors = require(script.Parent.Parent.Actors)
+local Rig = require(script.Parent.Parent.Ai.Rig)
 
 type Actor = Actors.Actor
 
@@ -79,6 +81,7 @@ local function buildRig(home: CFrame): Bunica
 	description.RightLegColor = Color3.fromRGB(60, 30, 40)
 	local rig = Players:CreateHumanoidModelFromDescription(description, Enum.HumanoidRigType.R15)
 	rig.Name = "Bunica"
+	Rig.useMotors(rig)
 	local humanoid = rig:FindFirstChildOfClass("Humanoid") :: Humanoid
 	humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
 	local root = rig:FindFirstChild("HumanoidRootPart") :: BasePart
@@ -196,11 +199,19 @@ local function intrudersOf(owner: Owner): { { actor: Actor, root: BasePart } }
 	return list
 end
 
+-- Proprietarul sau cineva din familia lui e în ogradă, aproape de prispă?
 local function ownerNearby(owner: Owner, bunica: Bunica): boolean
-	local root = if owner.actor then Actors.root(owner.actor) else nil
-	return root ~= nil
-		and (root.Position - bunica.home.Position).Magnitude <= Defense.bunicaNpc.ownerNearbyRange
-		and PlotService.plotAt(root.Position) == owner.plot
+	for _, member in FamilyService.familyOwners(owner) do
+		local root = if member.actor then Actors.root(member.actor) else nil
+		if
+			root
+			and (root.Position - bunica.home.Position).Magnitude <= Defense.bunicaNpc.ownerNearbyRange
+			and PlotService.plotAt(root.Position) == owner.plot
+		then
+			return true
+		end
+	end
+	return false
 end
 
 -- `perfect` = aruncare sigură (tutorial): rapidă, fără eroare, cu anticipare completă.

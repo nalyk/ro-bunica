@@ -20,6 +20,7 @@ type Owner = PlotService.Owner
 local WeatherService = {}
 
 local active: Weather.WeatherEvent? = nil
+local token = 0 -- fiecare eveniment pornit primește un token; unul nou îl oprește pe cel vechi
 local activeUntil = 0
 
 function WeatherService.current(): Weather.WeatherEvent?
@@ -81,26 +82,34 @@ local function applyTick(event: Weather.WeatherEvent)
 end
 
 -- Pornește un eveniment (programat sau cumpărat). Întoarce false dacă unul e deja activ.
-function WeatherService.trigger(eventId: string): boolean
+-- Pornește un eveniment. `force` înlocuiește evenimentul activ (Hora, „Bunica se supără”, cumpărare).
+function WeatherService.trigger(eventId: string, force: boolean?): boolean
 	local event = Weather.byId[eventId]
-	if not event or active then
+	if not event or (active and not force) then
 		return false
 	end
+	token += 1
+	local myToken = token
 	active = event
 	activeUntil = Workspace:GetServerTimeNow() + event.durationSeconds
 	GameState.set(GameState.Attributes.Weather, event.id)
 	GameState.set(GameState.Attributes.WeatherEndsAt, activeUntil)
 	Messenger.announce("announce.Weather", { Messenger.key("weather." .. event.id) })
 	task.spawn(function()
-		while Workspace:GetServerTimeNow() < activeUntil do
+		while token == myToken and Workspace:GetServerTimeNow() < activeUntil do
 			task.wait(Weather.tickSeconds)
+			if token ~= myToken then
+				return
+			end
 			local ok, err = pcall(applyTick :: any, event)
 			if not ok then
 				warn("[WeatherService] tick a eșuat:", err)
 			end
 		end
-		active = nil
-		GameState.set(GameState.Attributes.Weather, "")
+		if token == myToken then
+			active = nil
+			GameState.set(GameState.Attributes.Weather, "")
+		end
 	end)
 	return true
 end

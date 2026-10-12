@@ -4,6 +4,8 @@
 -- Furtul, papucul și Bunica lucrează doar cu actori, deci se comportă identic pentru ambele.
 
 local Players = game:GetService("Players")
+
+local Rig = require(script.Parent.Ai.Rig)
 local Workspace = game:GetService("Workspace")
 
 export type Actor = {
@@ -81,6 +83,7 @@ function Actors.createBot(name: string, at: CFrame): Actor
 	local description = Instance.new("HumanoidDescription")
 	local rig = Players:CreateHumanoidModelFromDescription(description, Enum.HumanoidRigType.R15)
 	rig.Name = name
+	Rig.useMotors(rig)
 	rig:PivotTo(at)
 	rig.Parent = Workspace
 	local root = rig:FindFirstChild("HumanoidRootPart") :: BasePart?

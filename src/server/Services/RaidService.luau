@@ -21,6 +21,7 @@ local StateService = require(script.Parent.StateService)
 local DayNightService = require(script.Parent.DayNightService)
 local Messenger = require(script.Parent.Messenger)
 local Actors = require(script.Parent.Parent.Actors)
+local FamilyService = require(script.Parent.FamilyService)
 
 type Owner = PlotService.Owner
 type Actor = Actors.Actor
@@ -109,6 +110,9 @@ function RaidService.isIntruder(actor: Actor, owner: Owner): boolean
 	end
 	if forcedIntruders[actor] == owner then
 		return true
+	end
+	if FamilyService.sameFamily(actor, owner.actor) then
+		return false
 	end
 	local carry = carries[actor]
 	if carry and carry.owner == owner then
@@ -214,6 +218,7 @@ function RaidService.tryStart(actor: Actor, owner: Owner, key: string)
 	local ok, reason = Raid.canSteal({
 		phase = DayNightService.phase(),
 		isOwnPlot = thief == owner,
+		sameFamily = FamilyService.sameFamily(actor, owner.actor),
 		ownerPresent = owner.plot.owner == owner,
 		thiefCarrying = carries[actor] ~= nil,
 		thiefStunned = RaidService.isStunned(actor),
@@ -227,7 +232,7 @@ function RaidService.tryStart(actor: Actor, owner: Owner, key: string)
 	})
 	if not ok then
 		debugLog("furt refuzat " .. actor.name .. ": " .. tostring(reason))
-		if reason == "NotNight" or reason == "Shielded" or reason == "NewPlayer" then
+		if reason == "NotNight" or reason == "Shielded" or reason == "NewPlayer" or reason == "Family" then
 			Messenger.notify(actor.player, "notify." .. reason)
 		end
 		return

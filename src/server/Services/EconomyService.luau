@@ -14,6 +14,7 @@ local CreatureService = require(script.Parent.CreatureService)
 local StateService = require(script.Parent.StateService)
 local RaidService = require(script.Parent.RaidService)
 local Messenger = require(script.Parent.Messenger)
+local Friends = require(script.Parent.Parent.Social.Friends)
 
 type Owner = PlotService.Owner
 
@@ -21,26 +22,10 @@ local EconomyService = {}
 
 local actionLimiter = RateLimiter.new(8, 4)
 local friendCounts: { [Player]: number } = {}
-local friendCache: { [string]: boolean } = {}
 local leaderstatsLei: { [Player]: IntValue } = {}
 
-local function pairKey(a: Player, b: Player): string
-	local low, high = math.min(a.UserId, b.UserId), math.max(a.UserId, b.UserId)
-	return low .. ":" .. high
-end
-
 local function areFriends(a: Player, b: Player): boolean
-	local key = pairKey(a, b)
-	local cached = friendCache[key]
-	if cached ~= nil then
-		return cached
-	end
-	local ok, result = pcall(function()
-		return a:IsFriendsWithAsync(b.UserId)
-	end)
-	local value = ok and result == true
-	friendCache[key] = value
-	return value
+	return Friends.areFriends(a, b)
 end
 
 local function recountFriends()

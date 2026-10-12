@@ -14,6 +14,7 @@ local NAMES = {
 	"Sell", -- (uid: string)
 	"Throw", -- (target: Vector3, kind: "Slipper" | "RollingPin")
 	"Rage", -- ()
+	"Hora", -- () jucătorul dansează hora (în vatra satului)
 	"ClientReady", -- () clientul și-a conectat ascultătorii; serverul retrimite starea
 	-- S→C
 	"State", -- (snapshot: PlayerState) starea completă a jucătorului

@@ -8,6 +8,7 @@ local Rarities = require(Config.Rarities)
 export type StealContext = {
 	phase: "Day" | "Night",
 	isOwnPlot: boolean,
+	sameFamily: boolean?, -- membrii aceleiași familii nu-și fură între ei
 	ownerPresent: boolean,
 	thiefCarrying: boolean,
 	thiefStunned: boolean,
@@ -27,6 +28,8 @@ function Raid.canSteal(ctx: StealContext): (boolean, string?)
 		return false, "NotNight"
 	elseif ctx.isOwnPlot then
 		return false, "OwnPlot"
+	elseif ctx.sameFamily then
+		return false, "Family"
 	elseif not ctx.ownerPresent then
 		return false, "OwnerAway"
 	elseif ctx.thiefCarrying then

@@ -64,6 +64,10 @@ return {
 	["juice.BunicaSlipper"] = "THWACK!",
 	["juice.Rage"] = "GOTCHA!",
 	["replay.title"] = "Throw of the night: {1}",
+	["ui.hora"] = "Hora",
+	["ui.family"] = "Family: {1}",
+	["hora.goToWell"] = "The hora is danced at the well in the middle of the village!",
+	["notify.Family"] = "You don't steal from family!",
 	["bunica.spot.1"] = "Who's there?",
 	["bunica.spot.2"] = "Well, look at this one...",
 	["bunica.spot.3"] = "I see everything, you know!",
@@ -105,4 +109,5 @@ return {
 	["announce.Night"] = "Night falls. Grandma is on guard!",
 	["announce.Day"] = "Morning has come.",
 	["announce.BestThrow"] = "Throw of the night: {1}, from {2} studs!",
+	["announce.Hora"] = "{1} players danced the hora and called {2}!",
 }

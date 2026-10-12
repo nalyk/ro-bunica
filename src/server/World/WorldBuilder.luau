@@ -7,6 +7,7 @@ local Lighting = game:GetService("Lighting")
 
 local Shared = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
 local World = require(Shared.Config.World)
+local Hora = require(Shared.Config.Hora)
 
 export type PlotGeometry = {
 	index: number,
@@ -273,6 +274,56 @@ local function buildPlot(index: number, parent: Instance): PlotGeometry
 	}
 end
 
+-- Vatra satului: cercul brodat pentru Horă, cu fântâna în mijloc
+local function buildHearth(parent: Instance)
+	local hearth = Instance.new("Model")
+	hearth.Name = "Vatra"
+	local center = Hora.center
+	local ring = Instance.new("Part")
+	ring.Name = "HoraRing"
+	ring.Anchored = true
+	ring.CanCollide = false
+	ring.Shape = Enum.PartType.Cylinder
+	ring.Size = Vector3.new(0.12, Hora.radius * 2, Hora.radius * 2)
+	ring.CFrame = CFrame.new(center + Vector3.new(0, -0.77, 0)) * CFrame.Angles(0, 0, math.pi / 2)
+	ring.Color = PALETTE.stitch
+	ring.Material = Enum.Material.Fabric
+	ring.Parent = hearth
+	local inner = ring:Clone()
+	inner.Name = "HoraFloor"
+	inner.Size = Vector3.new(0.14, Hora.radius * 2 - 1.6, Hora.radius * 2 - 1.6)
+	inner.Color = PALETTE.houseWall
+	inner.Parent = hearth
+	-- Fântâna: ghizd de piatră, doi stâlpi și acoperiș
+	local well = Instance.new("Part")
+	well.Name = "Fantana"
+	well.Anchored = true
+	well.Shape = Enum.PartType.Cylinder
+	well.Size = Vector3.new(3, Hora.wellRadius * 2, Hora.wellRadius * 2)
+	well.CFrame = CFrame.new(center + Vector3.new(0, 0.6, 0)) * CFrame.Angles(0, 0, math.pi / 2)
+	well.Color = Color3.fromRGB(150, 150, 150)
+	well.Material = Enum.Material.Cobblestone
+	well.Parent = hearth
+	for _, side in { -1, 1 } do
+		part({
+			Name = "Stalp",
+			Size = Vector3.new(0.6, 6, 0.6),
+			CFrame = CFrame.new(center + Vector3.new(side * Hora.wellRadius, 3, 0)),
+			Color = PALETTE.fence,
+			Material = Enum.Material.Wood,
+			Parent = hearth,
+		})
+	end
+	part({
+		Name = "Acoperis",
+		Size = Vector3.new(Hora.wellRadius * 2 + 2, 0.6, 3.5),
+		CFrame = CFrame.new(center + Vector3.new(0, 6.2, 0)),
+		Color = PALETTE.gate,
+		Parent = hearth,
+	})
+	hearth.Parent = parent
+end
+
 function WorldBuilder.build(): { PlotGeometry }
 	local village = Instance.new("Folder")
 	village.Name = "Village"
@@ -294,11 +345,14 @@ function WorldBuilder.build(): { PlotGeometry }
 		Material = Enum.Material.Sand,
 		Parent = village,
 	})
+	buildHearth(village)
+
+	-- Spawn-ul neutru (înainte de încărcarea profilului), pe drum, departe de fântână
 	local spawn = Instance.new("SpawnLocation")
 	spawn.Anchored = true
 	spawn.Neutral = true
 	spawn.Size = Vector3.new(8, 1, 8)
-	spawn.CFrame = CFrame.new(0, -0.5, 0)
+	spawn.CFrame = CFrame.new(Hora.center + Vector3.new(Hora.radius + 12, -0.5, 0))
 	spawn.Transparency = 1
 	spawn.CanCollide = false
 	spawn.Duration = 0

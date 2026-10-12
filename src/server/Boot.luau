@@ -10,6 +10,7 @@ local ORDER = {
 	"PlotService",
 	"StateService",
 	"CreatureService",
+	"FamilyService",
 	"DayNightService",
 	"WeatherService",
 	"GardenService",
@@ -19,6 +20,7 @@ local ORDER = {
 	"SlipperService",
 	"BunicaService",
 	"TutorialService",
+	"HoraService",
 }
 
 local Boot = {}

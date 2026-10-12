@@ -60,6 +60,7 @@ return {
 	["ui.rage"] = "FURIA BUNICII",
 	["ui.rollingPin"] = "Făcăleț",
 	["ui.seeds"] = "Semințele tale",
+	["ui.ammo"] = "Papuci: {1}/{2}",
 	-- Notificări personale
 	["notify.NotEnoughLei"] = "Nu ai destui lei",
 	["notify.OutOfStock"] = "S-a terminat marfa",

@@ -21,13 +21,14 @@ Ultima actualizare: 2026-10-12
 
 - [x] Review independent pentru erori de runtime; reparate: prompt-urile de furt lipsă pe ogrăzile NPC la pornire, remote-ul `ClientReady` (starea și stocul retrimise după ce clientul ascultă), modelul-fantomă când proprietarul pleacă în timpul unui furt, buclele de server protejate cu `pcall`, pivotul creaturilor pe centrul cutiei.
 
-## Testare e2e (în lucru)
+## Testare e2e
 
 - Nivel 1 (local): `./tools.sh`.
 - Nivel 2 (motorul Roblox real, Open Cloud Luau Execution): `python3 tools/cloud.py e2e` construiește `test.project.json`, publică o versiune „Saved” pe place-ul de test (universe 1855994157, place 5300295145; versiunea live nu se schimbă) și rulează `tests/e2e/Runner`. În sesiune nu rulează fizica și nici scripturile place-ului, iar jucători nu există: testele pornesc serverul prin `Server/Boot` și (următorul pas) folosesc actori-bot.
-  - **Blocaj:** cheia API din `.env.cloud` (`ROBLOX_API_KEY`). Crearea ei din browser a fost blocată de clasificatorul de siguranță al sesiunii; o creează omul (drepturi: universe-places write, luau-execution-sessions read + write, restricționată la experience-ul de test și la IP-ul 212.56.197.2).
+  - Cheia API e în `.env.cloud` (ignorat de git). **Rezultat: 14/14 teste e2e trec în motorul Roblox.** Au găsit 3 bug-uri reale: Bunica nu vedea piedestalele (raza 35 → 60), ograda botului eliminat nu revenea la NPC, creaturile pluteau (WorldPivot ignorat cu PrimaryPart → `CreatureBuilder.placeOn`).
 - Nivel 3 (Studio prin Vinegar/Wine, izolat de desktop): **funcționează**. Pornire: `tmux new-session -d -s xvfb "Xvfb :99 -screen 0 1600x900x24 -nolisten tcp"`, apoi `tmux new-session -d -s studio "env DISPLAY=:99 flatpak run org.vinegarhq.Vinegar run"`. Obligatoriu `renderer = "D3D11"` în `~/.var/app/org.vinegarhq.Vinegar/config/vinegar/config.toml` (cu DXVK/Vulkan Studio crapă pe Xvfb). Capturi: `DISPLAY=:99 import -window root x.png`; input: `DISPLAY=:99 xdotool`. Nu folosi display-ul `:1` (desktopul omului, în uz).
-  - **Blocaj:** login-ul în Studio (Quick sign-in cu cod) îl aprobă omul.
+  - Login făcut (Quick sign-in aprobat de om, persistă în prefix). Place-urile se copiază în `~/.var/app/org.vinegarhq.Vinegar/data/places/` (sandbox-ul flatpak nu vede `~/gits`; acces read-only la `build/` adăugat prin `flatpak override`, activ după restartul Studio). Output-ul jocului: Window → Output.
+  - Primul playtest în Studio (2026-10-12): jocul pornește fără erori; HUD, zi/noapte, creaturi, Bunica, sămânța de start eclozează. Reparat: emoji 🩴 lipsă din fontul Roblox → text localizat; etichetele creaturilor vizibile doar până la 30 studs.
 
 ## Urmează
 

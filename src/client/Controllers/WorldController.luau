@@ -44,7 +44,7 @@ local function labelCreature(model: Model)
 	billboard.Name = "CreatureLabel"
 	billboard.Size = UDim2.fromOffset(170, 58)
 	billboard.StudsOffsetWorldSpace = Vector3.new(0, model:GetExtentsSize().Y / 2 + 1.8, 0)
-	billboard.MaxDistance = 60
+	billboard.MaxDistance = 30
 	billboard.Adornee = primary
 	billboard.Parent = model
 	local nameText = ClientState.t("creature." .. creature.id)

@@ -197,7 +197,8 @@ local function tickTimers()
 
 	local maxAmmo = ClientState.state.maxAmmo or Defense.slipper.maxAmmo
 	local ammo = SlipperController.predictedAmmo()
-	ammoLabel.Text = string.rep("🩴", ammo) .. string.rep("·", math.max(maxAmmo - ammo, 0))
+	-- Text, nu emoji: 🩴 nu există în fontul Roblox (verificat în Studio)
+	ammoLabel.Text = ClientState.t("ui.ammo", { ammo, maxAmmo })
 end
 
 function HudController.start()

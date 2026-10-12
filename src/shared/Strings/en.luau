@@ -54,6 +54,7 @@ return {
 	["ui.rage"] = "GRANDMA RAGE",
 	["ui.rollingPin"] = "Rolling pin",
 	["ui.seeds"] = "Your seeds",
+	["ui.ammo"] = "Slippers: {1}/{2}",
 	["notify.NotEnoughLei"] = "Not enough lei",
 	["notify.OutOfStock"] = "Sold out",
 	["notify.NotForSale"] = "Not for sale",

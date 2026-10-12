@@ -37,15 +37,18 @@ Ultima actualizare: 2026-10-12
 
 ## Urmează
 
-1. **Primul test în Studio (de făcut de om, pe Windows/macOS).** În Studio, ciclul zi/noapte merge de 4× mai repede, iar protecția jucătorilor noi e oprită. deschide `build/bunica.rbxl` sau `rojo serve` + pluginul Rojo. Activează „Enable Studio Access to API Services” pentru DataStore (altfel ProfileStore rulează în mod mock). Test cu 2 jucători: Test → Clients and Servers → 2 Players. Raportează erorile din Output.
-2. Tutorialul ghidat din primele 10 minute (hoț NPC scriptat la 2:00, furt ghidat la vecin, mutație garantată).
-3. Upgrade-uri pe lei (straturi, piedestale, beci, Grivei, cocoș, muniție) și UI-ul lor.
-4. Monetizare: game passes, developer products, vremea cumpărată pentru server (`WeatherService.trigger`).
-5. Analytics (AnalyticsService): funnel primele 10 minute, retenție, raiduri pe noapte, conversie.
-6. Clasamente (OrderedDataStore) și gardul de laudă cu nume.
-7. Texte RU, ES, PT-BR scrise de mână.
-8. Sunete (lovitura de papuc, cocoș, noaptea) și modelele finale (Bunica, creaturi, papuc) prin `modelId`.
-9. Ungheni ca decor (GDD §19), după confirmare; apoi evenimentul gării cu schimbarea ecartamentului.
+Ordinea vine din `docs/VISION.md` (cercetarea din 2026-10-12): întâi ce afectează semnalele algoritmului Roblox (primele 60 s, întoarcerea în zilele 2–28, jocul cu prietenii) și ce face clipuri.
+
+1. Primul minut: hoț NPC scriptat în primele 30 s, papuc cu ajutor la ochit, lovitură garantată.
+2. Lovitura de papuc completă: hit-stop, lovitură de cameră, sunet, ragdoll peste gard, haptic; reluarea celei mai bune aruncări la final de noapte. Valorile în Configs.
+3. Bunica-vedetă: replici înregistrate (RO, ES, PT, EN) pe evenimente, replica semnătură, animații prin Animation Graphs. Fără LLM.
+4. Ograda familiei (până la 4 prieteni) și ritualul Horei (3+ jucători cheamă o vreme rară).
+5. Furt care nu alungă: o creatură pe raid, limită pe victimă pe noapte, recompense pentru apărare.
+6. Ritmul săptămânal: update sâmbăta, „Bunica se supără” cu o oră înainte, exclusivități rotative care cer să fii online.
+7. Arhitectură live: Configs + Experiments, funnel în AnalyticsService, test separat pentru Server Authority.
+8. Social fără chat: roată de emote, Quick Words, Friend Referral cu recompense cosmetice.
+9. Monetizare etică (vezi liniile roșii din VISION §4), Roblox Plus cu servere private.
+10. Texte RU, ES, PT-BR scrise de mână; modelele finale prin `modelId`; Ungheni ca decor (GDD §19).
 
 ## Decizii luate
 

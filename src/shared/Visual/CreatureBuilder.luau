@@ -113,6 +113,30 @@ function CreatureBuilder.placeOn(model: Model, pivot: CFrame)
 	model:PivotTo(model:GetPivot() + Vector3.new(0, pivot.Position.Y - bottom, 0))
 end
 
+-- Desprinde modelul de pe piedestal și îl sudează deasupra capului unui personaj (cărat).
+function CreatureBuilder.attachAbove(model: Model, root: BasePart, height: number)
+	local primary = model.PrimaryPart :: BasePart
+	for _, descendant in model:GetDescendants() do
+		if descendant:IsA("BasePart") then
+			descendant.Anchored = false
+			descendant.Massless = true
+			descendant.CanCollide = false
+			if descendant ~= primary then
+				local weld = Instance.new("WeldConstraint")
+				weld.Part0 = primary
+				weld.Part1 = descendant
+				weld.Parent = descendant
+			end
+		end
+	end
+	model:PivotTo(root.CFrame * CFrame.new(0, height + model:GetExtentsSize().Y / 2, 0))
+	local weld = Instance.new("WeldConstraint")
+	weld.Part0 = root
+	weld.Part1 = primary
+	weld.Parent = primary
+	model.Parent = root.Parent
+end
+
 -- Construiește modelul (fără Parent). `pivot` = unde stă baza modelului.
 function CreatureBuilder.build(record: Record, pivot: CFrame): Model
 	local creature = Creatures.byId[record.id]

@@ -14,6 +14,7 @@ local ORDER = {
 	"HudController",
 	"WorldController",
 	"EffectsController",
+	"TutorialController",
 }
 
 for _, name in ORDER do

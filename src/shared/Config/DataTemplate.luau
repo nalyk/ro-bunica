@@ -30,7 +30,8 @@ export type Profile = {
 	upgrades: { [string]: number },
 	playSeconds: number, -- total timp jucat, pentru protecția jucătorilor noi
 	lastSeen: number, -- os.time() la ultima salvare, pentru venitul offline
-	tutorialDone: boolean,
+	tutorialDone: boolean, -- sămânța de start a fost dată
+	tutorialThiefDone: boolean, -- hoțul din primul minut a fost prins
 	stats: { steals: number, defends: number, hatched: number },
 	uidCounter: number,
 }
@@ -54,6 +55,7 @@ function DataTemplate.new(): Profile
 		playSeconds = 0,
 		lastSeen = 0,
 		tutorialDone = false,
+		tutorialThiefDone = false,
 		stats = { steals = 0, defends = 0, hatched = 0 },
 		uidCounter = 0,
 	}

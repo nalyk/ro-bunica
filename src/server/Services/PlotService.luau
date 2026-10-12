@@ -126,14 +126,38 @@ local function spawnNpc(plot: Plot)
 	assign(plot, owner)
 end
 
+-- Mută personajul acasă. Roblox poate repoziționa personajul imediat după CharacterAdded,
+-- deci verificăm după o secundă și reîncercăm (playtest: jucătorul rămăsese la spawn-ul satului).
+local function debugLog(message: string)
+	if game:GetService("RunService"):IsStudio() then
+		print("[Plot] " .. message)
+	end
+end
+
 local function moveCharacterHome(player: Player, character: Model)
-	local owner = ownersByPlayer[player]
-	if not owner then
+	local root = character:WaitForChild("HumanoidRootPart", 10) :: BasePart?
+	if not root then
 		return
 	end
-	local root = character:WaitForChild("HumanoidRootPart", 10)
-	if root then
-		character:PivotTo(owner.plot.geometry.spawnCFrame)
+	for attempt = 1, 3 do
+		local owner = ownersByPlayer[player]
+		if not owner or character.Parent == nil then
+			debugLog(
+				string.format("acasă %s: fără ogradă sau personaj (încercarea %d)", player.Name, attempt)
+			)
+			return
+		end
+		task.wait(0.2)
+		local home = owner.plot.geometry.spawnCFrame
+		character:PivotTo(home)
+		task.wait(1)
+		local distance = (root.Position - home.Position).Magnitude
+		debugLog(
+			string.format("acasă %s: încercarea %d, la %.0f studs de casă", player.Name, attempt, distance)
+		)
+		if distance < 20 then
+			return
+		end
 	end
 end
 
@@ -171,7 +195,9 @@ local function onProfileLoaded(player: Player, profile: Profile)
 		joinedAt = os.clock(),
 	}
 	ownersByPlayer[player] = owner
+	player.RespawnLocation = chosen.geometry.spawn
 	assign(chosen, owner)
+	debugLog("profil încărcat " .. player.Name .. ", personaj: " .. tostring(player.Character ~= nil))
 	if player.Character then
 		task.spawn(moveCharacterHome, player, player.Character)
 	end
@@ -192,11 +218,16 @@ function PlotService.init()
 	for _, geometry in WorldBuilder.build() do
 		table.insert(PlotService.plots, { index = geometry.index, geometry = geometry, owner = nil })
 	end
-	Players.PlayerAdded:Connect(function(player)
+	-- Și pentru jucătorii intrați înainte de pornirea serverului (Play Solo, primul jucător pe un server nou)
+	local function hook(player: Player)
 		player.CharacterAdded:Connect(function(character)
 			moveCharacterHome(player, character)
 		end)
-	end)
+	end
+	Players.PlayerAdded:Connect(hook)
+	for _, player in Players:GetPlayers() do
+		hook(player)
+	end
 end
 
 function PlotService.start()

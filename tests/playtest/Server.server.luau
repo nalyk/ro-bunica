@@ -25,6 +25,7 @@ local CreatureService = services.CreatureService
 local DayNightService = services.DayNightService
 local BunicaService = services.BunicaService
 local SlipperService = services.SlipperService
+local TutorialService = services.TutorialService
 
 local function log(message: string)
 	print("[PLAYTEST] " .. message)
@@ -188,6 +189,46 @@ step("1. Sămânța de start eclozează pe un piedestal", function()
 		"clientul nu vede creatura în stare"
 	)
 	check(containsText(seen.hud, "lei"), "HUD-ul nu afișează leii")
+end)
+
+step("1b. Primul minut: hoțul vine, jucătorul îl nimerește cu papucul", function()
+	check(
+		waitFor(function()
+			return TutorialService.isWaitingForThrow(me)
+		end, 70),
+		"hoțul din tutorial nu a ajuns la aruncare"
+	)
+	local seen = call("query")
+	check(table.find(seen.tutorial, "throw") ~= nil, "clientul nu a primit indiciul de aruncare")
+	local serverRoot = Actors.root(myActor) :: BasePart
+	local thiefRoot = Actors.root(TutorialService.thiefOf(me)) :: BasePart
+	log(
+		string.format(
+			"poziții: client %s | server %s | acasă %s | hoț %s",
+			tostring(seen.position),
+			tostring(serverRoot.Position),
+			tostring(me.plot.geometry.spawnCFrame.Position),
+			tostring(thiefRoot.Position)
+		)
+	)
+	check(call("throwAt", "Hoțomanul") == "ok", "clientul nu vede hoțul")
+	check(
+		waitFor(function()
+			return me.profile.tutorialThiefDone
+		end, 6),
+		"tutorialul nu s-a încheiat după aruncare"
+	)
+	check(
+		waitFor(function()
+			return table.find(call("query").tutorial, "done") ~= nil
+		end, 3),
+		"clientul nu a primit finalul tutorialului"
+	)
+end)
+
+step("1c. Efectele sonore se încarcă", function()
+	local failed = call("preloadSounds")
+	check(#failed == 0, "sunete care nu se încarcă: " .. table.concat(failed, ", "))
 end)
 
 step("2. Leii cresc din venitul creaturilor", function()
@@ -446,6 +487,17 @@ step("15. Bunica apără singură cât jucătorul e plecat", function()
 	check(hit, "Bunica nu l-a prins pe bot în 15 s")
 	check(sawAwake, "Bunica nu a trecut prin starea Awake")
 	check(me.profile.pedestals[key] ~= nil, "creatura nu a rămas la jucător")
+end)
+
+step("15b. La răsărit se reia lovitura nopții", function()
+	DayNightService.forcePhase("Day")
+	check(
+		waitFor(function()
+			return call("query").counters.Replay >= 1
+		end, 5),
+		"clientul nu a primit reluarea loviturii nopții"
+	)
+	task.wait(4) -- lasă reluarea să se termine (capturi)
 end)
 
 step("16. Fără erori de script (server și client)", function()

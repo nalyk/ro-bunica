@@ -14,6 +14,7 @@ local RaidConfig = require(Shared.Config.Raid)
 local Defense = require(Shared.Config.Defense)
 local Raid = require(Shared.Domain.Raid)
 local Inventory = require(Shared.Domain.Inventory)
+local CreatureBuilder = require(Shared.Visual.CreatureBuilder)
 local PlotService = require(script.Parent.PlotService)
 local CreatureService = require(script.Parent.CreatureService)
 local StateService = require(script.Parent.StateService)
@@ -46,6 +47,22 @@ local carries: { [Actor]: Carry } = {}
 local carriedUids: { [string]: boolean } = {}
 local stunnedUntil: { [Actor]: number } = {}
 local prompts: { [ProximityPrompt]: boolean } = {}
+local forcedIntruders: { [Actor]: Owner } = {} -- intruși și ziua (hoțul din tutorial)
+
+export type HitSource = {
+	kind: string, -- "Slipper" | "RollingPin" | "BunicaSlipper" | "Rage"
+	thrower: Actor?, -- cine a aruncat (nil = Bunica)
+	owner: Owner, -- ograda apărată
+	distance: number, -- de la aruncare la impact
+}
+local hitCallbacks: { (Actor, HitSource) -> () } = {}
+
+-- Diagnostic doar în Studio (playtest), ca să vedem de ce un furt e refuzat
+local function debugLog(message: string)
+	if RunService:IsStudio() then
+		print("[Raid] " .. message)
+	end
+end
 
 local function now(): number
 	return Workspace:GetServerTimeNow()
@@ -72,9 +89,26 @@ function RaidService.isStunned(actor: Actor): boolean
 end
 
 -- Este jucătorul un intrus pentru acest proprietar? (ținta legitimă a papucului)
+-- Marchează un actor ca intrus în ograda dată, indiferent de fază (nil = anulează).
+function RaidService.forceIntruder(actor: Actor, owner: Owner?)
+	if owner then
+		forcedIntruders[actor] = owner
+	else
+		forcedIntruders[actor] = nil
+	end
+end
+
+-- Apelat după fiecare lovitură (papuc, făcăleț, Bunica, Furie).
+function RaidService.onActorHit(callback: (Actor, HitSource) -> ())
+	table.insert(hitCallbacks, callback)
+end
+
 function RaidService.isIntruder(actor: Actor, owner: Owner): boolean
 	if owner.actor == actor then
 		return false
+	end
+	if forcedIntruders[actor] == owner then
+		return true
 	end
 	local carry = carries[actor]
 	if carry and carry.owner == owner then
@@ -156,30 +190,6 @@ local function complete(actor: Actor, thief: Owner)
 	StateService.markDirty(owner.player)
 end
 
-local function attachToCharacter(model: Model, root: BasePart)
-	local primary = model.PrimaryPart :: BasePart
-	for _, descendant in model:GetDescendants() do
-		if descendant:IsA("BasePart") then
-			descendant.Anchored = false
-			descendant.Massless = true
-			descendant.CanCollide = false
-			if descendant ~= primary then
-				local weld = Instance.new("WeldConstraint")
-				weld.Part0 = primary
-				weld.Part1 = descendant
-				weld.Parent = descendant
-			end
-		end
-	end
-	local height = model:GetExtentsSize().Y
-	model:PivotTo(root.CFrame * CFrame.new(0, CARRY_HEIGHT + height / 2, 0))
-	local weld = Instance.new("WeldConstraint")
-	weld.Part0 = root
-	weld.Part1 = primary
-	weld.Parent = primary
-	model.Parent = root.Parent
-end
-
 -- Încearcă să înceapă un furt. Apelat de prompt (jucători) sau direct (boți, teste).
 function RaidService.tryStart(actor: Actor, owner: Owner, key: string)
 	local thief = PlotService.getOwnerOfActor(actor)
@@ -188,6 +198,17 @@ function RaidService.tryStart(actor: Actor, owner: Owner, key: string)
 	local model = CreatureService.modelAt(owner, key)
 	local record = owner.profile.pedestals[key]
 	if not thief or not root or not humanoid or humanoid.Health <= 0 or not model or not record then
+		debugLog(
+			string.format(
+				"furt refuzat %s: ogradă=%s root=%s humanoid=%s model=%s record=%s",
+				actor.name,
+				tostring(thief ~= nil),
+				tostring(root ~= nil),
+				tostring(humanoid ~= nil),
+				tostring(model ~= nil),
+				tostring(record ~= nil)
+			)
+		)
 		return
 	end
 	local ok, reason = Raid.canSteal({
@@ -205,6 +226,7 @@ function RaidService.tryStart(actor: Actor, owner: Owner, key: string)
 		creatureOnPedestal = not carriedUids[record.uid],
 	})
 	if not ok then
+		debugLog("furt refuzat " .. actor.name .. ": " .. tostring(reason))
 		if reason == "NotNight" or reason == "Shielded" or reason == "NewPlayer" then
 			Messenger.notify(actor.player, "notify." .. reason)
 		end
@@ -216,7 +238,7 @@ function RaidService.tryStart(actor: Actor, owner: Owner, key: string)
 	if prompt then
 		prompt:Destroy()
 	end
-	attachToCharacter(model, root)
+	CreatureBuilder.attachAbove(model, root, CARRY_HEIGHT)
 
 	local creature = Creatures.byId[record.id]
 	carries[actor] = {
@@ -304,7 +326,7 @@ end
 
 -- Apelat de papuc și de Bunica: scapă creatura, amețește și aruncă actorul.
 -- Jucătorul își aplică singur reculul (îi deține fizica); botului i-l aplică serverul.
-function RaidService.onHit(victim: Actor, knockback: Vector3, stunSeconds: number)
+function RaidService.onHit(victim: Actor, knockback: Vector3, stunSeconds: number, source: HitSource)
 	if carries[victim] then
 		RaidService.drop(victim)
 	end
@@ -312,10 +334,25 @@ function RaidService.onHit(victim: Actor, knockback: Vector3, stunSeconds: numbe
 	if victim.player then
 		Net.get("Knockback"):FireClient(victim.player, knockback, stunSeconds)
 	else
+		-- Botul: ragdoll pe server (îi deținem fizica), apoi se ridică
 		local root = Actors.root(victim)
+		local humanoid = Actors.humanoid(victim)
+		if humanoid then
+			humanoid.PlatformStand = true
+			task.delay(stunSeconds, function()
+				if humanoid.Parent then
+					humanoid.PlatformStand = false
+				end
+			end)
+		end
 		if root then
 			root.AssemblyLinearVelocity = knockback
+			root.AssemblyAngularVelocity =
+				Vector3.new(math.random(-8, 8), math.random(-8, 8), math.random(-8, 8))
 		end
+	end
+	for _, callback in hitCallbacks do
+		task.spawn(callback, victim, source)
 	end
 end
 
@@ -340,6 +377,7 @@ function RaidService.start()
 	Actors.onRemoving(function(actor)
 		RaidService.drop(actor)
 		stunnedUntil[actor] = nil
+		forcedIntruders[actor] = nil
 	end)
 	local elapsed = 0
 	RunService.Heartbeat:Connect(function(dt)

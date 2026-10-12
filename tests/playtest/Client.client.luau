@@ -17,11 +17,15 @@ local player = Players.LocalPlayer
 local controllers = player:WaitForChild("PlayerScripts"):WaitForChild("Client"):WaitForChild("Controllers")
 local ClientState = (require :: any)(controllers:WaitForChild("ClientState"))
 
-local counters: { [string]: number } = { Alarm = 0, Knockback = 0, Hit = 0, Projectile = 0 }
+local counters: { [string]: number } = { Alarm = 0, Knockback = 0, Hit = 0, Projectile = 0, Replay = 0 }
+local tutorialStages: { string } = {}
 local notifications: { string } = {}
 local clientErrors: { string } = {}
 
-for _, name in { "Alarm", "Knockback", "Hit", "Projectile" } do
+Net.get("Tutorial").OnClientEvent:Connect(function(stage)
+	table.insert(tutorialStages, stage)
+end)
+for _, name in { "Alarm", "Knockback", "Hit", "Projectile", "Replay" } do
 	Net.get(name).OnClientEvent:Connect(function()
 		counters[name] += 1
 	end)
@@ -117,6 +121,25 @@ function ops.throwAt(targetName: string): string
 	return "ok"
 end
 
+-- Încarcă efectele sonore și întoarce cele care nu s-au putut încărca.
+function ops.preloadSounds(): { string }
+	local ContentProvider = game:GetService("ContentProvider")
+	local Sounds = require(Shared.Config.Sounds)
+	local sounds = {}
+	for _, id in Sounds do
+		local sound = Instance.new("Sound")
+		sound.SoundId = id :: string
+		table.insert(sounds, sound)
+	end
+	local failed = {}
+	ContentProvider:PreloadAsync(sounds, function(contentId: string, status: Enum.AssetFetchStatus)
+		if status ~= Enum.AssetFetchStatus.Success then
+			table.insert(failed, contentId .. " " .. status.Name)
+		end
+	end)
+	return failed
+end
+
 function ops.openShop(): number
 	local ShopPanel = (require :: any)(controllers:WaitForChild("ShopPanel"))
 	ShopPanel.toggle()
@@ -160,6 +183,8 @@ function ops.query(): { [string]: any }
 		notifications = table.clone(notifications),
 		walkSpeed = humanoid and humanoid.WalkSpeed or 0,
 		errors = table.clone(clientErrors),
+		tutorial = table.clone(tutorialStages),
+		position = (character():FindFirstChild("HumanoidRootPart") :: BasePart).Position,
 	}
 end
 

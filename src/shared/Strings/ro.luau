@@ -61,6 +61,17 @@ return {
 	["ui.rollingPin"] = "Făcăleț",
 	["ui.seeds"] = "Semințele tale",
 	["ui.ammo"] = "Papuci: {1}/{2}",
+	-- Primul minut
+	["tutorial.incoming"] = "Vine un hoț!",
+	["tutorial.throw"] = "Aruncă papucul în hoț! Atinge-l sau dă click pe el.",
+	["tutorial.doneByPlayer"] = "Bravo! Hoțul a zburat peste gard.",
+	["tutorial.doneByBunica"] = "Bunica l-a prins! Data viitoare aruncă tu.",
+	-- Lovitura
+	["juice.Slipper"] = "PLEOSC!",
+	["juice.RollingPin"] = "BUF!",
+	["juice.BunicaSlipper"] = "PLEOSC!",
+	["juice.Rage"] = "HAȚ!",
+	["replay.title"] = "Lovitura nopții: {1}",
 	-- Notificări personale
 	["notify.NotEnoughLei"] = "Nu ai destui lei",
 	["notify.OutOfStock"] = "S-a terminat marfa",
@@ -83,4 +94,5 @@ return {
 	["announce.Weather"] = "{1} a început!",
 	["announce.Night"] = "Se lasă noaptea. Bunica e de pază!",
 	["announce.Day"] = "S-a făcut ziuă.",
+	["announce.BestThrow"] = "Lovitura nopții: {1}, de la {2} studs!",
 }

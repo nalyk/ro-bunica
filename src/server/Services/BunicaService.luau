@@ -152,7 +152,8 @@ local function ownerNearby(owner: Owner, bunica: Bunica): boolean
 		and PlotService.plotAt(root.Position) == owner.plot
 end
 
-local function throwAt(owner: Owner, bunica: Bunica, targetRoot: BasePart)
+-- `perfect` = aruncare sigură (tutorial): rapidă, fără eroare, cu anticipare completă.
+local function throwAt(owner: Owner, bunica: Bunica, targetRoot: BasePart, perfect: boolean?)
 	local config = Defense.bunicaNpc
 	setState(bunica, "Awake")
 	bunica.rig:SetAttribute("Windup", true)
@@ -162,24 +163,36 @@ local function throwAt(owner: Owner, bunica: Bunica, targetRoot: BasePart)
 			return
 		end
 		local origin = bunica.root.Position + Vector3.new(0, 2, 0)
+		local speed = if perfect then Defense.slipper.speed else config.throwSpeed
 		local distance = (targetRoot.Position - origin).Magnitude
-		local flightTime = distance / config.throwSpeed
-		local lead = targetRoot.AssemblyLinearVelocity * flightTime * 0.5 -- țintește doar pe jumătate înainte
-		local errorOffset = Vector3.new(
-			(math.random() * 2 - 1) * config.aimErrorStuds,
-			0,
-			(math.random() * 2 - 1) * config.aimErrorStuds
-		)
+		local flightTime = distance / speed
+		-- Bunica obișnuită anticipează doar pe jumătate și greșește puțin: hoțul se poate feri
+		local lead = targetRoot.AssemblyLinearVelocity * flightTime * (if perfect then 1 else 0.5)
+		local errorOffset = if perfect
+			then Vector3.zero
+			else Vector3.new(
+				(math.random() * 2 - 1) * config.aimErrorStuds,
+				0,
+				(math.random() * 2 - 1) * config.aimErrorStuds
+			)
 		SlipperService.launch(owner, nil, "BunicaSlipper", origin, targetRoot.Position + lead + errorOffset, {
-			speed = config.throwSpeed,
+			speed = speed,
 			gravity = Defense.slipper.gravity,
-			hitRadius = Defense.slipper.hitRadius,
+			hitRadius = Defense.slipper.hitRadius + (if perfect then 1.5 else 0),
 			maxRange = config.sightRange + 15,
 			maxLifetime = 3,
 			stunSeconds = Defense.slipper.stunSeconds,
 			knockbackSpeed = Defense.slipper.knockbackSpeed,
 		})
 	end)
+end
+
+-- Bunica ograzii aruncă la comandă (tutorialul o folosește ca plasă de siguranță).
+function BunicaService.throwAt(owner: Owner, targetRoot: BasePart, perfect: boolean?)
+	local bunica = bunicas[owner.plot.index]
+	if bunica then
+		throwAt(owner, bunica, targetRoot, perfect)
+	end
 end
 
 local function endRage(bunica: Bunica)
@@ -207,7 +220,12 @@ local function tickRage(owner: Owner, bunica: Bunica, intruders: { { actor: Acto
 	if closestDistance <= config.hitRadius + 2 and now() - lastHit >= RAGE_HIT_COOLDOWN then
 		bunica.lastHitAt[closest.actor] = now()
 		local knockback = SlipperService.knockbackFor(owner, closest.root.Position, config.knockbackSpeed)
-		RaidService.onHit(closest.actor, knockback, config.stunSeconds)
+		RaidService.onHit(closest.actor, knockback, config.stunSeconds, {
+			kind = "Rage",
+			thrower = nil,
+			owner = owner,
+			distance = closestDistance,
+		})
 		Net.get("Hit"):FireAllClients({
 			id = 0,
 			kind = "Rage",

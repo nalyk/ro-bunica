@@ -66,7 +66,7 @@ while [ $(( $(date +%s) - START )) -lt $TIMEOUT ]; do
 done
 kill $CAPTURE 2>/dev/null
 
-grep -o "\[PLAYTEST\].*" "$LOG" | sed 's/\\n$//'
+grep -o "\[\(PLAYTEST\|Raid\|Tutorial\|Slipper\)\].*" "$LOG" | sed 's/\\n$//'
 xdotool key shift+F5
 if [ -z "$RESULT" ]; then
 	echo "[playtest] TIMEOUT după ${TIMEOUT}s"

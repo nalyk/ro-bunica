@@ -10,6 +10,8 @@ local Net = require(Shared.Net)
 local Defense = require(Shared.Config.Defense)
 local World = require(Shared.Config.World)
 local Slipper = require(Shared.Domain.Slipper)
+local AimAssist = require(Shared.Domain.AimAssist)
+local Juice = require(Shared.Config.Juice)
 local RateLimiter = require(Shared.Domain.RateLimiter)
 local PlotService = require(script.Parent.PlotService)
 local StateService = require(script.Parent.StateService)
@@ -55,6 +57,23 @@ local ammoByActor: { [Actor]: Slipper.Ammo } = {}
 local nerviByActor: { [Actor]: number } = {}
 local projectiles: { Projectile } = {}
 local nextId = 0
+
+-- Ajutor la ochit pe actor: funcția întoarce țintele spre care se pot redirecționa aruncările
+type AimAssistEntry = { targets: () -> { Vector3 }, radius: number }
+local aimAssist: { [Actor]: AimAssistEntry } = {}
+
+-- Cea mai lungă lovitură a nopții, reluată la răsărit
+export type BestThrow = {
+	name: string,
+	distance: number,
+	kind: string,
+	origin: Vector3,
+	velocity: Vector3,
+	gravity: number,
+	duration: number,
+	plotIndex: number,
+}
+local bestThrow: BestThrow? = nil
 
 local function now(): number
 	return Workspace:GetServerTimeNow()
@@ -139,24 +158,58 @@ SlipperService.knockbackFor = knockbackFor
 local function applyHit(projectile: Projectile, victim: Actor, root: BasePart)
 	projectile.alreadyHit[victim] = true
 	local params = projectile.params
+	local distance = (root.Position - projectile.origin).Magnitude
 	RaidService.onHit(
 		victim,
 		knockbackFor(projectile.owner, root.Position, params.knockbackSpeed),
-		params.stunSeconds
+		params.stunSeconds,
+		{
+			kind = projectile.kind,
+			thrower = projectile.thrower,
+			owner = projectile.owner,
+			distance = distance,
+		}
 	)
 	local thrower = projectile.thrower
 	if thrower then
 		addNervi(thrower, Defense.nervi.perHit)
 		projectile.owner.profile.stats.defends += 1
 		Messenger.notify(thrower.player, "notify.Defended", { victim.name })
+		if not bestThrow or distance > bestThrow.distance then
+			bestThrow = {
+				name = thrower.name,
+				distance = distance,
+				kind = projectile.kind,
+				origin = projectile.origin,
+				velocity = projectile.velocity,
+				gravity = params.gravity,
+				duration = projectile.age,
+				plotIndex = projectile.owner.plot.index,
+			}
+		end
 	end
 	Net.get("Hit"):FireAllClients({
 		id = projectile.id,
 		kind = projectile.kind,
 		position = root.Position,
 		victimUserId = victim.id,
+		throwerUserId = if thrower then thrower.id else 0,
+		distance = distance,
 		plotIndex = projectile.owner.plot.index,
 	})
+end
+
+-- Pornește sau oprește ajutorul la ochit pentru un actor (tutorial, jucători noi).
+function SlipperService.setAimAssist(actor: Actor, targets: (() -> { Vector3 })?, radius: number?)
+	if targets then
+		aimAssist[actor] = { targets = targets, radius = radius or 20 }
+	else
+		aimAssist[actor] = nil
+	end
+end
+
+function SlipperService.bestThrow(): BestThrow?
+	return bestThrow
 end
 
 local function step(dt: number)
@@ -227,6 +280,21 @@ function SlipperService.throwAs(actor: Actor, target: Vector3, kind: "Slipper" |
 		params = Defense.slipper
 		StateService.markDirty(actor.player)
 	end
+	local assist = aimAssist[actor]
+	if assist then
+		local before = target
+		target = AimAssist.retarget(target, assist.targets(), assist.radius)
+		if RunService:IsStudio() then
+			print(
+				string.format(
+					"[Slipper] ajutor la ochit %s: %.1f studs corecție, țintă la %.1f studs",
+					actor.name,
+					(target - before).Magnitude,
+					(target - root.Position).Magnitude
+				)
+			)
+		end
+	end
 	local origin = root.Position + Vector3.new(0, 2, 0)
 	SlipperService.launch(owner, actor, kind, origin, target, params)
 	return true
@@ -260,9 +328,20 @@ function SlipperService.start()
 	Actors.onRemoving(function(actor)
 		ammoByActor[actor] = nil
 		nerviByActor[actor] = nil
+		aimAssist[actor] = nil
 		throwLimiter:forget(actor.id)
 	end)
 	DayNightService.onPhaseChanged(function(phase)
+		if phase == "Night" then
+			bestThrow = nil
+		end
+		-- Lovitura nopții, reluată pentru tot serverul la răsărit
+		local best = bestThrow
+		if phase == "Day" and best and best.distance >= Juice.replayMinDistance then
+			Net.get("Replay"):FireAllClients(best)
+			Messenger.announce("announce.BestThrow", { best.name, tostring(math.floor(best.distance)) })
+			bestThrow = nil
+		end
 		if phase == "Day" then
 			for actor in nerviByActor do
 				nerviByActor[actor] = 0

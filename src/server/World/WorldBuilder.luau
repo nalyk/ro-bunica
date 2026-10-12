@@ -18,6 +18,7 @@ export type PlotGeometry = {
 	deposit: BasePart,
 	bunicaCFrame: CFrame,
 	spawnCFrame: CFrame,
+	spawn: SpawnLocation, -- RespawnLocation pentru proprietar
 	sign: TextLabel,
 	creatureFolder: Folder,
 }
@@ -236,6 +237,20 @@ local function buildPlot(index: number, parent: Instance): PlotGeometry
 	label.Text = ""
 	label.Parent = surface
 
+	-- Locul de reînviere al proprietarului (invizibil; setat ca Player.RespawnLocation)
+	local spawn = Instance.new("SpawnLocation")
+	spawn.Name = "OwnerSpawn"
+	spawn.Anchored = true
+	spawn.Neutral = true
+	spawn.Enabled = false -- doar prin RespawnLocation, nu pentru spawn-uri aleatorii
+	spawn.Duration = 0
+	spawn.Transparency = 1
+	spawn.CanCollide = false
+	spawn.CanQuery = false
+	spawn.Size = Vector3.new(6, 1, 6)
+	spawn.CFrame = cf * CFrame.new(0, 0.5, 0)
+	spawn.Parent = model
+
 	local creatureFolder = Instance.new("Folder")
 	creatureFolder.Name = "Creatures"
 	creatureFolder.Parent = model
@@ -252,6 +267,7 @@ local function buildPlot(index: number, parent: Instance): PlotGeometry
 		bunicaCFrame = cf * CFrame.new(0, 1, World.plotSize.Z / 2 - 17) * CFrame.Angles(0, math.pi, 0),
 		-- Mijlocul ogrăzii, cu fața spre drum: camera nu intră în Bunica de pe prispă
 		spawnCFrame = cf * CFrame.new(0, 3, 0),
+		spawn = spawn,
 		sign = label,
 		creatureFolder = creatureFolder,
 	}

@@ -24,6 +24,8 @@ local NAMES = {
 	"Knockback", -- (velocity: Vector3, stunSeconds: number) aplicat de clientul lovit
 	"Alarm", -- (plotIndex: number) hoț în ograda ta
 	"Shop", -- (stock: {[string]: number}, nextRestockAt: number)
+	"Tutorial", -- (stage: string, data: {any}?) pașii din primul minut
+	"Replay", -- (best: BestThrow) lovitura nopții, reluată la răsărit
 }
 
 local FOLDER_NAME = "Remotes"

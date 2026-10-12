@@ -1,0 +1,326 @@
+--!strict
+-- Bunica fiecărei ogrăzi: personaj cu stări (doarme, bănuitoare, trează, furioasă).
+-- Când proprietarul lipsește, apără slab: aruncă un papuc lent și anunțat, iar cocoșul dă alarma.
+-- Furia Bunicii (100 Nervi): Bunica iese de pe prispă și urmărește singură hoții câteva secunde.
+
+local Players = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
+
+local Shared = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
+local Net = require(Shared.Net)
+local Defense = require(Shared.Config.Defense)
+local RateLimiter = require(Shared.Domain.RateLimiter)
+local PlotService = require(script.Parent.PlotService)
+local RaidService = require(script.Parent.RaidService)
+local SlipperService = require(script.Parent.SlipperService)
+
+type Owner = PlotService.Owner
+
+type BunicaState = "Sleeping" | "Suspicious" | "Awake" | "Watching" | "Rage"
+
+type Bunica = {
+	rig: Model,
+	humanoid: Humanoid,
+	root: BasePart,
+	stateLabel: TextLabel,
+	home: CFrame,
+	suspicion: number,
+	nextThrowAt: number,
+	rageUntil: number,
+	lastAlarmAt: number,
+	hadIntruders: boolean,
+	lastHitAt: { [Player]: number },
+}
+
+local TICK = 0.2
+local ALARM_COOLDOWN = 10
+local RAGE_HIT_COOLDOWN = 1
+
+local STATE_ICONS: { [string]: string } = {
+	Sleeping = "💤",
+	Suspicious = "❓",
+	Awake = "❗",
+	Watching = "👀",
+	Rage = "😡",
+}
+
+local BunicaService = {}
+
+local bunicas: { [number]: Bunica } = {} -- după indexul ogrăzii
+local rageLimiter = RateLimiter.new(2, 0.5)
+
+local function now(): number
+	return Workspace:GetServerTimeNow()
+end
+
+local function buildRig(home: CFrame): Bunica
+	local description = Instance.new("HumanoidDescription")
+	local skin = Color3.fromRGB(234, 192, 160)
+	description.HeadColor = skin
+	description.LeftArmColor = skin
+	description.RightArmColor = skin
+	description.TorsoColor = Color3.fromRGB(40, 40, 70) -- vestă închisă
+	description.LeftLegColor = Color3.fromRGB(60, 30, 40) -- fustă lungă
+	description.RightLegColor = Color3.fromRGB(60, 30, 40)
+	local rig = Players:CreateHumanoidModelFromDescription(description, Enum.HumanoidRigType.R15)
+	rig.Name = "Bunica"
+	local humanoid = rig:FindFirstChildOfClass("Humanoid") :: Humanoid
+	humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
+	local root = rig:FindFirstChild("HumanoidRootPart") :: BasePart
+	local head = rig:FindFirstChild("Head") :: BasePart
+
+	-- Basmaua roșie (placeholder până la modelul final)
+	local scarf = Instance.new("Part")
+	scarf.Name = "Basma"
+	scarf.Shape = Enum.PartType.Ball
+	scarf.Size = head.Size * 1.25
+	scarf.Color = Color3.fromRGB(200, 30, 40)
+	scarf.CanCollide = false
+	scarf.Massless = true
+	scarf.CFrame = head.CFrame * CFrame.new(0, 0.15, 0.1)
+	local weld = Instance.new("WeldConstraint")
+	weld.Part0 = head
+	weld.Part1 = scarf
+	weld.Parent = scarf
+	scarf.Parent = rig
+
+	local billboard = Instance.new("BillboardGui")
+	billboard.Size = UDim2.fromOffset(60, 60)
+	billboard.StudsOffset = Vector3.new(0, 3.5, 0)
+	billboard.AlwaysOnTop = true
+	billboard.MaxDistance = 120
+	billboard.Parent = head
+	local label = Instance.new("TextLabel")
+	label.Size = UDim2.fromScale(1, 1)
+	label.BackgroundTransparency = 1
+	label.TextScaled = true
+	label.Text = STATE_ICONS.Sleeping
+	label.Parent = billboard
+
+	rig:PivotTo(home * CFrame.new(0, 2.5, 0))
+	root.Anchored = true
+	rig.Parent = Workspace
+	return {
+		rig = rig,
+		humanoid = humanoid,
+		root = root,
+		stateLabel = label,
+		home = home,
+		suspicion = 0,
+		nextThrowAt = 0,
+		rageUntil = 0,
+		lastAlarmAt = -math.huge,
+		hadIntruders = false,
+		lastHitAt = {},
+	}
+end
+
+local function setState(bunica: Bunica, state: BunicaState)
+	if bunica.rig:GetAttribute("State") ~= state then
+		bunica.rig:SetAttribute("State", state)
+		bunica.stateLabel.Text = STATE_ICONS[state]
+	end
+end
+
+local function intrudersOf(owner: Owner): { { player: Player, root: BasePart } }
+	local list = {}
+	for _, player in Players:GetPlayers() do
+		if RaidService.isIntruder(player, owner) then
+			local character = player.Character
+			local root = character and character:FindFirstChild("HumanoidRootPart") :: BasePart?
+			if root then
+				table.insert(list, { player = player, root = root })
+			end
+		end
+	end
+	return list
+end
+
+local function ownerNearby(owner: Owner, bunica: Bunica): boolean
+	local player = owner.player
+	local character = player and player.Character
+	local root = character and character:FindFirstChild("HumanoidRootPart") :: BasePart?
+	return root ~= nil
+		and (root.Position - bunica.home.Position).Magnitude <= Defense.bunicaNpc.ownerNearbyRange
+		and PlotService.plotAt(root.Position) == owner.plot
+end
+
+local function throwAt(owner: Owner, bunica: Bunica, targetRoot: BasePart)
+	local config = Defense.bunicaNpc
+	setState(bunica, "Awake")
+	bunica.rig:SetAttribute("Windup", true)
+	task.delay(config.windupSeconds, function()
+		bunica.rig:SetAttribute("Windup", false)
+		if owner.plot.owner ~= owner or not targetRoot.Parent then
+			return
+		end
+		local origin = bunica.root.Position + Vector3.new(0, 2, 0)
+		local distance = (targetRoot.Position - origin).Magnitude
+		local flightTime = distance / config.throwSpeed
+		local lead = targetRoot.AssemblyLinearVelocity * flightTime * 0.5 -- țintește doar pe jumătate înainte
+		local errorOffset = Vector3.new(
+			(math.random() * 2 - 1) * config.aimErrorStuds,
+			0,
+			(math.random() * 2 - 1) * config.aimErrorStuds
+		)
+		SlipperService.launch(owner, nil, "BunicaSlipper", origin, targetRoot.Position + lead + errorOffset, {
+			speed = config.throwSpeed,
+			gravity = Defense.slipper.gravity,
+			hitRadius = Defense.slipper.hitRadius,
+			maxRange = config.sightRange + 15,
+			maxLifetime = 3,
+			stunSeconds = Defense.slipper.stunSeconds,
+			knockbackSpeed = Defense.slipper.knockbackSpeed,
+		})
+	end)
+end
+
+local function endRage(bunica: Bunica)
+	bunica.rageUntil = 0
+	bunica.humanoid:MoveTo(bunica.root.Position)
+	bunica.rig:PivotTo(bunica.home * CFrame.new(0, 2.5, 0))
+	bunica.root.Anchored = true
+end
+
+local function tickRage(owner: Owner, bunica: Bunica, intruders: { { player: Player, root: BasePart } })
+	local config = Defense.rage
+	local closest, closestDistance = nil, math.huge
+	for _, intruder in intruders do
+		local distance = (intruder.root.Position - bunica.root.Position).Magnitude
+		if distance < closestDistance then
+			closest, closestDistance = intruder, distance
+		end
+	end
+	if not closest then
+		bunica.humanoid:MoveTo(bunica.home.Position)
+		return
+	end
+	bunica.humanoid:MoveTo(closest.root.Position)
+	local lastHit = bunica.lastHitAt[closest.player] or -math.huge
+	if closestDistance <= config.hitRadius + 2 and now() - lastHit >= RAGE_HIT_COOLDOWN then
+		bunica.lastHitAt[closest.player] = now()
+		local knockback = SlipperService.knockbackFor(owner, closest.root.Position, config.knockbackSpeed)
+		RaidService.onHit(closest.player, knockback, config.stunSeconds)
+		Net.get("Hit"):FireAllClients({
+			id = 0,
+			kind = "Rage",
+			position = closest.root.Position,
+			victimUserId = closest.player.UserId,
+			plotIndex = owner.plot.index,
+		})
+	end
+end
+
+local function tick(dt: number)
+	local config = Defense.bunicaNpc
+	local t = now()
+	for _, plot in PlotService.plots do
+		local owner = plot.owner
+		local bunica = bunicas[plot.index]
+		if not owner or not bunica then
+			continue
+		end
+		local intruders = intrudersOf(owner)
+
+		-- Alarma cocoșului pentru proprietar
+		local hasIntruders = #intruders > 0
+		if
+			hasIntruders
+			and not bunica.hadIntruders
+			and owner.player
+			and t - bunica.lastAlarmAt >= ALARM_COOLDOWN
+		then
+			bunica.lastAlarmAt = t
+			Net.get("Alarm"):FireClient(owner.player, plot.index)
+		end
+		bunica.hadIntruders = hasIntruders
+
+		if bunica.rageUntil > t then
+			setState(bunica, "Rage")
+			tickRage(owner, bunica, intruders)
+			continue
+		elseif bunica.rageUntil ~= 0 then
+			endRage(bunica)
+		end
+
+		if ownerNearby(owner, bunica) then
+			bunica.suspicion = math.max(bunica.suspicion - config.suspicionDecayPerSecond * dt, 0)
+			setState(bunica, if hasIntruders then "Watching" else "Sleeping")
+			continue
+		end
+
+		local visible: BasePart? = nil
+		for _, intruder in intruders do
+			if (intruder.root.Position - bunica.home.Position).Magnitude <= config.sightRange then
+				visible = intruder.root
+				break
+			end
+		end
+		if visible then
+			bunica.suspicion = math.min(bunica.suspicion + config.suspicionPerSecond * dt, 1)
+		else
+			bunica.suspicion = math.max(bunica.suspicion - config.suspicionDecayPerSecond * dt, 0)
+		end
+
+		if visible and bunica.suspicion >= 1 then
+			if t >= bunica.nextThrowAt then
+				bunica.nextThrowAt = t + config.throwIntervalSeconds
+				throwAt(owner, bunica, visible)
+			end
+		elseif bunica.suspicion > 0 then
+			setState(bunica, "Suspicious")
+		else
+			setState(bunica, "Sleeping")
+		end
+	end
+end
+
+local function onRage(player: Player)
+	if not rageLimiter:allow(player.UserId, os.clock()) then
+		return
+	end
+	local owner = PlotService.getOwner(player)
+	local bunica = owner and bunicas[owner.plot.index]
+	if not owner or not bunica or bunica.rageUntil > now() then
+		return
+	end
+	if not SlipperService.spendNervi(player, Defense.rage.cost) then
+		return
+	end
+	bunica.rageUntil = now() + Defense.rage.durationSeconds
+	bunica.lastHitAt = {}
+	bunica.root.Anchored = false
+	bunica.humanoid.WalkSpeed = Defense.rage.bunicaSpeed
+	bunica.root:SetNetworkOwner(nil)
+end
+
+function BunicaService.start()
+	for _, plot in PlotService.plots do
+		local bunica = buildRig(plot.geometry.bunicaCFrame)
+		bunica.rig.Parent = plot.geometry.model
+		bunicas[plot.index] = bunica
+	end
+	PlotService.onOwnerRemoving(function(owner)
+		local bunica = bunicas[owner.plot.index]
+		if bunica then
+			if bunica.rageUntil ~= 0 then
+				endRage(bunica)
+			end
+			bunica.suspicion = 0
+			setState(bunica, "Sleeping")
+		end
+	end)
+	Net.get("Rage").OnServerEvent:Connect(onRage)
+	Players.PlayerRemoving:Connect(function(player)
+		rageLimiter:forget(player.UserId)
+	end)
+	while true do
+		local dt = task.wait(TICK)
+		local ok, err = pcall(tick :: any, dt)
+		if not ok then
+			warn("[BunicaService] tick a eșuat:", err)
+		end
+	end
+end
+
+return BunicaService

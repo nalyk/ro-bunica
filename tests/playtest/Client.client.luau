@@ -224,6 +224,11 @@ function ops.query(): { [string]: any }
 		walkSpeed = humanoid and humanoid.WalkSpeed or 0,
 		errors = table.clone(clientErrors),
 		tutorial = table.clone(tutorialStages),
+		papuci = (function()
+			local stats = player:FindFirstChild("leaderstats")
+			local value = stats and stats:FindFirstChild("Papuci") :: IntValue?
+			return if value then value.Value else -1
+		end)(),
 		position = (character():FindFirstChild("HumanoidRootPart") :: BasePart).Position,
 	}
 end

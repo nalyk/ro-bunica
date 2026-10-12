@@ -55,6 +55,7 @@ export type HitSource = {
 	thrower: Actor?, -- cine a aruncat (nil = Bunica)
 	owner: Owner, -- ograda apărată
 	distance: number, -- de la aruncare la impact
+	saved: { id: string, size: string, mutation: string? }?, -- creatura scăpată de hoț (completat de onHit)
 }
 local hitCallbacks: { (Actor, HitSource) -> () } = {}
 
@@ -181,6 +182,7 @@ local function complete(actor: Actor, thief: Owner)
 	end
 
 	thief.profile.stats.steals += 1
+	owner.stolenTonight = (owner.stolenTonight or 0) + 1
 	if owner.kind == "Player" then
 		owner.shieldUntil = now() + RaidConfig.victimShieldSeconds
 	end
@@ -223,6 +225,8 @@ function RaidService.tryStart(actor: Actor, owner: Owner, key: string)
 		thiefCarrying = carries[actor] ~= nil,
 		thiefStunned = RaidService.isStunned(actor),
 		ownerShieldUntil = owner.shieldUntil,
+		-- Vecinii NPC simpli (fără actor) nu au limită; jucătorii și boții au
+		ownerStolenTonight = if owner.actor then owner.stolenTonight or 0 else 0,
 		-- În Studio, protecția jucătorilor noi e dezactivată ca să poată fi testate furturile
 		ownerPlaySeconds = if RunService:IsStudio() then math.huge else owner.profile.playSeconds,
 		ownerIsNpc = owner.kind == "Npc",
@@ -232,7 +236,13 @@ function RaidService.tryStart(actor: Actor, owner: Owner, key: string)
 	})
 	if not ok then
 		debugLog("furt refuzat " .. actor.name .. ": " .. tostring(reason))
-		if reason == "NotNight" or reason == "Shielded" or reason == "NewPlayer" or reason == "Family" then
+		if
+			reason == "NotNight"
+			or reason == "Shielded"
+			or reason == "NewPlayer"
+			or reason == "Family"
+			or reason == "NightLimit"
+		then
 			Messenger.notify(actor.player, "notify." .. reason)
 		end
 		return
@@ -332,7 +342,12 @@ end
 -- Apelat de papuc și de Bunica: scapă creatura, amețește și aruncă actorul.
 -- Jucătorul își aplică singur reculul (îi deține fizica); botului i-l aplică serverul.
 function RaidService.onHit(victim: Actor, knockback: Vector3, stunSeconds: number, source: HitSource)
-	if carries[victim] then
+	local carry = carries[victim]
+	if carry then
+		local record = carry.owner.profile.pedestals[carry.key]
+		if record then
+			source.saved = { id = record.id, size = record.size, mutation = record.mutation }
+		end
 		RaidService.drop(victim)
 	end
 	stunnedUntil[victim] = now() + stunSeconds
@@ -369,6 +384,10 @@ function RaidService.start()
 	DayNightService.onPhaseChanged(function(phase)
 		for prompt in prompts do
 			prompt.Enabled = phase == "Night"
+		end
+		-- Limita de furturi pe noapte se resetează
+		for _, owner in PlotService.owners() do
+			owner.stolenTonight = 0
 		end
 	end)
 	PlotService.onOwnerRemoving(function(owner)

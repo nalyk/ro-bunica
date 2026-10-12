@@ -43,7 +43,7 @@ Fiecare pas: logică în `Domain` + teste Lune, servicii, client, teste e2e în 
 - [x] **2. Lovitura de papuc** — client: înghețarea camerei 0,07 s, FOV punch, shake, flash, text comic „PLEOSC!” la impact, sunete ProSoundEffects (lovitură, țipăt de hoț în zbor, căzătură), haptic (pcall). Server: ragdoll pentru boți. „Lovitura nopții”: cea mai lungă lovitură e reluată cu încetinitorul la răsărit (`Replay`), cu banner și anunț. Valorile în `Config/Juice`.
 - [x] **3. Bunica-vedetă** — `Config/BunicaLines` (replici pe evenimente, RO/EN, `soundId` opțional pentru vocea înregistrată), bule de dialog, replica semnătură „Fugi, că vine Bunica!”. Client: animații procedurale pe Motor6D pe stări (doarme, bănuitoare, ochește, aruncă, sărbătorește, furioasă, veghează) și față desenată pe cap (ochelari rotunzi, sprâncene, gură pe stări).
 - [x] **4. Familia și Hora** — `Domain/Family`: prietenii Roblox de pe server formează familii (max 4), cu ogrăzi alăturate. Membrii nu-și fură între ei, apără orice ogradă din familie cu papucul, iar Bunica îi consideră „acasă”. `Domain/Ritual` + `HoraService`: vatra satului (cerc pe drum, cu fântână); 3+ jucători care dansează 4 s cheamă Culesul de aur sau Curcubeul pentru server, cu cooldown 20 min. Buton „Horă” și dans procedural.
-- [ ] **5. Furt corect** — max 2 furturi de la aceeași victimă pe noapte (apoi scut până dimineață), recompensă în lei pentru apărare (0,5 × prețul creaturii salvate), statistica „Apărări” în clasament.
+- [x] **5. Furt corect** — max 2 furturi de la aceeași victimă pe noapte (apoi scut până dimineață), recompensă în lei pentru apărare (0,5 × prețul creaturii salvate), statistica „Apărări” în clasament.
 - [ ] **6. Ritmul săptămânal** — `Config/LiveEvents` + `Domain/LiveEvents`: „Bunica se supără” sâmbăta 16:00–17:00 UTC (o oră înaintea update-ului de la 17:00): ploaie de papuci peste hoți, vremea exclusivă „Supărarea Bunicii” cu mutația „Papucită”, sămânță exclusivă rotativă pe săptămână, disponibilă doar online. Creștere offline a plantelor (plafon 8 h).
 
 Rezultate pașii 1–2 (2026-10-12): e2e cloud 16/16, playtest Studio 19/19 (scena tutorialului jucată de clientul real, sunete încărcate, reluarea nopții). Găsite în playtest: jucătorul rămânea la spawn-ul satului (CharacterAdded vine înainte de parentare; jucătorii intrați înainte de pornirea serverului nu aveau handler) → reparat cu RespawnLocation pe ogradă + așteptare + reîncercări; camera nu arăta hoțul → cadru cinematic + săgeată la marginea ecranului. `tools/playtest.sh` face și capturi la comandă (`[PLAYTEST] SNAP <nume>`).
@@ -55,6 +55,8 @@ Rezultate pasul 4: e2e 20/20, playtest 20/20 (Hora jucată de clientul real cu d
 - **StreamingEnabled:** articulațiile și părțile sosesc după model → controllerele completează ce lipsește și caută periodic.
 - **Iluminare:** Studio migrează automat „Compatibility” și blochează playtest-ul cu un dialog → `Lighting.Technology = ShadowMap` în toate proiectele.
 - Agentul de playtest iese din ogradă pe poartă (`leaveHome`), deci nu se mai blochează în colțul gardului.
+
+Rezultate pasul 5: e2e 22/22 (două furturi complete, al treilea refuzat, resetare dimineața; recompensa exactă), playtest 20/20 (notificarea recompensei și coloana „Papuci” pe clientul real).
 
 ## După pașii 1–6
 

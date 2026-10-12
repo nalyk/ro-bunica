@@ -34,6 +34,7 @@ export type Owner = {
 	shieldUntil: number,
 	joinedAt: number,
 	removing: boolean?, -- true cât rulează callback-urile de plecare
+	stolenTonight: number?, -- furturi reușite de la această ogradă în noaptea curentă
 }
 
 local NPC_NAMES =

@@ -77,6 +77,8 @@ return {
 	["ui.family"] = "Familia: {1}",
 	["hora.goToWell"] = "Hora se joacă la fântâna din mijlocul satului!",
 	["notify.Family"] = "Nu furi de la familie!",
+	["notify.NightLimit"] = "Ograda asta a fost jefuită destul în noaptea asta!",
+	["notify.DefenseReward"] = "Ai salvat creatura! +{1} lei",
 	-- Bunica (replici scrise de mână)
 	["bunica.spot.1"] = "Cine-i acolo?",
 	["bunica.spot.2"] = "Ia uite-l pe ăsta...",

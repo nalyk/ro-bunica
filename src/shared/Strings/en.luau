@@ -68,6 +68,8 @@ return {
 	["ui.family"] = "Family: {1}",
 	["hora.goToWell"] = "The hora is danced at the well in the middle of the village!",
 	["notify.Family"] = "You don't steal from family!",
+	["notify.NightLimit"] = "This yard has been robbed enough tonight!",
+	["notify.DefenseReward"] = "You saved the creature! +{1} lei",
 	["bunica.spot.1"] = "Who's there?",
 	["bunica.spot.2"] = "Well, look at this one...",
 	["bunica.spot.3"] = "I see everything, you know!",

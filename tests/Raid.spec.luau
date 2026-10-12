@@ -35,6 +35,7 @@ describe("Raid.canSteal", function()
 		{ "TooFar", { distance = 50 } },
 		{ "Shielded", { ownerShieldUntil = 1030 } },
 		{ "NewPlayer", { ownerPlaySeconds = 60 } },
+		{ "NightLimit", { ownerStolenTonight = 2 } },
 	}
 	for _, case in cases do
 		it("refuză: " .. case[1], function()
@@ -48,6 +49,17 @@ describe("Raid.canSteal", function()
 		expect(Raid.canSteal(context({ ownerIsNpc = true, ownerPlaySeconds = 0, ownerShieldUntil = 99999 }))).toBe(
 			true
 		)
+	end)
+end)
+
+describe("Raid recompense", function()
+	it("salvatorul primește jumătate din preț", function()
+		expect(Raid.defenseReward(151)).toBe(75)
+	end)
+	it("limita de noapte se aplică și vecinilor-bot", function()
+		local ok, reason = Raid.canSteal(context({ ownerIsNpc = true, ownerStolenTonight = 5 }))
+		expect(ok).toBe(false)
+		expect(reason).toBe("NightLimit")
 	end)
 end)
 

@@ -116,6 +116,8 @@ Momentul de clip: planta se zguduie, strălucește și explodează în varianta 
 - Furtul eșuează când hoțul e lovit de papuc, iese de pe server sau proprietarul iese de pe server. În toate cazurile creatura se întoarce la proprietar. Așa nu apar duplicate.
 - Orice viteză de deplasare imposibilă (teleport, speed hack) anulează furtul.
 - **Victima primește un scut de 60 s** după un furt reușit.
+- **Limită de noapte:** după 2 furturi reușite de la aceeași ogradă, ograda e protejată până dimineață („Ograda asta a fost jefuită destul în noaptea asta!”). Așa serverele nu devin ostile (motivul declinului Grow a Garden 2).
+- **Apărarea e răsplătită:** cine lovește un hoț care cară o creatură primește 50% din prețul ei în lei („Ai salvat creatura!”), plus Nervi. Coloana „Papuci” din lista de jucători arată apărările fiecăruia.
 - **Jucătorii noi nu pot fi jefuiți** în primele 20 de minute de joc.
 - Anunț pe server la furturi mari: „Ana a furat Plăcintonio Bombardino de la Mihai!”.
 

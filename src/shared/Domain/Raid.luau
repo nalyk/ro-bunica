@@ -13,6 +13,7 @@ export type StealContext = {
 	thiefCarrying: boolean,
 	thiefStunned: boolean,
 	ownerShieldUntil: number,
+	ownerStolenTonight: number?, -- furturi reușite de la această ogradă în noaptea curentă
 	ownerPlaySeconds: number,
 	ownerIsNpc: boolean,
 	now: number,
@@ -21,6 +22,11 @@ export type StealContext = {
 }
 
 local Raid = {}
+
+-- Recompensa pentru cine salvează o creatură cu papucul.
+function Raid.defenseReward(sellPrice: number): number
+	return math.floor(sellPrice * RaidConfig.defenseRewardShare)
+end
 
 -- Întoarce (true, nil) sau (false, motiv).
 function Raid.canSteal(ctx: StealContext): (boolean, string?)
@@ -42,6 +48,8 @@ function Raid.canSteal(ctx: StealContext): (boolean, string?)
 		return false, "TooFar"
 	elseif not ctx.ownerIsNpc and ctx.now < ctx.ownerShieldUntil then
 		return false, "Shielded"
+	elseif (ctx.ownerStolenTonight or 0) >= RaidConfig.maxStealsPerVictimPerNight then
+		return false, "NightLimit"
 	elseif not ctx.ownerIsNpc and ctx.ownerPlaySeconds < RaidConfig.newPlayerProtectionSeconds then
 		return false, "NewPlayer"
 	end

@@ -403,6 +403,11 @@ step("10. Botul fură de la jucător și e lovit de papucul jucătorului", funct
 		seen.counters.Hit >= 1 and seen.counters.Projectile >= 1,
 		"clientul nu a văzut proiectilul și lovitura"
 	)
+	check(
+		table.find(seen.notifications, "notify.DefenseReward") ~= nil,
+		"jucătorul nu a primit recompensa pentru apărare"
+	)
+	check(seen.papuci >= 1, "clasamentul nu arată apărările (Papuci = " .. tostring(seen.papuci) .. ")")
 	-- Bunica sărbătorește cu bulă de dialog: prim-plan pentru captură
 	local rig = me.plot.geometry.model:FindFirstChild("Bunica") :: Model
 	local head = rig:FindFirstChild("Head") :: BasePart

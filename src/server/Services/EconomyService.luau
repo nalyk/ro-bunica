@@ -8,6 +8,7 @@ local Net = require(Shared.Net)
 local EconomyConfig = require(Shared.Config.Economy)
 local Economy = require(Shared.Domain.Economy)
 local Inventory = require(Shared.Domain.Inventory)
+local Raid = require(Shared.Domain.Raid)
 local RateLimiter = require(Shared.Domain.RateLimiter)
 local PlotService = require(script.Parent.PlotService)
 local CreatureService = require(script.Parent.CreatureService)
@@ -23,6 +24,7 @@ local EconomyService = {}
 local actionLimiter = RateLimiter.new(8, 4)
 local friendCounts: { [Player]: number } = {}
 local leaderstatsLei: { [Player]: IntValue } = {}
+local leaderstatsDefends: { [Player]: IntValue } = {}
 
 local function areFriends(a: Player, b: Player): boolean
 	return Friends.areFriends(a, b)
@@ -62,8 +64,13 @@ local function setupLeaderstats(player: Player)
 	local lei = Instance.new("IntValue")
 	lei.Name = "Lei"
 	lei.Parent = folder
+	-- Câte apărări cu papucul: clasamentul apărătorilor, vizibil tuturor
+	local defends = Instance.new("IntValue")
+	defends.Name = "Papuci"
+	defends.Parent = folder
 	folder.Parent = player
 	leaderstatsLei[player] = lei
+	leaderstatsDefends[player] = defends
 end
 
 local function grantOffline(owner: Owner)
@@ -166,12 +173,42 @@ function EconomyService.start()
 	Players.PlayerRemoving:Connect(function(player)
 		friendCounts[player] = nil
 		leaderstatsLei[player] = nil
+		leaderstatsDefends[player] = nil
 		actionLimiter:forget(player.UserId)
 	end)
 	PlotService.onOwnerAdded(function(owner)
 		if owner.kind == "Player" then
 			grantOffline(owner)
 			EconomyService.addLei(owner, 0) -- sincronizează leaderstats
+			local player = owner.player :: Player
+			if leaderstatsDefends[player] then
+				leaderstatsDefends[player].Value = owner.profile.stats.defends
+			end
+		end
+	end)
+
+	-- Apărarea e răsplătită: cine salvează o creatură primește o parte din prețul ei
+	RaidService.onActorHit(function(_victim, source)
+		local thrower = source.thrower
+		local throwerOwner = if thrower then PlotService.getOwnerOfActor(thrower) else nil
+		if not throwerOwner then
+			return
+		end
+		local saved = source.saved
+		if saved then
+			local reward = Raid.defenseReward(Economy.sellPrice(saved))
+			if reward > 0 then
+				EconomyService.addLei(throwerOwner, reward)
+				Messenger.notify(
+					thrower and thrower.player,
+					"notify.DefenseReward",
+					{ Economy.formatShort(reward) }
+				)
+			end
+		end
+		local player = throwerOwner.player
+		if player and leaderstatsDefends[player] then
+			leaderstatsDefends[player].Value = throwerOwner.profile.stats.defends
 		end
 	end)
 

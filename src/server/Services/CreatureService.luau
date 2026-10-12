@@ -47,7 +47,7 @@ local function renderShowcase(owner: Owner)
 		local model =
 			CreatureBuilder.build({ id = record.id, size = record.size, mutation = record.mutation }, pivot)
 		model:ScaleTo(model:GetScale() * SHOWCASE_SCALE)
-		model:PivotTo(pivot * CFrame.new(0, model:GetExtentsSize().Y / 2, 0))
+		CreatureBuilder.placeOn(model, pivot)
 		model:SetAttribute("Showcase", true)
 		model.Parent = owner.plot.geometry.creatureFolder
 		table.insert(showcaseByOwner[owner], model)

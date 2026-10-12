@@ -134,7 +134,7 @@ local function renderPlant(bed: BasePart)
 		local fruit =
 			CreatureBuilder.build({ id = seedId, size = "Normal", mutation = mutation }, stem.CFrame)
 		fruit:ScaleTo(math.max(0.25, progress * 0.6))
-		fruit:PivotTo(stem.CFrame * CFrame.new(0, stem.Size.Y / 2 + fruit:GetExtentsSize().Y / 2, 0))
+		CreatureBuilder.placeOn(fruit, stem.CFrame * CFrame.new(0, stem.Size.Y / 2, 0))
 		CollectionService:RemoveTag(fruit, CreatureBuilder.TAG)
 		fruit.Parent = model
 	else

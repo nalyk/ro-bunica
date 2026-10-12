@@ -36,7 +36,7 @@ return table.freeze({
 		perHit = 25,
 	}),
 	bunicaNpc = table.freeze({
-		sightRange = 35,
+		sightRange = 60, -- acoperă toată ograda de pe prispă (ograda are 80 × 70)
 		suspicionPerSecond = 0.35, -- de la 0 la 1
 		suspicionDecayPerSecond = 0.2,
 		windupSeconds = 0.6, -- avertismentul vizibil înainte de aruncare

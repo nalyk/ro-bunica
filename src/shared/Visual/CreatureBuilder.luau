@@ -104,6 +104,15 @@ local function applyMutation(model: Model, mutationId: string?)
 	end
 end
 
+-- Așază modelul cu baza (cu tot cu detaliile de dedesubt) exact pe `pivot`.
+-- Cu PrimaryPart setat, WorldPivot nu se poate muta, deci măsurăm și corectăm pe verticală.
+function CreatureBuilder.placeOn(model: Model, pivot: CFrame)
+	model:PivotTo(pivot)
+	local box, extents = model:GetBoundingBox()
+	local bottom = box.Position.Y - extents.Y / 2
+	model:PivotTo(model:GetPivot() + Vector3.new(0, pivot.Position.Y - bottom, 0))
+end
+
 -- Construiește modelul (fără Parent). `pivot` = unde stă baza modelului.
 function CreatureBuilder.build(record: Record, pivot: CFrame): Model
 	local creature = Creatures.byId[record.id]
@@ -118,10 +127,7 @@ function CreatureBuilder.build(record: Record, pivot: CFrame): Model
 	end
 	applyMutation(model, record.mutation)
 
-	-- Pivotul devine centrul cutiei, ca baza modelului (cu tot cu detaliile de dedesubt) să stea pe pivot
-	local box, extents = model:GetBoundingBox()
-	model.WorldPivot = box
-	model:PivotTo(pivot * CFrame.new(0, extents.Y / 2, 0))
+	CreatureBuilder.placeOn(model, pivot)
 
 	model:SetAttribute("CreatureId", record.id)
 	model:SetAttribute("Size", record.size)

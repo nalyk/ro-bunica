@@ -150,7 +150,10 @@ return function(Spec: any, services: { [string]: any })
 			local defenderCharacter = Actors.characterOf(defender) :: Model
 			defenderCharacter:PivotTo(CFrame.new(thiefRoot.Position + Vector3.new(15, 0, 0)))
 			expect(SlipperService.throwAs(defender, thiefRoot.Position, "Slipper")).toBe(true)
-			pump(1.5)
+			local deadline = os.clock() + 1.5
+			while RaidService.isCarrying(thief) and os.clock() < deadline do
+				pump(0.05)
+			end
 			expect(RaidService.isCarrying(thief)).toBe(false)
 			expect(RaidService.isStunned(thief)).toBe(true)
 			expect(defenderOwner.profile.pedestals[key].uid).toBe(uid)

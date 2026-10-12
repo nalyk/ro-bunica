@@ -202,6 +202,18 @@ end
 function PlotService.start()
 	DataService.onLoaded(onProfileLoaded)
 	DataService.onReleasing(onProfileReleasing)
+	-- Un bot care dispare își eliberează ograda, iar vecinul NPC revine
+	Actors.onRemoving(function(actor)
+		if actor.player then
+			return
+		end
+		for _, plot in PlotService.plots do
+			if plot.owner and plot.owner.actor == actor then
+				vacate(plot)
+				spawnNpc(plot)
+			end
+		end
+	end)
 	for _, plot in PlotService.plots do
 		spawnNpc(plot)
 	end

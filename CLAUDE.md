@@ -14,3 +14,4 @@ Reguli:
 - Uneltele sunt prin Rokit (`. ~/.rokit/env`), rulate din rădăcina repo-ului.
 - Verificare înainte de a declara ceva gata: `./tools.sh` (teste, lint, format, tipuri cu luau-lsp, build `.rbxl`).
 - Nu critica bugetul, echipa sau „începe mic”: proiectul e construit ambițios de la început.
+- După fiecare pas verificat: commit cu tot (`git add -A`) și `git push origin main` (remote: `git@github.com:nalyk/ro-bunica.git`). `.env.cloud` conține cheia API și nu se comite niciodată.

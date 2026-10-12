@@ -1,5 +1,7 @@
 # BUNICA
 
+[![CI](https://github.com/nalyk/ro-bunica/actions/workflows/ci.yml/badge.svg)](https://github.com/nalyk/ro-bunica/actions/workflows/ci.yml)
+
 Joc Roblox: crești creaturi trăsnite din mâncare, le furi pe ale prietenilor noaptea și îți aperi ograda cu papucul Bunicii.
 
 Fiecare jucător are o ogradă într-un sat moldovenesc stilizat. Din semințe cresc creaturi (Cartofel Agent, Plăcintonio Bombardino, Mămăligator și altele), care aduc lei cât stau la vedere pe piedestal. Noaptea poți fura creaturile altora și le cari acasă, la beci, mai încet decât mergi de obicei. Proprietarul aruncă papucul, iar hoțul lovit scapă creatura și zboară spre poartă. Când proprietarul e plecat la furat, Bunica de pe prispă apără ograda singură, mai slab.

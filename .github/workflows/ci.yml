@@ -37,6 +37,8 @@ jobs:
             /tmp/rokit/rokit self-install
           fi
           echo "$HOME/.rokit/bin" >> "$GITHUB_PATH"
+          # Cache-ul păstrează tokenul din runul anterior; îl înlocuim (altfel: „token already exists”)
+          "$HOME/.rokit/bin/rokit" authenticate github --remove || true
           "$HOME/.rokit/bin/rokit" authenticate github --token "$GITHUB_TOKEN" --skip-verify
           "$HOME/.rokit/bin/rokit" install --no-trust-check
 

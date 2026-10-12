@@ -81,6 +81,15 @@ function RaidService.isCarrying(actor: Actor): boolean
 	return carries[actor] ~= nil
 end
 
+-- Toți actorii care cară acum o creatură furată, cu ograda de la care au furat-o.
+function RaidService.carriers(): { [Actor]: Owner }
+	local list = {}
+	for actor, carry in carries do
+		list[actor] = carry.owner
+	end
+	return list
+end
+
 function RaidService.carryOf(actor: Actor): Owner?
 	local carry = carries[actor]
 	return if carry then carry.owner else nil

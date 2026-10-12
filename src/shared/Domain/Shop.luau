@@ -15,7 +15,13 @@ function Shop.restock(rng: () -> number): Stock
 	for _, creature in Creatures.list do
 		local rarity = Rarities.byId[creature.rarity]
 		local count = EconomyConfig.shop.stockPerRarity[creature.rarity]
-		if creature.seedPrice and rarity and count and rng() < rarity.shopChance then
+		if
+			creature.seedPrice
+			and not creature.exclusive
+			and rarity
+			and count
+			and rng() < rarity.shopChance
+		then
 			stock[creature.id] = count
 		end
 	end

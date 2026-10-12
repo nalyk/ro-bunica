@@ -9,6 +9,7 @@ local Shared = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
 local Net = require(Shared.Net)
 local GameState = require(Shared.GameState)
 local Shop = require(Shared.Domain.Shop)
+local Creatures = require(Shared.Config.Creatures)
 local RateLimiter = require(Shared.Domain.RateLimiter)
 local PlotService = require(script.Parent.PlotService)
 local StateService = require(script.Parent.StateService)
@@ -21,6 +22,15 @@ local buyLimiter = RateLimiter.new(10, 5)
 local serverStock: Shop.Stock = {}
 local personalStock: { [Player]: Shop.Stock } = {}
 local restockAt = 0
+local exclusive: string? = nil -- sămânța exclusivă a evenimentului în curs (una pe jucător)
+local boughtExclusive: { [Player]: boolean } = {}
+
+local function addExclusive(player: Player)
+	local stock = personalStock[player]
+	if exclusive and stock and not boughtExclusive[player] then
+		stock[exclusive] = 1
+	end
+end
 
 local function sendStock(player: Player)
 	Net.get("Shop"):FireClient(player, personalStock[player] or {}, restockAt)
@@ -32,7 +42,30 @@ local function restock()
 	GameState.set(GameState.Attributes.ShopRestockAt, restockAt)
 	for _, player in Players:GetPlayers() do
 		personalStock[player] = table.clone(serverStock)
+		addExclusive(player)
 		sendStock(player)
+	end
+end
+
+function ShopService.exclusive(): string?
+	return exclusive
+end
+
+-- Pornește sau oprește exclusivitatea de eveniment (doar online, cât ține evenimentul).
+function ShopService.setExclusive(seedId: string?)
+	exclusive = seedId
+	table.clear(boughtExclusive)
+	for _, player in Players:GetPlayers() do
+		local stock = personalStock[player]
+		if stock then
+			for id in stock do
+				if Creatures.byId[id] and Creatures.byId[id].exclusive then
+					stock[id] = nil
+				end
+			end
+			addExclusive(player)
+			sendStock(player)
+		end
 	end
 end
 
@@ -51,6 +84,9 @@ local function onBuy(player: Player, seedId: unknown)
 		return
 	end
 	stock[seedId] -= 1
+	if seedId == exclusive then
+		boughtExclusive[player] = true
+	end
 	owner.profile.seeds[seedId] = (owner.profile.seeds[seedId] or 0) + 1
 	EconomyService.addLei(owner, -(result :: number))
 	StateService.markDirty(player)
@@ -66,6 +102,7 @@ function ShopService.start()
 	end)
 	Players.PlayerAdded:Connect(function(player)
 		personalStock[player] = table.clone(serverStock)
+		addExclusive(player)
 		sendStock(player)
 	end)
 	Players.PlayerRemoving:Connect(function(player)

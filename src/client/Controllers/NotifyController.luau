@@ -62,7 +62,7 @@ function NotifyController.start()
 	bannerColumn = Instance.new("Frame")
 	bannerColumn.BackgroundTransparency = 1
 	bannerColumn.AnchorPoint = Vector2.new(0.5, 0)
-	bannerColumn.Position = UDim2.new(0.5, 0, 0, 146)
+	bannerColumn.Position = UDim2.new(0.5, 0, 0, 182) -- sub pastila evenimentului săptămânal
 	bannerColumn.Size = UDim2.fromOffset(520, 200)
 	bannerColumn.Parent = screen
 	local bannerLayout = UI.list(bannerColumn, Enum.FillDirection.Vertical, 4)

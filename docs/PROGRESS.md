@@ -35,7 +35,7 @@ Ultima actualizare: 2026-10-12
   - Deschis: în pasul 15, drumul spre `roadPoint(npcPlots[3])` se blochează constant la 54 studs de țintă (pathfinding „Success”, dar personajul nu înaintează). De investigat ce obiect blochează.
   - Studio rulează un proces per place (`-task EditFile -localPlaceFile ...`); scriptul pornește Studio direct cu place-ul și închide instanța veche.
 
-## În lucru: pașii 1–6 din VISION (aprobați 2026-10-12; pasul 7 doar la cerere)
+## Pașii 1–6 din VISION (gata) (aprobați 2026-10-12; pasul 7 doar la cerere)
 
 Fiecare pas: logică în `Domain` + teste Lune, servicii, client, teste e2e în cloud, scenariu în playtest, GDD actualizat, commit + push.
 
@@ -44,7 +44,7 @@ Fiecare pas: logică în `Domain` + teste Lune, servicii, client, teste e2e în 
 - [x] **3. Bunica-vedetă** — `Config/BunicaLines` (replici pe evenimente, RO/EN, `soundId` opțional pentru vocea înregistrată), bule de dialog, replica semnătură „Fugi, că vine Bunica!”. Client: animații procedurale pe Motor6D pe stări (doarme, bănuitoare, ochește, aruncă, sărbătorește, furioasă, veghează) și față desenată pe cap (ochelari rotunzi, sprâncene, gură pe stări).
 - [x] **4. Familia și Hora** — `Domain/Family`: prietenii Roblox de pe server formează familii (max 4), cu ogrăzi alăturate. Membrii nu-și fură între ei, apără orice ogradă din familie cu papucul, iar Bunica îi consideră „acasă”. `Domain/Ritual` + `HoraService`: vatra satului (cerc pe drum, cu fântână); 3+ jucători care dansează 4 s cheamă Culesul de aur sau Curcubeul pentru server, cu cooldown 20 min. Buton „Horă” și dans procedural.
 - [x] **5. Furt corect** — max 2 furturi de la aceeași victimă pe noapte (apoi scut până dimineață), recompensă în lei pentru apărare (0,5 × prețul creaturii salvate), statistica „Apărări” în clasament.
-- [ ] **6. Ritmul săptămânal** — `Config/LiveEvents` + `Domain/LiveEvents`: „Bunica se supără” sâmbăta 16:00–17:00 UTC (o oră înaintea update-ului de la 17:00): ploaie de papuci peste hoți, vremea exclusivă „Supărarea Bunicii” cu mutația „Papucită”, sămânță exclusivă rotativă pe săptămână, disponibilă doar online. Creștere offline a plantelor (plafon 8 h).
+- [x] **6. Ritmul săptămânal** — `Config/LiveEvents` + `Domain/LiveEvents`: „Bunica se supără” sâmbăta 16:00–17:00 UTC (o oră înaintea update-ului de la 17:00): ploaie de papuci peste hoți, vremea exclusivă „Supărarea Bunicii” cu mutația „Papucită”, sămânță exclusivă rotativă pe săptămână, disponibilă doar online. Creștere offline a plantelor (plafon 8 h).
 
 Rezultate pașii 1–2 (2026-10-12): e2e cloud 16/16, playtest Studio 19/19 (scena tutorialului jucată de clientul real, sunete încărcate, reluarea nopții). Găsite în playtest: jucătorul rămânea la spawn-ul satului (CharacterAdded vine înainte de parentare; jucătorii intrați înainte de pornirea serverului nu aveau handler) → reparat cu RespawnLocation pe ogradă + așteptare + reîncercări; camera nu arăta hoțul → cadru cinematic + săgeată la marginea ecranului. `tools/playtest.sh` face și capturi la comandă (`[PLAYTEST] SNAP <nume>`).
 
@@ -57,6 +57,8 @@ Rezultate pasul 4: e2e 20/20, playtest 20/20 (Hora jucată de clientul real cu d
 - Agentul de playtest iese din ogradă pe poartă (`leaveHome`), deci nu se mai blochează în colțul gardului.
 
 Rezultate pasul 5: e2e 22/22 (două furturi complete, al treilea refuzat, resetare dimineața; recompensa exactă), playtest 20/20 (notificarea recompensei și coloana „Papuci” pe clientul real).
+
+Rezultate pasul 6: e2e 25/25 (vremea și sămânța exclusivă, papucii din cer îl prind pe hoț, oprirea), playtest 21/21 (pastila din HUD, sămânța exclusivă în taraba clientului, captură cu anunțurile).
 
 ## După pașii 1–6
 

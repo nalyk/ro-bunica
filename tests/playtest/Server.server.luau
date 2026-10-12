@@ -27,6 +27,8 @@ local BunicaService = services.BunicaService
 local SlipperService = services.SlipperService
 local TutorialService = services.TutorialService
 local HoraService = services.HoraService
+local LiveEventService = services.LiveEventService
+local ShopService = services.ShopService
 local Hora = require(Shared.Config.Hora)
 local GameState = require(Shared.GameState)
 
@@ -570,6 +572,23 @@ step("15c. Hora: jucătorul dansează la fântână cu doi vecini și cheamă o 
 	for _, dancer in dancers do
 		Actors.removeBot(dancer)
 	end
+end)
+
+step("15d. „Bunica se supără”: pastila din HUD, sămânța exclusivă, ploaia de papuci", function()
+	LiveEventService.forceStart("BunicaSeSupara", 40)
+	local exclusive = ShopService.exclusive() :: string
+	check(exclusive ~= nil, "evenimentul nu are sămânță exclusivă")
+	check(
+		waitFor(function()
+			local seen = call("query")
+			local pill = containsText(seen.hud, "fury") or containsText(seen.hud, "supără")
+			return seen.shopStock[exclusive] == 1 and pill
+		end, 5),
+		"clientul nu vede evenimentul sau sămânța exclusivă"
+	)
+	task.wait(2)
+	log("SNAP bunica-se-supara")
+	LiveEventService.stop()
 end)
 
 step("16. Fără erori de script (server și client)", function()

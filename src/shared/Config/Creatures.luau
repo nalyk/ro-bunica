@@ -20,6 +20,7 @@ export type Creature = {
 	income: number, -- lei pe secundă, înainte de multiplicatori
 	growSeconds: number,
 	seedPrice: number?,
+	exclusive: boolean?, -- doar în evenimente (nu intră în stocul obișnuit al tarabei)
 	modelId: number?,
 	look: Look,
 }
@@ -194,6 +195,34 @@ local list: { Creature } = {
 		look = {
 			body = part("Ball", V(3.4, 2.8, 3.4), ZERO, RGB(245, 130, 20)),
 			parts = { part("Block", V(3.6, 0.4, 0.4), V(0, 1.2, 0), RGB(30, 30, 30)) }, -- căști
+		},
+	},
+	-- Exclusivități de eveniment („Bunica se supără”), prin rotație săptămânală
+	{
+		id = "Papucel",
+		rarity = "Legendary",
+		income = 900,
+		growSeconds = 600,
+		seedPrice = 150000,
+		exclusive = true,
+		look = {
+			body = part("Block", V(1.6, 0.7, 3.2), ZERO, RGB(110, 70, 50)), -- talpa papucului
+			parts = { part("Block", V(1.7, 0.6, 1), V(0, 0.55, -0.6), RGB(200, 30, 40)) }, -- bareta roșie
+		},
+	},
+	{
+		id = "Martisorel",
+		rarity = "Legendary",
+		income = 1000,
+		growSeconds = 660,
+		seedPrice = 180000,
+		exclusive = true,
+		look = {
+			body = part("Ball", V(2.2, 2.6, 2.2), ZERO, RGB(245, 245, 245)),
+			parts = {
+				part("Cylinder", V(0.3, 2.4, 2.4), V(0, 0.5, 0), RGB(200, 30, 40)), -- șnurul roșu
+				part("Cylinder", V(0.3, 2.4, 2.4), V(0, -0.5, 0), RGB(200, 30, 40)),
+			},
 		},
 	},
 	{

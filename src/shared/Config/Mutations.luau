@@ -14,7 +14,9 @@ local list: { Mutation } = {
 	{ id = "Hail", rank = 2, multiplier = 3, color = Color3.fromRGB(200, 230, 255), announce = false },
 	{ id = "Frozen", rank = 3, multiplier = 4, color = Color3.fromRGB(150, 230, 255), announce = true },
 	{ id = "Golden", rank = 4, multiplier = 10, color = Color3.fromRGB(255, 205, 50), announce = true },
-	{ id = "Rainbow", rank = 5, multiplier = 20, color = Color3.fromRGB(255, 100, 200), announce = true },
+	-- Doar din „Supărarea Bunicii” (evenimentul de sâmbătă)
+	{ id = "Papucita", rank = 5, multiplier = 15, color = Color3.fromRGB(200, 30, 40), announce = true },
+	{ id = "Rainbow", rank = 6, multiplier = 20, color = Color3.fromRGB(255, 100, 200), announce = true },
 }
 
 local byId: { [string]: Mutation } = {}

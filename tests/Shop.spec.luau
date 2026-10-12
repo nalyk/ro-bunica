@@ -8,6 +8,7 @@ describe("Shop", function()
 		expect(stock.CartofelAgent).toBe(8)
 		expect(stock.DovleacDJ).toBe(1)
 		expect(stock.RetetaSecreta).toBeNil()
+		expect(stock.Papucel).toBeNil() -- exclusivitate de eveniment
 	end)
 
 	it("comunele intră mereu, chiar fără noroc", function()

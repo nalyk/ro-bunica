@@ -54,6 +54,16 @@ local list: { WeatherEvent } = {
 		scheduleWeight = 5,
 	},
 	{
+		id = "BunicaAngry",
+		mutation = "Papucita",
+		durationSeconds = 120,
+		plantChancePerTick = 0.05,
+		creatureChancePerTick = 0.008,
+		growthSpeed = 1.5,
+		phase = "Any",
+		scheduleWeight = 0, -- doar în evenimentul de sâmbătă
+	},
+	{
 		id = "Rainbow",
 		mutation = "Rainbow",
 		durationSeconds = 45,

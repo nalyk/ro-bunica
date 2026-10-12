@@ -6,7 +6,7 @@ return table.freeze({
 	incomeTickSeconds = 1,
 	sellMultiplier = 30, -- prețul de vânzare = valoare pe secundă × asta
 	offlineRate = 0.1,
-	offlineCapSeconds = 8 * 3600,
+	offlineCapSeconds = 8 * 3600, -- plafon pentru venitul offline și pentru creșterea plantelor offline
 	friendBoostPerFriend = 0.1,
 	friendBoostMax = 0.5,
 

@@ -21,6 +21,7 @@ local ORDER = {
 	"BunicaService",
 	"TutorialService",
 	"HoraService",
+	"LiveEventService",
 }
 
 local Boot = {}

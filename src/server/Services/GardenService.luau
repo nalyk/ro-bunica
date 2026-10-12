@@ -9,6 +9,7 @@ local Creatures = require(Shared.Config.Creatures)
 local Rarities = require(Shared.Config.Rarities)
 local Sizes = require(Shared.Config.Sizes)
 local Mutations = require(Shared.Config.Mutations)
+local EconomyConfig = require(Shared.Config.Economy)
 local Growth = require(Shared.Domain.Growth)
 local Inventory = require(Shared.Domain.Inventory)
 local RateLimiter = require(Shared.Domain.RateLimiter)
@@ -176,6 +177,14 @@ function GardenService.start()
 	Net.get("Plant").OnServerEvent:Connect(onPlant)
 	PlotService.onOwnerAdded(function(owner)
 		if owner.kind == "Player" then
+			-- Plantele au crescut și cât a lipsit (plafonat); cele gata eclozează la următorul tick
+			local profile = owner.profile
+			if profile.lastSeen > 0 then
+				local away = os.time() - profile.lastSeen
+				for _, plant in profile.beds do
+					Growth.advanceOffline(plant, away, EconomyConfig.offlineCapSeconds)
+				end
+			end
 			giveStarter(owner)
 		end
 		renderBeds(owner)

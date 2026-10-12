@@ -27,6 +27,8 @@ local pinButton: TextButton
 local rageButton: TextButton
 local seedBar: Frame
 local familyLabel: TextLabel
+local livePill: Frame
+local liveLabel: TextLabel
 
 local function buildTop(screen: ScreenGui)
 	local money = UI.frame({
@@ -57,6 +59,22 @@ local function buildTop(screen: ScreenGui)
 		Parent = screen,
 	})
 	phaseLabel = UI.label({ Size = UDim2.fromScale(1, 1), Text = "", Parent = phasePill })
+
+	livePill = UI.frame({
+		AnchorPoint = Vector2.new(0.5, 0),
+		Position = UDim2.new(0.5, 0, 0, 144),
+		Size = UDim2.fromOffset(300, 30),
+		BackgroundColor3 = UI.colors.stitch,
+		Visible = false,
+		Parent = screen,
+	})
+	liveLabel = UI.label({
+		Size = UDim2.new(1, -12, 1, -4),
+		Position = UDim2.fromOffset(6, 2),
+		Text = "",
+		TextColor3 = UI.colors.linen,
+		Parent = livePill,
+	})
 
 	weatherLabel = UI.label({
 		AnchorPoint = Vector2.new(0.5, 0),
@@ -237,6 +255,14 @@ local function tickTimers()
 	end
 
 	renderFamily()
+	local live = GameState.get("LiveEvent")
+	if live and live ~= "" then
+		local liveEnds = GameState.get("LiveEventEndsAt") or now
+		liveLabel.Text = "😡 " .. ClientState.t("ui.liveEvent", { UI.formatTime(liveEnds - now) })
+		livePill.Visible = true
+	else
+		livePill.Visible = false
+	end
 	local maxAmmo = ClientState.state.maxAmmo or Defense.slipper.maxAmmo
 	local ammo = SlipperController.predictedAmmo()
 	-- Text, nu emoji: 🩴 nu există în fontul Roblox (verificat în Studio)

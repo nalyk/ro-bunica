@@ -307,7 +307,34 @@ local function watchBunica(rig: Model)
 	end)
 end
 
+-- Papuci decorativi care cad din cer peste sat cât ține „Bunica se supără” (doar vizual)
+local function decorativeRain()
+	while true do
+		task.wait(0.6)
+		local state = game:GetService("ReplicatedStorage"):FindFirstChild("GameState")
+		local active = state and state:GetAttribute("LiveEvent")
+		local camera = Workspace.CurrentCamera
+		if active and active ~= "" and camera then
+			local focus = camera.Focus.Position
+			local landing = focus + Vector3.new(math.random(-40, 40), 0, math.random(-40, 40))
+			local part = makeProjectile("Slipper")
+			part.CFrame = CFrame.new(landing + Vector3.new(0, 45, 0))
+			local fall = TweenService:Create(
+				part,
+				TweenInfo.new(1.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In),
+				{ CFrame = CFrame.new(landing) * CFrame.Angles(math.random() * 6, math.random() * 6, 0) }
+			)
+			fall:Play()
+			fall.Completed:Connect(function()
+				burst(landing, false)
+				part:Destroy()
+			end)
+		end
+	end
+end
+
 function EffectsController.start()
+	task.spawn(decorativeRain)
 	Net.get("Projectile").OnClientEvent:Connect(onProjectile)
 	Net.get("Hit").OnClientEvent:Connect(onHit)
 	Net.get("Replay").OnClientEvent:Connect(onReplay)

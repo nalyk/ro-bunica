@@ -219,6 +219,12 @@ Jucătorul nu poate fi jefuit pe toată această secvență (scutul de 20 de min
 - **Iconița și thumbnail-ul** se schimbă ușor, ca să le testăm A/B.
 - **Creatori de conținut:** creatori din MD, RO, BR, LATAM și RU primesc creaturi exclusive numite după ei. Provocări reale („Pot 5 dintre noi să fure de la o singură Bunică într-o noapte?”). Sponsorizarea se declară clar.
 
+## 12c. Ritmul săptămânal
+
+- **Update în fiecare sâmbătă la 17:00 UTC** (o creatură sau o mutație nouă).
+- **„Bunica se supără”**, sâmbăta 16:00–17:00 UTC, cu o oră înaintea update-ului (`Config/LiveEvents`): vremea exclusivă „Supărarea Bunicii” (mutația „Papucită”, ×15) repornită la 5 minute, ploaie de papuci din cer peste hoții care cară creaturi (la 12 s) și papuci decorativi peste tot satul. Sămânța exclusivă a săptămânii (Papucel sau Mărțișorel, prin rotație) se vinde doar cât ține evenimentul, una de jucător: trebuie să fii online.
+- **Creștere offline:** plantele cresc și cât ești plecat (maximum 8 ore); cele gata eclozează când revii.
+
 ## 13. Monetizare
 
 Monetizăm identitatea, comoditatea și momentele sociale. Niciodată frica sau jocurile de noroc.

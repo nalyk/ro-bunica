@@ -16,6 +16,8 @@ return {
 	["creature.ColtunasPirat"] = "Colțunaș Pirat",
 	["creature.CozonacRobot"] = "Cozonac Robot",
 	["creature.DovleacDJ"] = "Dovleac DJ",
+	["creature.Papucel"] = "Papucel",
+	["creature.Martisorel"] = "Mărțișorel",
 	["creature.RetetaSecreta"] = "Rețeta Secretă",
 	-- Rarități
 	["rarity.Common"] = "Comun",
@@ -29,6 +31,7 @@ return {
 	["mutation.Hail"] = "Grindinată",
 	["mutation.Frozen"] = "Înghețată",
 	["mutation.Golden"] = "Aurie",
+	["mutation.Papucita"] = "Papucită",
 	["mutation.Rainbow"] = "Curcubeu",
 	-- Mărimi
 	["size.Small"] = "Mică",
@@ -40,6 +43,7 @@ return {
 	["weather.Hail"] = "Grindină",
 	["weather.FrostNight"] = "Noapte geroasă",
 	["weather.GoldHarvest"] = "Culesul de aur",
+	["weather.BunicaAngry"] = "Supărarea Bunicii",
 	["weather.Rainbow"] = "Curcubeu",
 	-- Interfață
 	["ui.lei"] = "lei",
@@ -71,6 +75,7 @@ return {
 	["juice.RollingPin"] = "BUF!",
 	["juice.BunicaSlipper"] = "PLEOSC!",
 	["juice.Rage"] = "HAȚ!",
+	["juice.SkySlipper"] = "DIN CER!",
 	["replay.title"] = "Lovitura nopții: {1}",
 	-- Familia și Hora
 	["ui.hora"] = "Horă",
@@ -122,6 +127,9 @@ return {
 	["announce.Weather"] = "{1} a început!",
 	["announce.Night"] = "Se lasă noaptea. Bunica e de pază!",
 	["announce.Day"] = "S-a făcut ziuă.",
+	["announce.LiveStart"] = "Bunica s-a supărat! O oră de ploaie de papuci și o sămânță rară: {1}!",
+	["announce.LiveEnd"] = "Bunica s-a liniștit. Ne vedem sâmbăta viitoare!",
+	["ui.liveEvent"] = "Bunica se supără: {1}",
 	["announce.BestThrow"] = "Lovitura nopții: {1}, de la {2} studs!",
 	["announce.Hora"] = "{1} jucători au dansat hora și au chemat {2}!",
 }

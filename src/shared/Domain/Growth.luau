@@ -39,6 +39,11 @@ function Growth.advance(plant: Plant, dt: number, speed: number): boolean
 	return Growth.isReady(plant)
 end
 
+-- Creșterea cât jucătorul a fost offline (plafonată). Plantele gata eclozează la următorul tick.
+function Growth.advanceOffline(plant: Plant, secondsAway: number, capSeconds: number)
+	Growth.advance(plant, math.clamp(secondsAway, 0, capSeconds), 1)
+end
+
 function Growth.isReady(plant: Plant): boolean
 	return plant.grown >= Growth.requiredSeconds(plant)
 end

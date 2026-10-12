@@ -2,7 +2,6 @@
 -- Papucul și făcălețul: muniție, Nervi, proiectile simulate pe server și lovituri.
 -- Clienții primesc proiectilele doar pentru randare; lovitura o decide serverul.
 
-local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
@@ -17,6 +16,9 @@ local StateService = require(script.Parent.StateService)
 local DayNightService = require(script.Parent.DayNightService)
 local RaidService = require(script.Parent.RaidService)
 local Messenger = require(script.Parent.Messenger)
+local Actors = require(script.Parent.Parent.Actors)
+
+type Actor = Actors.Actor
 
 type Owner = PlotService.Owner
 
@@ -34,14 +36,14 @@ type Projectile = {
 	id: number,
 	kind: string,
 	owner: Owner,
-	thrower: Player?,
+	thrower: Actor?,
 	origin: Vector3,
 	velocity: Vector3,
 	params: ProjectileParams,
 	age: number,
 	last: Vector3,
 	pierces: boolean, -- făcălețul lovește tot ce prinde pe traiectorie
-	alreadyHit: { [Player]: boolean },
+	alreadyHit: { [Actor]: boolean },
 }
 
 local TARGET_RADIUS = 2.5
@@ -49,8 +51,8 @@ local TARGET_RADIUS = 2.5
 local SlipperService = {}
 
 local throwLimiter = RateLimiter.new(6, 4)
-local ammoByPlayer: { [Player]: Slipper.Ammo } = {}
-local nerviByPlayer: { [Player]: number } = {}
+local ammoByActor: { [Actor]: Slipper.Ammo } = {}
+local nerviByActor: { [Actor]: number } = {}
 local projectiles: { Projectile } = {}
 local nextId = 0
 
@@ -66,30 +68,30 @@ local function isFiniteVector(v: Vector3): boolean
 	return v.X == v.X and v.Y == v.Y and v.Z == v.Z and v.Magnitude < 1e6
 end
 
-function SlipperService.nervi(player: Player): number
-	return nerviByPlayer[player] or 0
+function SlipperService.nervi(actor: Actor): number
+	return nerviByActor[actor] or 0
 end
 
 -- Consumă Nervi; întoarce false dacă nu sunt destui.
-function SlipperService.spendNervi(player: Player, amount: number): boolean
-	local current = nerviByPlayer[player] or 0
+function SlipperService.spendNervi(actor: Actor, amount: number): boolean
+	local current = nerviByActor[actor] or 0
 	if current < amount then
 		return false
 	end
-	nerviByPlayer[player] = current - amount
-	StateService.markDirty(player)
+	nerviByActor[actor] = current - amount
+	StateService.markDirty(actor.player)
 	return true
 end
 
-local function addNervi(player: Player, amount: number)
-	nerviByPlayer[player] = math.min((nerviByPlayer[player] or 0) + amount, Defense.nervi.max)
-	StateService.markDirty(player)
+local function addNervi(actor: Actor, amount: number)
+	nerviByActor[actor] = math.min((nerviByActor[actor] or 0) + amount, Defense.nervi.max)
+	StateService.markDirty(actor.player)
 end
 
 -- Lansează un proiectil care poate lovi intrușii ogrăzii `owner`.
 function SlipperService.launch(
 	owner: Owner,
-	thrower: Player?,
+	thrower: Actor?,
 	kind: string,
 	origin: Vector3,
 	target: Vector3,
@@ -119,7 +121,7 @@ function SlipperService.launch(
 		gravity = params.gravity,
 		lifetime = params.maxLifetime,
 		startTime = now(),
-		throwerUserId = if thrower then thrower.UserId else 0,
+		throwerUserId = if thrower then thrower.id else 0,
 		plotIndex = owner.plot.index,
 	})
 end
@@ -134,7 +136,7 @@ end
 
 SlipperService.knockbackFor = knockbackFor
 
-local function applyHit(projectile: Projectile, victim: Player, root: BasePart)
+local function applyHit(projectile: Projectile, victim: Actor, root: BasePart)
 	projectile.alreadyHit[victim] = true
 	local params = projectile.params
 	RaidService.onHit(
@@ -146,13 +148,13 @@ local function applyHit(projectile: Projectile, victim: Player, root: BasePart)
 	if thrower then
 		addNervi(thrower, Defense.nervi.perHit)
 		projectile.owner.profile.stats.defends += 1
-		Messenger.notify(thrower, "notify.Defended", { victim.DisplayName })
+		Messenger.notify(thrower.player, "notify.Defended", { victim.name })
 	end
 	Net.get("Hit"):FireAllClients({
 		id = projectile.id,
 		kind = projectile.kind,
 		position = root.Position,
-		victimUserId = victim.UserId,
+		victimUserId = victim.id,
 		plotIndex = projectile.owner.plot.index,
 	})
 end
@@ -168,12 +170,11 @@ local function step(dt: number)
 			projectile.age
 		)
 		local finished = projectile.age >= projectile.params.maxLifetime or position.Y < -5
-		for _, player in Players:GetPlayers() do
-			if projectile.alreadyHit[player] or not RaidService.isIntruder(player, projectile.owner) then
+		for _, actor in Actors.all() do
+			if projectile.alreadyHit[actor] or not RaidService.isIntruder(actor, projectile.owner) then
 				continue
 			end
-			local character = player.Character
-			local root = character and character:FindFirstChild("HumanoidRootPart") :: BasePart?
+			local root = Actors.root(actor)
 			if
 				root
 				and Slipper.hits(
@@ -184,7 +185,7 @@ local function step(dt: number)
 					TARGET_RADIUS
 				)
 			then
-				applyHit(projectile, player, root)
+				applyHit(projectile, actor, root)
 				if not projectile.pierces then
 					finished = true
 					break
@@ -198,6 +199,39 @@ local function step(dt: number)
 	end
 end
 
+-- Aruncarea unui actor care își apără ograda. Întoarce true dacă a pornit un proiectil.
+function SlipperService.throwAs(actor: Actor, target: Vector3, kind: "Slipper" | "RollingPin"): boolean
+	if RaidService.isStunned(actor) then
+		return false
+	end
+	local owner = PlotService.getOwnerOfActor(actor)
+	local root = Actors.root(actor)
+	if not owner or not root then
+		return false
+	end
+	local params: ProjectileParams
+	if kind == "RollingPin" then
+		if not SlipperService.spendNervi(actor, Defense.rollingPin.cost) then
+			return false
+		end
+		params = Defense.rollingPin
+	else
+		local ammo = ammoByActor[actor]
+		if not ammo then
+			ammo = Slipper.newAmmo(maxAmmo(owner), now())
+			ammoByActor[actor] = ammo
+		end
+		if not Slipper.consume(ammo, now(), maxAmmo(owner), Defense.slipper.regenSeconds) then
+			return false
+		end
+		params = Defense.slipper
+		StateService.markDirty(actor.player)
+	end
+	local origin = root.Position + Vector3.new(0, 2, 0)
+	SlipperService.launch(owner, actor, kind, origin, target, params)
+	return true
+end
+
 local function onThrow(player: Player, target: unknown, kind: unknown)
 	if typeof(target) ~= "Vector3" or not isFiniteVector(target :: Vector3) then
 		return
@@ -205,65 +239,48 @@ local function onThrow(player: Player, target: unknown, kind: unknown)
 	if kind ~= "Slipper" and kind ~= "RollingPin" then
 		return
 	end
-	if not throwLimiter:allow(player.UserId, os.clock()) or RaidService.isStunned(player) then
+	if not throwLimiter:allow(player.UserId, os.clock()) then
 		return
 	end
-	local owner = PlotService.getOwner(player)
-	local character = player.Character
-	local root = character and character:FindFirstChild("HumanoidRootPart") :: BasePart?
-	if not owner or not root then
-		return
-	end
-	local params: ProjectileParams
-	if kind == "RollingPin" then
-		if not SlipperService.spendNervi(player, Defense.rollingPin.cost) then
-			return
-		end
-		params = Defense.rollingPin
-	else
-		local ammo = ammoByPlayer[player]
-		if not ammo or not Slipper.consume(ammo, now(), maxAmmo(owner), Defense.slipper.regenSeconds) then
-			return
-		end
-		params = Defense.slipper
-		StateService.markDirty(player)
-	end
-	local origin = root.Position + Vector3.new(0, 2, 0)
-	SlipperService.launch(owner, player, kind :: string, origin, target :: Vector3, params)
+	SlipperService.throwAs(Actors.forPlayer(player), target :: Vector3, kind :: any)
 end
+
+-- Avansează proiectilele (rulat pe Heartbeat; expus pentru teste).
+SlipperService.step = step
 
 function SlipperService.start()
 	Net.get("Throw").OnServerEvent:Connect(onThrow)
 	PlotService.onOwnerAdded(function(owner)
-		local player = owner.player
-		if player then
-			ammoByPlayer[player] = Slipper.newAmmo(maxAmmo(owner), now())
-			nerviByPlayer[player] = 0
+		local actor = owner.actor
+		if actor then
+			ammoByActor[actor] = Slipper.newAmmo(maxAmmo(owner), now())
+			nerviByActor[actor] = 0
 		end
 	end)
-	Players.PlayerRemoving:Connect(function(player)
-		ammoByPlayer[player] = nil
-		nerviByPlayer[player] = nil
-		throwLimiter:forget(player.UserId)
+	Actors.onRemoving(function(actor)
+		ammoByActor[actor] = nil
+		nerviByActor[actor] = nil
+		throwLimiter:forget(actor.id)
 	end)
 	DayNightService.onPhaseChanged(function(phase)
 		if phase == "Day" then
-			for player in nerviByPlayer do
-				nerviByPlayer[player] = 0
-				StateService.markDirty(player)
+			for actor in nerviByActor do
+				nerviByActor[actor] = 0
+				StateService.markDirty(actor.player)
 			end
 		end
 	end)
 	StateService.addProvider(function(player, state)
+		local actor = Actors.forPlayer(player)
 		local owner = PlotService.getOwner(player)
-		local ammo = ammoByPlayer[player]
+		local ammo = ammoByActor[actor]
 		if owner and ammo then
 			Slipper.updateAmmo(ammo, now(), maxAmmo(owner), Defense.slipper.regenSeconds)
 			state.ammo = ammo.ammo
 			state.ammoRegenStart = ammo.regenStart
 			state.maxAmmo = maxAmmo(owner)
 		end
-		state.nervi = nerviByPlayer[player] or 0
+		state.nervi = nerviByActor[actor] or 0
 	end)
 	RunService.Heartbeat:Connect(step)
 end

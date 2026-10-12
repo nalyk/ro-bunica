@@ -4,3 +4,4 @@ build/
 sourcemap.json
 roblox.d.luau
 roblox.yml
+.env.cloud

@@ -3,7 +3,6 @@
 -- Regula anti-duplicare: creatura rămâne în profilul proprietarului până la depunere.
 -- Orice eșec (lovitură, ieșire de pe server, viteză imposibilă) o lasă acolo unde era.
 
-local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
@@ -20,8 +19,10 @@ local CreatureService = require(script.Parent.CreatureService)
 local StateService = require(script.Parent.StateService)
 local DayNightService = require(script.Parent.DayNightService)
 local Messenger = require(script.Parent.Messenger)
+local Actors = require(script.Parent.Parent.Actors)
 
 type Owner = PlotService.Owner
+type Actor = Actors.Actor
 
 type Carry = {
 	owner: Owner,
@@ -41,104 +42,97 @@ local CARRY_HEIGHT = 3.5
 
 local RaidService = {}
 
-local carries: { [Player]: Carry } = {}
+local carries: { [Actor]: Carry } = {}
 local carriedUids: { [string]: boolean } = {}
-local stunnedUntil: { [Player]: number } = {}
+local stunnedUntil: { [Actor]: number } = {}
 local prompts: { [ProximityPrompt]: boolean } = {}
 
 local function now(): number
 	return Workspace:GetServerTimeNow()
 end
 
-local function rootOf(player: Player): BasePart?
-	local character = player.Character
-	return if character then character:FindFirstChild("HumanoidRootPart") :: BasePart? else nil
-end
-
-local function humanoidOf(player: Player): Humanoid?
-	local character = player.Character
-	return if character then character:FindFirstChildOfClass("Humanoid") else nil
-end
+local rootOf = Actors.root
+local humanoidOf = Actors.humanoid
 
 function RaidService.isCarried(uid: string): boolean
 	return carriedUids[uid] == true
 end
 
-function RaidService.isCarrying(player: Player): boolean
-	return carries[player] ~= nil
+function RaidService.isCarrying(actor: Actor): boolean
+	return carries[actor] ~= nil
 end
 
-function RaidService.carryOf(player: Player): Owner?
-	local carry = carries[player]
+function RaidService.carryOf(actor: Actor): Owner?
+	local carry = carries[actor]
 	return if carry then carry.owner else nil
 end
 
-function RaidService.isStunned(player: Player): boolean
-	return (stunnedUntil[player] or 0) > now()
+function RaidService.isStunned(actor: Actor): boolean
+	return (stunnedUntil[actor] or 0) > now()
 end
 
 -- Este jucătorul un intrus pentru acest proprietar? (ținta legitimă a papucului)
-function RaidService.isIntruder(player: Player, owner: Owner): boolean
-	if owner.player == player then
+function RaidService.isIntruder(actor: Actor, owner: Owner): boolean
+	if owner.actor == actor then
 		return false
 	end
-	local carry = carries[player]
+	local carry = carries[actor]
 	if carry and carry.owner == owner then
 		return true
 	end
 	if DayNightService.phase() ~= "Night" then
 		return false
 	end
-	local root = rootOf(player)
+	local root = rootOf(actor)
 	return root ~= nil and PlotService.plotAt(root.Position) == owner.plot
 end
 
-local function restoreHumanoid(player: Player, carry: Carry)
-	local humanoid = humanoidOf(player)
+local function restoreHumanoid(actor: Actor, carry: Carry)
+	local humanoid = humanoidOf(actor)
 	if humanoid then
 		humanoid.WalkSpeed = carry.walkSpeed
 		humanoid.JumpHeight = carry.jumpHeight
 	end
 end
 
-local function endCarry(player: Player): Carry?
-	local carry = carries[player]
+local function endCarry(actor: Actor): Carry?
+	local carry = carries[actor]
 	if not carry then
 		return nil
 	end
-	carries[player] = nil
+	carries[actor] = nil
 	carriedUids[carry.uid] = nil
-	restoreHumanoid(player, carry)
+	restoreHumanoid(actor, carry)
 	carry.model:Destroy()
 	return carry
 end
 
 -- Creatura scapă și se întoarce pe piedestal (dacă proprietarul mai e în ogradă).
-function RaidService.drop(player: Player)
-	local carry = endCarry(player)
+function RaidService.drop(actor: Actor)
+	local carry = endCarry(actor)
 	if carry and carry.owner.plot.owner == carry.owner and not carry.owner.removing then
 		CreatureService.setHidden(carry.owner, carry.key, false)
 	end
 end
 
-local function complete(player: Player, thief: Owner)
-	local carry = carries[player]
+local function complete(actor: Actor, thief: Owner)
+	local carry = carries[actor]
 	if not carry then
 		return
 	end
 	local owner = carry.owner
 	local record = owner.profile.pedestals[carry.key]
 	if not record or record.uid ~= carry.uid then
-		RaidService.drop(player)
+		RaidService.drop(actor)
 		return
 	end
 	-- Verificăm locul la hoț înainte să mutăm ceva
 	if not Inventory.freePedestal(thief.profile) and not Inventory.cellarHasRoom(thief.profile) then
-		Messenger.notify(player, "notify.Full")
-		RaidService.drop(player)
+		Messenger.notify(actor.player, "notify.Full")
+		RaidService.drop(actor)
 		return
 	end
-	endCarry(player)
+	endCarry(actor)
 	Inventory.takeFromPedestal(owner.profile, carry.key)
 	local where, newKey = Inventory.place(thief.profile, table.clone(record))
 	CreatureService.setHidden(owner, carry.key, false)
@@ -158,7 +152,7 @@ local function complete(player: Player, thief: Owner)
 	if rarity.announceSteal then
 		Messenger.announce("announce.Steal", { thief.name, creatureKey, owner.name })
 	end
-	StateService.markDirty(player)
+	StateService.markDirty(actor.player)
 	StateService.markDirty(owner.player)
 end
 
@@ -186,10 +180,11 @@ local function attachToCharacter(model: Model, root: BasePart)
 	model.Parent = root.Parent
 end
 
-local function tryStart(player: Player, owner: Owner, key: string)
-	local thief = PlotService.getOwner(player)
-	local root = rootOf(player)
-	local humanoid = humanoidOf(player)
+-- Încearcă să înceapă un furt. Apelat de prompt (jucători) sau direct (boți, teste).
+function RaidService.tryStart(actor: Actor, owner: Owner, key: string)
+	local thief = PlotService.getOwnerOfActor(actor)
+	local root = rootOf(actor)
+	local humanoid = humanoidOf(actor)
 	local model = CreatureService.modelAt(owner, key)
 	local record = owner.profile.pedestals[key]
 	if not thief or not root or not humanoid or humanoid.Health <= 0 or not model or not record then
@@ -199,8 +194,8 @@ local function tryStart(player: Player, owner: Owner, key: string)
 		phase = DayNightService.phase(),
 		isOwnPlot = thief == owner,
 		ownerPresent = owner.plot.owner == owner,
-		thiefCarrying = carries[player] ~= nil,
-		thiefStunned = RaidService.isStunned(player),
+		thiefCarrying = carries[actor] ~= nil,
+		thiefStunned = RaidService.isStunned(actor),
 		ownerShieldUntil = owner.shieldUntil,
 		-- În Studio, protecția jucătorilor noi e dezactivată ca să poată fi testate furturile
 		ownerPlaySeconds = if RunService:IsStudio() then math.huge else owner.profile.playSeconds,
@@ -211,7 +206,7 @@ local function tryStart(player: Player, owner: Owner, key: string)
 	})
 	if not ok then
 		if reason == "NotNight" or reason == "Shielded" or reason == "NewPlayer" then
-			Messenger.notify(player, "notify." .. reason)
+			Messenger.notify(actor.player, "notify." .. reason)
 		end
 		return
 	end
@@ -224,7 +219,7 @@ local function tryStart(player: Player, owner: Owner, key: string)
 	attachToCharacter(model, root)
 
 	local creature = Creatures.byId[record.id]
-	carries[player] = {
+	carries[actor] = {
 		owner = owner,
 		key = key,
 		uid = record.uid,
@@ -264,23 +259,24 @@ local function addPrompt(owner: Owner, key: string, model: Model)
 		prompts[prompt] = nil
 	end)
 	prompt.Triggered:Connect(function(player)
-		tryStart(player, owner, key)
+		RaidService.tryStart(Actors.forPlayer(player), owner, key)
 	end)
 end
 
 local function checkCarries()
-	for player, carry in carries do
-		local root = rootOf(player)
-		local humanoid = humanoidOf(player)
-		local thief = PlotService.getOwner(player)
+	for actor, carry in carries do
+		local root = rootOf(actor)
+		local humanoid = humanoidOf(actor)
+		local thief = PlotService.getOwnerOfActor(actor)
 		if
-			not root
+			not Actors.isActive(actor)
+			or not root
 			or not humanoid
 			or humanoid.Health <= 0
 			or not thief
 			or carry.owner.plot.owner ~= carry.owner
 		then
-			RaidService.drop(player)
+			RaidService.drop(actor)
 			continue
 		end
 		local t = os.clock()
@@ -296,24 +292,35 @@ local function checkCarries()
 			carry.lastPosition = position
 			carry.lastTime = t
 			if not plausible then
-				RaidService.drop(player)
+				RaidService.drop(actor)
 				continue
 			end
 		end
 		if (position - thief.plot.geometry.deposit.Position).Magnitude <= RaidConfig.depositRadius then
-			complete(player, thief)
+			complete(actor, thief)
 		end
 	end
 end
 
--- Apelat de papuc și de Bunica: scapă creatura, amețește și aruncă jucătorul.
-function RaidService.onHit(victim: Player, knockback: Vector3, stunSeconds: number)
+-- Apelat de papuc și de Bunica: scapă creatura, amețește și aruncă actorul.
+-- Jucătorul își aplică singur reculul (îi deține fizica); botului i-l aplică serverul.
+function RaidService.onHit(victim: Actor, knockback: Vector3, stunSeconds: number)
 	if carries[victim] then
 		RaidService.drop(victim)
 	end
 	stunnedUntil[victim] = now() + stunSeconds
-	Net.get("Knockback"):FireClient(victim, knockback, stunSeconds)
+	if victim.player then
+		Net.get("Knockback"):FireClient(victim.player, knockback, stunSeconds)
+	else
+		local root = Actors.root(victim)
+		if root then
+			root.AssemblyLinearVelocity = knockback
+		end
+	end
 end
+
+-- Verificarea furturilor în curs (rulată pe Heartbeat; expusă pentru teste).
+RaidService.checkCarries = checkCarries
 
 function RaidService.start()
 	CreatureService.onModelCreated(addPrompt)
@@ -323,16 +330,16 @@ function RaidService.start()
 		end
 	end)
 	PlotService.onOwnerRemoving(function(owner)
-		for player, carry in carries do
+		for actor, carry in carries do
 			-- Proprietarul pleacă: creatura cărată rămâne a lui. Hoțul pleacă: scapă ce căra.
-			if carry.owner == owner or player == owner.player then
-				RaidService.drop(player)
+			if carry.owner == owner or actor == owner.actor then
+				RaidService.drop(actor)
 			end
 		end
 	end)
-	Players.PlayerRemoving:Connect(function(player)
-		RaidService.drop(player)
-		stunnedUntil[player] = nil
+	Actors.onRemoving(function(actor)
+		RaidService.drop(actor)
+		stunnedUntil[actor] = nil
 	end)
 	local elapsed = 0
 	RunService.Heartbeat:Connect(function(dt)

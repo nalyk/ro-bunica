@@ -25,13 +25,27 @@ function DayNightService.onPhaseChanged(callback: (string) -> ())
 	table.insert(callbacks, callback)
 end
 
+local forced = false
+
+-- Fixează faza (teste, evenimente, comenzi de admin). `nil` revine la ciclul normal.
+function DayNightService.forcePhase(phase: ("Day" | "Night")?)
+	forced = phase ~= nil
+	if phase and phase ~= currentPhase then
+		currentPhase = phase
+		GameState.set(GameState.Attributes.Phase, phase)
+		for _, callback in callbacks do
+			task.spawn(callback, phase)
+		end
+	end
+end
+
 function DayNightService.start()
 	local startedAt = Workspace:GetServerTimeNow()
 	local first = true
 	while true do
 		local now = Workspace:GetServerTimeNow()
 		local info = DayNight.at((now - startedAt) * SPEED)
-		if first or info.phase ~= currentPhase then
+		if not forced and (first or info.phase ~= currentPhase) then
 			currentPhase = info.phase
 			GameState.set(GameState.Attributes.Phase, info.phase)
 			GameState.set(GameState.Attributes.PhaseEndsAt, now + info.secondsLeft / SPEED)

@@ -13,6 +13,9 @@ local RateLimiter = require(Shared.Domain.RateLimiter)
 local PlotService = require(script.Parent.PlotService)
 local RaidService = require(script.Parent.RaidService)
 local SlipperService = require(script.Parent.SlipperService)
+local Actors = require(script.Parent.Parent.Actors)
+
+type Actor = Actors.Actor
 
 type Owner = PlotService.Owner
 
@@ -29,7 +32,7 @@ type Bunica = {
 	rageUntil: number,
 	lastAlarmAt: number,
 	hadIntruders: boolean,
-	lastHitAt: { [Player]: number },
+	lastHitAt: { [Actor]: number },
 }
 
 local TICK = 0.2
@@ -47,6 +50,12 @@ local STATE_ICONS: { [string]: string } = {
 local BunicaService = {}
 
 local bunicas: { [number]: Bunica } = {} -- după indexul ogrăzii
+local enabled = true
+
+-- Pornește sau oprește apărarea automată a Bunicilor (teste, tutorial).
+function BunicaService.setEnabled(value: boolean)
+	enabled = value
+end
 local rageLimiter = RateLimiter.new(2, 0.5)
 
 local function now(): number
@@ -122,14 +131,13 @@ local function setState(bunica: Bunica, state: BunicaState)
 	end
 end
 
-local function intrudersOf(owner: Owner): { { player: Player, root: BasePart } }
+local function intrudersOf(owner: Owner): { { actor: Actor, root: BasePart } }
 	local list = {}
-	for _, player in Players:GetPlayers() do
-		if RaidService.isIntruder(player, owner) then
-			local character = player.Character
-			local root = character and character:FindFirstChild("HumanoidRootPart") :: BasePart?
+	for _, actor in Actors.all() do
+		if RaidService.isIntruder(actor, owner) then
+			local root = Actors.root(actor)
 			if root then
-				table.insert(list, { player = player, root = root })
+				table.insert(list, { actor = actor, root = root })
 			end
 		end
 	end
@@ -137,9 +145,7 @@ local function intrudersOf(owner: Owner): { { player: Player, root: BasePart } }
 end
 
 local function ownerNearby(owner: Owner, bunica: Bunica): boolean
-	local player = owner.player
-	local character = player and player.Character
-	local root = character and character:FindFirstChild("HumanoidRootPart") :: BasePart?
+	local root = if owner.actor then Actors.root(owner.actor) else nil
 	return root ~= nil
 		and (root.Position - bunica.home.Position).Magnitude <= Defense.bunicaNpc.ownerNearbyRange
 		and PlotService.plotAt(root.Position) == owner.plot
@@ -182,7 +188,7 @@ local function endRage(bunica: Bunica)
 	bunica.root.Anchored = true
 end
 
-local function tickRage(owner: Owner, bunica: Bunica, intruders: { { player: Player, root: BasePart } })
+local function tickRage(owner: Owner, bunica: Bunica, intruders: { { actor: Actor, root: BasePart } })
 	local config = Defense.rage
 	local closest, closestDistance = nil, math.huge
 	for _, intruder in intruders do
@@ -196,16 +202,16 @@ local function tickRage(owner: Owner, bunica: Bunica, intruders: { { player: Pla
 		return
 	end
 	bunica.humanoid:MoveTo(closest.root.Position)
-	local lastHit = bunica.lastHitAt[closest.player] or -math.huge
+	local lastHit = bunica.lastHitAt[closest.actor] or -math.huge
 	if closestDistance <= config.hitRadius + 2 and now() - lastHit >= RAGE_HIT_COOLDOWN then
-		bunica.lastHitAt[closest.player] = now()
+		bunica.lastHitAt[closest.actor] = now()
 		local knockback = SlipperService.knockbackFor(owner, closest.root.Position, config.knockbackSpeed)
-		RaidService.onHit(closest.player, knockback, config.stunSeconds)
+		RaidService.onHit(closest.actor, knockback, config.stunSeconds)
 		Net.get("Hit"):FireAllClients({
 			id = 0,
 			kind = "Rage",
 			position = closest.root.Position,
-			victimUserId = closest.player.UserId,
+			victimUserId = closest.actor.id,
 			plotIndex = owner.plot.index,
 		})
 	end
@@ -284,7 +290,7 @@ local function onRage(player: Player)
 	if not owner or not bunica or bunica.rageUntil > now() then
 		return
 	end
-	if not SlipperService.spendNervi(player, Defense.rage.cost) then
+	if not SlipperService.spendNervi(Actors.forPlayer(player), Defense.rage.cost) then
 		return
 	end
 	bunica.rageUntil = now() + Defense.rage.durationSeconds
@@ -316,6 +322,9 @@ function BunicaService.start()
 	end)
 	while true do
 		local dt = task.wait(TICK)
+		if not enabled then
+			continue
+		end
 		local ok, err = pcall(tick :: any, dt)
 		if not ok then
 			warn("[BunicaService] tick a eșuat:", err)

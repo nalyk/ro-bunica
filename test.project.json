@@ -1,0 +1,23 @@
+{
+  "name": "bunica-test",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "Shared": { "$path": "src/shared" }
+    },
+    "ServerScriptService": {
+      "Server": { "$path": "src/server" }
+    },
+    "ServerStorage": {
+      "E2E": { "$path": "tests/e2e" }
+    },
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "Client": { "$path": "src/client" }
+      }
+    },
+    "Players": {
+      "$properties": { "CharacterAutoLoads": true }
+    }
+  }
+}

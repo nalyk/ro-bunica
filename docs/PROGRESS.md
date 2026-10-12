@@ -21,6 +21,13 @@ Ultima actualizare: 2026-10-12
 
 - [x] Review independent pentru erori de runtime; reparate: prompt-urile de furt lipsă pe ogrăzile NPC la pornire, remote-ul `ClientReady` (starea și stocul retrimise după ce clientul ascultă), modelul-fantomă când proprietarul pleacă în timpul unui furt, buclele de server protejate cu `pcall`, pivotul creaturilor pe centrul cutiei.
 
+## Testare e2e (în lucru)
+
+- Nivel 1 (local): `./tools.sh`.
+- Nivel 2 (motorul Roblox real, Open Cloud Luau Execution): `python3 tools/cloud.py e2e` construiește `test.project.json`, publică o versiune „Saved” pe place-ul de test (universe 1855994157, place 5300295145; versiunea live nu se schimbă) și rulează `tests/e2e/Runner`. În sesiune nu rulează fizica și nici scripturile place-ului, iar jucători nu există: testele pornesc serverul prin `Server/Boot` și (următorul pas) folosesc actori-bot.
+  - **Blocaj:** cheia API din `.env.cloud` (`ROBLOX_API_KEY`). Crearea ei din browser a fost blocată de clasificatorul de siguranță al sesiunii; o creează omul (drepturi: universe-places write, luau-execution-sessions read + write, restricționată la experience-ul de test și la IP-ul 212.56.197.2).
+- Nivel 3 (Studio prin Vinegar/Wine, pe Xvfb `:99`, izolat de desktop): Studio crapă la ~2,5 s, la pagina de login (probabil WebView fără GPU pe Xvfb). De reluat.
+
 ## Urmează
 
 1. **Primul test în Studio (de făcut de om, pe Windows/macOS).** În Studio, ciclul zi/noapte merge de 4× mai repede, iar protecția jucătorilor noi e oprită. deschide `build/bunica.rbxl` sau `rojo serve` + pluginul Rojo. Activează „Enable Studio Access to API Services” pentru DataStore (altfel ProfileStore rulează în mod mock). Test cu 2 jucători: Test → Clients and Servers → 2 Players. Raportează erorile din Output.

@@ -11,6 +11,7 @@ local Inventory = require(Shared.Domain.Inventory)
 local Growth = require(Shared.Domain.Growth)
 local WorldBuilder = require(script.Parent.Parent.World.WorldBuilder)
 local DataService = require(script.Parent.DataService)
+local Actors = require(script.Parent.Parent.Actors)
 
 type Profile = DataTemplate.Profile
 
@@ -23,6 +24,7 @@ export type Plot = {
 export type Owner = {
 	kind: "Player" | "Npc",
 	player: Player?,
+	actor: Actors.Actor?, -- cine apără ograda: jucătorul, un bot sau nimeni (vecin NPC simplu)
 	userId: number, -- negativ pentru NPC
 	name: string,
 	profile: Profile,
@@ -112,6 +114,7 @@ local function spawnNpc(plot: Plot)
 	local owner: Owner = {
 		kind = "Npc",
 		player = nil,
+		actor = nil,
 		userId = -npcCounter,
 		name = NPC_NAMES[(npcCounter - 1) % #NPC_NAMES + 1],
 		profile = profile,
@@ -159,6 +162,7 @@ local function onProfileLoaded(player: Player, profile: Profile)
 	local owner: Owner = {
 		kind = "Player",
 		player = player,
+		actor = Actors.forPlayer(player),
 		userId = player.UserId,
 		name = player.DisplayName,
 		profile = profile,
@@ -220,6 +224,38 @@ end
 
 function PlotService.getOwner(player: Player): Owner?
 	return ownersByPlayer[player]
+end
+
+-- Ograda unui actor (jucător sau bot), dacă are una.
+function PlotService.getOwnerOfActor(actor: Actors.Actor): Owner?
+	if actor.player then
+		return ownersByPlayer[actor.player]
+	end
+	for _, plot in PlotService.plots do
+		if plot.owner and plot.owner.actor == actor then
+			return plot.owner
+		end
+	end
+	return nil
+end
+
+-- Dă unui bot o ogradă de vecin (tutorial, teste e2e). Botul poate apoi fura și depune.
+function PlotService.assignBot(plot: Plot, actor: Actors.Actor): Owner
+	vacate(plot)
+	local profile = DataTemplate.new()
+	local owner: Owner = {
+		kind = "Npc",
+		player = nil,
+		actor = actor,
+		userId = actor.id,
+		name = actor.name,
+		profile = profile,
+		plot = plot,
+		shieldUntil = 0,
+		joinedAt = os.clock(),
+	}
+	assign(plot, owner)
+	return owner
 end
 
 function PlotService.owners(): { Owner }

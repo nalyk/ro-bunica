@@ -11,7 +11,8 @@ echo "== teste"; lune run tests
 echo "== lint"; selene src tests
 echo "== format"; stylua --check src tests
 echo "== tipuri"
-rojo sourcemap default.project.json -o sourcemap.json >/dev/null
-luau-lsp analyze --definitions=roblox.d.luau --sourcemap=sourcemap.json --ignore="src/server/Packages/**" src
+rojo sourcemap test.project.json -o sourcemap.json >/dev/null
+luau-lsp analyze --definitions=roblox.d.luau --sourcemap=sourcemap.json --ignore="src/server/Packages/**" src tests/e2e
 echo "== build"; mkdir -p build && rojo build default.project.json -o build/bunica.rbxl
+rojo build test.project.json -o build/bunica-test.rbxl
 echo "TOTUL OK"

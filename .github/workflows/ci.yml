@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Teste, lint, tipuri, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache Rokit
+        uses: actions/cache@v4
+        with:
+          path: ~/.rokit
+          key: rokit-${{ runner.os }}-${{ hashFiles('rokit.toml') }}
+
+      - name: Instalează Rokit și uneltele
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ ! -x "$HOME/.rokit/bin/rokit" ]; then
+            curl -sSL -o /tmp/rokit.zip https://github.com/rojo-rbx/rokit/releases/download/v1.2.0/rokit-1.2.0-linux-x86_64.zip
+            unzip -q -o /tmp/rokit.zip -d /tmp/rokit
+            /tmp/rokit/rokit self-install
+          fi
+          echo "$HOME/.rokit/bin" >> "$GITHUB_PATH"
+          "$HOME/.rokit/bin/rokit" authenticate github --token "$GITHUB_TOKEN" --skip-verify
+          "$HOME/.rokit/bin/rokit" install --no-trust-check
+
+      - name: Verificare completă
+        run: ./tools.sh
+
+      - name: Place-urile construite
+        uses: actions/upload-artifact@v4
+        with:
+          name: bunica-places
+          path: build/*.rbxl
+          retention-days: 14

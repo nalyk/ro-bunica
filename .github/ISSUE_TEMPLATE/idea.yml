@@ -1,0 +1,16 @@
+name: Idee de gameplay
+description: O creatură, un eveniment, o mecanică
+labels: [idee]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: Ideea
+      description: Ce ar face jucătorul și de ce ar fi amuzant.
+    validations:
+      required: true
+  - type: input
+    id: gdd
+    attributes:
+      label: Secțiunea din GDD
+      description: De exemplu „§6 Vreme și mutații” sau „§16 Backlog”.

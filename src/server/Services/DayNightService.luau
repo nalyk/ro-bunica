@@ -6,6 +6,7 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
 local DayNight = require(Shared.Domain.DayNight)
+local DayNightConfig = require(Shared.Config.DayNight)
 local GameState = require(Shared.GameState)
 local Messenger = require(script.Parent.Messenger)
 
@@ -30,6 +31,10 @@ local forced = false
 -- Fixează faza (teste, evenimente, comenzi de admin). `nil` revine la ciclul normal.
 function DayNightService.forcePhase(phase: ("Day" | "Night")?)
 	forced = phase ~= nil
+	if phase then
+		local seconds = if phase == "Night" then DayNightConfig.nightSeconds else DayNightConfig.daySeconds
+		GameState.set(GameState.Attributes.PhaseEndsAt, Workspace:GetServerTimeNow() + seconds / SPEED)
+	end
 	if phase and phase ~= currentPhase then
 		currentPhase = phase
 		GameState.set(GameState.Attributes.Phase, phase)

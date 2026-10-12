@@ -13,6 +13,9 @@ echo "== format"; stylua --check src tests
 echo "== tipuri"
 rojo sourcemap test.project.json -o sourcemap.json >/dev/null
 luau-lsp analyze --definitions=roblox.d.luau --sourcemap=sourcemap.json --ignore="src/server/Packages/**" src tests/e2e
+rojo sourcemap playtest.project.json -o sourcemap.json >/dev/null
+luau-lsp analyze --definitions=roblox.d.luau --sourcemap=sourcemap.json --ignore="src/server/Packages/**" tests/playtest
 echo "== build"; mkdir -p build && rojo build default.project.json -o build/bunica.rbxl
 rojo build test.project.json -o build/bunica-test.rbxl
+rojo build playtest.project.json -o build/bunica-playtest.rbxl
 echo "TOTUL OK"

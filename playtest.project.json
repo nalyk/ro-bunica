@@ -1,0 +1,23 @@
+{
+  "name": "bunica-playtest",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "Shared": { "$path": "src/shared" },
+      "PlaytestShared": { "$path": "tests/playtest/Shared" }
+    },
+    "ServerScriptService": {
+      "Server": { "$path": "src/server" },
+      "Playtest": { "$path": "tests/playtest/Server.server.luau" }
+    },
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "Client": { "$path": "src/client" },
+        "PlaytestClient": { "$path": "tests/playtest/Client.client.luau" }
+      }
+    },
+    "Players": {
+      "$properties": { "CharacterAutoLoads": true }
+    }
+  }
+}

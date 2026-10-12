@@ -1,0 +1,10 @@
+* text=auto eol=lf
+
+*.rbxl binary
+*.rbxm binary
+*.png binary
+*.jpg binary
+
+*.luau linguist-language=Luau
+src/server/Packages/** linguist-vendored
+docs/** linguist-documentation

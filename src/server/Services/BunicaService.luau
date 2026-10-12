@@ -82,11 +82,12 @@ local function buildRig(home: CFrame): Bunica
 	local scarf = Instance.new("Part")
 	scarf.Name = "Basma"
 	scarf.Shape = Enum.PartType.Ball
-	scarf.Size = head.Size * 1.25
+	scarf.Size = head.Size * 1.15
 	scarf.Color = Color3.fromRGB(200, 30, 40)
 	scarf.CanCollide = false
 	scarf.Massless = true
-	scarf.CFrame = head.CFrame * CFrame.new(0, 0.15, 0.1)
+	-- Spre ceafă și în sus, ca fața Bunicii să rămână la vedere
+	scarf.CFrame = head.CFrame * CFrame.new(0, 0.2, 0.3)
 	local weld = Instance.new("WeldConstraint")
 	weld.Part0 = head
 	weld.Part1 = scarf

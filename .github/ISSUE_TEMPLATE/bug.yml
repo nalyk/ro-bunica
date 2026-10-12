@@ -1,0 +1,30 @@
+name: Bug
+description: Ceva nu merge în joc sau în unelte
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: Ce s-a întâmplat
+      description: Ce ai văzut și ce te așteptai să vezi.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Pași de reproducere
+      placeholder: |
+        1. Intră în joc
+        2. Noaptea, fură de la...
+    validations:
+      required: true
+  - type: input
+    id: where
+    attributes:
+      label: Unde
+      description: Studio, joc publicat, test e2e, playtest, CI.
+  - type: textarea
+    id: logs
+    attributes:
+      label: Output / log
+      render: text

@@ -5,3 +5,5 @@ sourcemap.json
 roblox.d.luau
 roblox.yml
 .env.cloud
+.DS_Store
+__pycache__/

@@ -30,6 +30,11 @@ Ultima actualizare: 2026-10-12
   - Login făcut (Quick sign-in aprobat de om, persistă în prefix). Place-urile se copiază în `~/.var/app/org.vinegarhq.Vinegar/data/places/` (sandbox-ul flatpak nu vede `~/gits`; acces read-only la `build/` adăugat prin `flatpak override`, activ după restartul Studio). Output-ul jocului: Window → Output.
   - Primul playtest în Studio (2026-10-12): jocul pornește fără erori; HUD, zi/noapte, creaturi, Bunica, sămânța de start eclozează. Reparat: emoji 🩴 lipsă din fontul Roblox → text localizat; etichetele creaturilor vizibile doar până la 30 studs.
 
+- Playtest automat cu jucător real + jucător-bot (`tools/playtest.sh`, scenariul în `tests/playtest`): **16/16** pe 2026-10-12. Pașii: eclozare, venit, taraba, cumpărare, plantare prin prompt, creștere, noapte (HUD + lumină), furt de la NPC, depunere, botul lovit de papuc (alarmă, Nervi, efecte), furt reușit al botului (notificare, scut), scutul, vânzare, beci, Bunica NPC, zero erori de script.
+  - Găsite și reparate în playtest: camera intra în Bunica (spawn mutat în mijlocul ogrăzii), basmaua acoperea fața Bunicii, timer 0:00 la faza forțată, jucătorii se agățau în grila de piedestale (piedestale coborâte la 0,6 studs; varianta fără coliziune arunca jucătorul în aer).
+  - Deschis: în pasul 15, drumul spre `roadPoint(npcPlots[3])` se blochează constant la 54 studs de țintă (pathfinding „Success”, dar personajul nu înaintează). De investigat ce obiect blochează.
+  - Studio rulează un proces per place (`-task EditFile -localPlaceFile ...`); scriptul pornește Studio direct cu place-ul și închide instanța veche.
+
 ## Urmează
 
 1. **Primul test în Studio (de făcut de om, pe Windows/macOS).** În Studio, ciclul zi/noapte merge de 4× mai repede, iar protecția jucătorilor noi e oprită. deschide `build/bunica.rbxl` sau `rojo serve` + pluginul Rojo. Activează „Enable Studio Access to API Services” pentru DataStore (altfel ProfileStore rulează în mod mock). Test cu 2 jucători: Test → Clients and Servers → 2 Players. Raportează erorile din Output.

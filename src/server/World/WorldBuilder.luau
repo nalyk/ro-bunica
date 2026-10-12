@@ -183,8 +183,9 @@ local function buildPlot(index: number, parent: Instance): PlotGeometry
 		local pedestal = part({
 			Name = "Pedestal" .. i,
 			Shape = Enum.PartType.Cylinder,
-			Size = Vector3.new(1.2, 5, 5),
-			CFrame = cf * CFrame.new(position + Vector3.new(0, 0.6, 0)) * CFrame.Angles(0, 0, math.pi / 2),
+			-- Joase (0,6), ca jucătorii să pășească peste ele fără să se agațe în grilă
+			Size = Vector3.new(0.6, 5, 5),
+			CFrame = cf * CFrame.new(position + Vector3.new(0, 0.3, 0)) * CFrame.Angles(0, 0, math.pi / 2),
 			Color = PALETTE.pedestal,
 			Parent = model,
 		})
@@ -249,7 +250,8 @@ local function buildPlot(index: number, parent: Instance): PlotGeometry
 		showcase = showcase,
 		deposit = deposit,
 		bunicaCFrame = cf * CFrame.new(0, 1, World.plotSize.Z / 2 - 17) * CFrame.Angles(0, math.pi, 0),
-		spawnCFrame = cf * CFrame.new(0, 3, World.plotSize.Z / 2 - 24),
+		-- Mijlocul ogrăzii, cu fața spre drum: camera nu intră în Bunica de pe prispă
+		spawnCFrame = cf * CFrame.new(0, 3, 0),
 		sign = label,
 		creatureFolder = creatureFolder,
 	}

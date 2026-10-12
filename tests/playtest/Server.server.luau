@@ -212,6 +212,8 @@ step("1b. Primul minut: hoțul vine, jucătorul îl nimerește cu papucul", func
 		)
 	)
 	check(call("throwAt", "Hoțomanul") == "ok", "clientul nu vede hoțul")
+	task.wait(0.25)
+	log("SNAP tutorial-lovitura")
 	check(
 		waitFor(function()
 			return me.profile.tutorialThiefDone
@@ -358,7 +360,10 @@ step("10. Botul fură de la jucător și e lovit de papucul jucătorului", funct
 		end, 3),
 		"jucătorul nu a primit alarma"
 	)
+	local nerviBefore = SlipperService.nervi(myActor)
 	call("throwAt", "HotBot")
+	task.wait(0.25)
+	log("SNAP noapte-lovitura")
 	check(
 		waitFor(function()
 			return not RaidService.isCarrying(bot)
@@ -371,12 +376,12 @@ step("10. Botul fură de la jucător și e lovit de papucul jucătorului", funct
 		"creatura nu s-a întors pe piedestal"
 	)
 	check(CreatureService.modelAt(me, key) ~= nil, "modelul creaturii nu a reapărut")
-	check(SlipperService.nervi(myActor) == 25, "Nervii nu au crescut la 25")
+	check(SlipperService.nervi(myActor) == nerviBefore + 25, "Nervii nu au crescut cu 25")
 	local seen = nil
 	check(
 		waitFor(function()
 			seen = call("query")
-			return seen.nervi == 25
+			return seen.nervi == SlipperService.nervi(myActor)
 		end, 3),
 		"HUD-ul nu are Nervii actualizați"
 	)
@@ -491,6 +496,8 @@ end)
 
 step("15b. La răsărit se reia lovitura nopții", function()
 	DayNightService.forcePhase("Day")
+	task.wait(1.5)
+	log("SNAP reluare")
 	check(
 		waitFor(function()
 			return call("query").counters.Replay >= 1

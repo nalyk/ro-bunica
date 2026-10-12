@@ -139,6 +139,11 @@ local function moveCharacterHome(player: Player, character: Model)
 	if not root then
 		return
 	end
+	-- CharacterAdded vine uneori înainte ca personajul să fie pus în Workspace (văzut în playtest)
+	local deadline = os.clock() + 10
+	while character.Parent == nil and os.clock() < deadline do
+		task.wait(0.1)
+	end
 	for attempt = 1, 3 do
 		local owner = ownersByPlayer[player]
 		if not owner or character.Parent == nil then

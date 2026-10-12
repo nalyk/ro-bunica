@@ -38,18 +38,37 @@ if [ -z "${WIN:-}" ]; then
 fi
 sleep 15
 xdotool windowactivate --sync "$WIN" 2>/dev/null
+# Dialogul „Opening…” rămâne blocat sub Wine și acoperă centrul ecranului: îl închidem cu Cancel
+xdotool mousemove 1168 498 click 1; sleep 1
 xdotool mousemove 900 500 click 1; sleep 1
 xdotool key F5
 START=$(date +%s)
 echo "[playtest] pornit $NAME"
 
-# Capturi periodice în fundal
+# Capturi periodice (la 4 s) și la comandă: regizorul scrie „[PLAYTEST] SNAP <nume>” în log
 (
 	i=0
+	seen=0
+	last=0
 	while [ $(( $(date +%s) - START )) -lt $TIMEOUT ]; do
-		import -window root "$FRAMES/frame-$(printf %03d $i).png" 2>/dev/null
-		i=$((i + 1))
-		sleep 4
+		LOGNOW=$(ls -t "$LOGS"/*Studio*.log 2>/dev/null | head -1)
+		if [ -n "$LOGNOW" ]; then
+			snaps=$(grep -o "\[PLAYTEST\] SNAP [A-Za-z0-9_-]*" "$LOGNOW" | awk '{print $3}')
+			count=$(echo "$snaps" | grep -c .)
+			if [ "$count" -gt "$seen" ]; then
+				for name in $(echo "$snaps" | tail -n $((count - seen))); do
+					import -window root "$FRAMES/snap-$name.png" 2>/dev/null
+				done
+				seen=$count
+			fi
+		fi
+		now=$(date +%s)
+		if [ $((now - last)) -ge 4 ]; then
+			import -window root "$FRAMES/frame-$(printf %03d $i).png" 2>/dev/null
+			i=$((i + 1))
+			last=$now
+		fi
+		sleep 0.2
 	done
 ) &
 CAPTURE=$!
@@ -66,7 +85,7 @@ while [ $(( $(date +%s) - START )) -lt $TIMEOUT ]; do
 done
 kill $CAPTURE 2>/dev/null
 
-grep -o "\[\(PLAYTEST\|Raid\|Tutorial\|Slipper\)\].*" "$LOG" | sed 's/\\n$//'
+grep -o "\[\(PLAYTEST\|Raid\|Tutorial\|Slipper\|Plot\)\].*" "$LOG" | sed 's/\\n$//'
 xdotool key shift+F5
 if [ -z "$RESULT" ]; then
 	echo "[playtest] TIMEOUT după ${TIMEOUT}s"

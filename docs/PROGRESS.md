@@ -35,20 +35,22 @@ Ultima actualizare: 2026-10-12
   - Deschis: în pasul 15, drumul spre `roadPoint(npcPlots[3])` se blochează constant la 54 studs de țintă (pathfinding „Success”, dar personajul nu înaintează). De investigat ce obiect blochează.
   - Studio rulează un proces per place (`-task EditFile -localPlaceFile ...`); scriptul pornește Studio direct cu place-ul și închide instanța veche.
 
-## Urmează
+## În lucru: pașii 1–6 din VISION (aprobați 2026-10-12; pasul 7 doar la cerere)
 
-Ordinea vine din `docs/VISION.md` (cercetarea din 2026-10-12): întâi ce afectează semnalele algoritmului Roblox (primele 60 s, întoarcerea în zilele 2–28, jocul cu prietenii) și ce face clipuri.
+Fiecare pas: logică în `Domain` + teste Lune, servicii, client, teste e2e în cloud, scenariu în playtest, GDD actualizat, commit + push.
 
-1. Primul minut: hoț NPC scriptat în primele 30 s, papuc cu ajutor la ochit, lovitură garantată.
-2. Lovitura de papuc completă: hit-stop, lovitură de cameră, sunet, ragdoll peste gard, haptic; reluarea celei mai bune aruncări la final de noapte. Valorile în Configs.
-3. Bunica-vedetă: replici înregistrate (RO, ES, PT, EN) pe evenimente, replica semnătură, animații prin Animation Graphs. Fără LLM.
-4. Ograda familiei (până la 4 prieteni) și ritualul Horei (3+ jucători cheamă o vreme rară).
-5. Furt care nu alungă: o creatură pe raid, limită pe victimă pe noapte, recompense pentru apărare.
-6. Ritmul săptămânal: update sâmbăta, „Bunica se supără” cu o oră înainte, exclusivități rotative care cer să fii online.
-7. Arhitectură live: Configs + Experiments, funnel în AnalyticsService, test separat pentru Server Authority.
-8. Social fără chat: roată de emote, Quick Words, Friend Referral cu recompense cosmetice.
-9. Monetizare etică (vezi liniile roșii din VISION §4), Roblox Plus cu servere private.
-10. Texte RU, ES, PT-BR scrise de mână; modelele finale prin `modelId`; Ungheni ca decor (GDD §19).
+- [ ] **1. Primul minut** — `TutorialService`: la ~25 s după intrare (după eclozarea creaturii de start) vine hoțul NPC „Hoțomanul” pe drum, intră pe poartă, ridică o copie vizuală a creaturii (datele nu se ating; originalul ascuns cu `CreatureService.setHidden`). Hoțul e intrus forțat (`RaidService.forceIntruder`) și ziua. Aim assist (`Domain/AimAssist`): aruncarea în raza de 25 studs de hoț e redirecționată spre el. Fallback după 15 s: Bunica aruncă sigur. Clientul primește `Tutorial` (indiciu mare, mână animată, săgeată). Profil: `tutorialThiefDone`.
+- [ ] **2. Lovitura de papuc** — client: înghețarea camerei 0,07 s, FOV punch, shake, flash, text comic „PLEOSC!” la impact, sunete ProSoundEffects (lovitură, țipăt de hoț în zbor, căzătură), haptic (pcall). Server: ragdoll pentru boți. „Lovitura nopții”: cea mai lungă lovitură e reluată cu încetinitorul la răsărit (`Replay`), cu banner și anunț. Valorile în `Config/Juice`.
+- [ ] **3. Bunica-vedetă** — `Config/BunicaLines` (replici pe evenimente, RO/EN, `soundId` opțional pentru vocea înregistrată), bule de dialog, replica semnătură „Fugi, că vine Bunica!”. Client: animații procedurale pe Motor6D pe stări (doarme, bănuitoare, ochește, aruncă, sărbătorește, furioasă, veghează) și față desenată pe cap (ochelari rotunzi, sprâncene, gură pe stări).
+- [ ] **4. Familia și Hora** — `Domain/Family`: prietenii Roblox de pe server formează familii (max 4), cu ogrăzi alăturate. Membrii nu-și fură între ei, apără orice ogradă din familie cu papucul, iar Bunica îi consideră „acasă”. `Domain/Ritual` + `HoraService`: vatra satului (cerc pe drum, cu fântână); 3+ jucători care dansează 4 s cheamă Culesul de aur sau Curcubeul pentru server, cu cooldown 20 min. Buton „Horă” și dans procedural.
+- [ ] **5. Furt corect** — max 2 furturi de la aceeași victimă pe noapte (apoi scut până dimineață), recompensă în lei pentru apărare (0,5 × prețul creaturii salvate), statistica „Apărări” în clasament.
+- [ ] **6. Ritmul săptămânal** — `Config/LiveEvents` + `Domain/LiveEvents`: „Bunica se supără” sâmbăta 16:00–17:00 UTC (o oră înaintea update-ului de la 17:00): ploaie de papuci peste hoți, vremea exclusivă „Supărarea Bunicii” cu mutația „Papucită”, sămânță exclusivă rotativă pe săptămână, disponibilă doar online. Creștere offline a plantelor (plafon 8 h).
+
+## După pașii 1–6
+
+- Pasul 7 (Configs/Experiments, funnel AnalyticsService, Server Authority) — doar la cererea omului.
+- Vocea reală a Bunicii: înregistrări (ideal o bunică reală) + încărcare de asset-uri (cheia actuală nu are dreptul `asset:write`).
+- Texte ES, PT-BR, RU scrise de mână; modelele finale prin `modelId`; Ungheni ca decor (GDD §19).
 
 ## Decizii luate
 

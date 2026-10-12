@@ -255,8 +255,9 @@ local function onReplay(best: { [string]: any })
 		local position = Slipper.positionAt(best.origin, best.velocity, best.gravity, t)
 		part.CFrame = CFrame.new(position) * CFrame.Angles(t * 14, t * 6, 0)
 		local side = best.velocity.Unit:Cross(Vector3.yAxis)
+		-- Sus și în lateral, ca nimic din ogradă să nu acopere papucul
 		camera.CFrame =
-			CFrame.lookAt(position - best.velocity.Unit * 9 + side * 4 + Vector3.new(0, 3, 0), position)
+			CFrame.lookAt(position - best.velocity.Unit * 14 + side * 7 + Vector3.new(0, 9, 0), position)
 		if t >= duration then
 			connection:Disconnect()
 			burst(position, true)

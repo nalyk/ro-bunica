@@ -126,7 +126,8 @@ Momentul de clip: planta se zguduie, strălucește și explodează în varianta 
 - Proprietarul are mereu papucul. Pe mobil atinge ecranul unde vrea să arunce, pe PC dă click.
 - **3 papuci**, se reîncarcă câte unul la 2,5 s. Traiectorie ușor curbată, se vede clar, deci te poți feri.
 - Papucul lovește doar **intruși**: jucători aflați în ograda ta sau care îți cară o creatură. Nu poți hărțui pe nimeni pe drum.
-- **Lovitura:** hit-stop, încetinire scurtă, strigătul Bunicii, hoțul zboară spre poartă, e amețit 1,2 s și scapă creatura, care se întoarce pe piedestal.
+- **Lovitura:** camera îngheață 0,07 s, câmpul vizual se strânge și revine, text comic „PLEOSC!” la impact, sunet de lovitură, țipătul hoțului și căzătura, vibrație pe telefon. Hoțul zboară spre poartă în ragdoll, e amețit 1,2 s și scapă creatura, care se întoarce pe piedestal. Valorile sunt în `Config/Juice`, sunetele în `Config/Sounds` (librăria ProSoundEffects).
+- **Lovitura nopții:** cea mai lungă lovitură a nopții e reluată pentru tot serverul la răsărit, cu încetinitorul și cu numele aruncătorului.
 
 ### Escaladarea: Nervii Bunicii
 
@@ -185,7 +186,7 @@ Trecerea în noapte e un moment de 3 secunde: cerul trece la indigo, ferestrele 
 | 0:15 | O sămânță deja plantată crește și eclozează: primul Cartofel Agent dansează pe piedestal. | prima surpriză |
 | 0:45 | O săgeată duce la taraba cu semințe; cumpără două cu leii de start. | progres vizibil |
 | 1:30 | Plantează cu o atingere; contorul de lei crește. | loop |
-| 2:00 | Un hoț NPC se furișează. Jucătorul primește papucul, cu ajutor la ochit, și îl nimerește. Bunica sărbătorește. | gluma de bază, garantată, făcută de jucător |
+| 0:25 | „Hoțomanul” (hoț NPC) vine pe drum, intră pe poartă și ridică creatura. Camera se întoarce spre el, iar o mână și o săgeată arată unde să atingă. Aruncarea din raza de 25 studs merge spre hoț (ajutor la ochit); după 12 s, Bunica aruncă sigur. | gluma de bază, garantată, înaintea pragului de 60 s al algoritmului |
 | 3:00 | Iese pe drum și vede gardurile vecinilor pline de creaturi rare. | viitor accesibil |
 | 4:00 | Prima noapte: furt ghidat de la un vecin NPC. | învață să fure în siguranță |
 | 6:00 | Aduce creatura acasă și o pune la vedere. | prima laudă |

@@ -3,6 +3,7 @@
 
 Comenzi:
   cloud.py publish <fișier.rbxl>      publică o versiune „Saved” (versiunea live nu se schimbă)
+  cloud.py publish-live <fișier.rbxl> publică versiunea live, cea care se joacă din link (locul e privat)
   cloud.py run <versiune> <script.luau> rulează un script Luau pe acea versiune, afișează log-urile
   cloud.py e2e                         build test.project.json + publish + rulează tests/e2e
 
@@ -56,16 +57,16 @@ def request(env: dict, method: str, url: str, body: bytes | None = None, content
         sys.exit(f"HTTP {error.code} la {method} {url}\n{detail}")
 
 
-def publish(env: dict, place_file: str) -> int:
+def publish(env: dict, place_file: str, version_type: str = "Saved") -> int:
     with open(place_file, "rb") as handle:
         data = handle.read()
     url = (
         f"{API}/universes/v1/{env['ROBLOX_UNIVERSE_ID']}/places/{env['ROBLOX_PLACE_ID']}"
-        "/versions?versionType=Saved"
+        f"/versions?versionType={version_type}"
     )
     result = request(env, "POST", url, data, "application/octet-stream")
     version = int(result["versionNumber"])
-    print(f"[cloud] publicat {os.path.basename(place_file)} ca versiunea {version} (Saved)")
+    print(f"[cloud] publicat {os.path.basename(place_file)} ca versiunea {version} ({version_type})")
     return version
 
 
@@ -120,6 +121,10 @@ def main() -> int:
     command = sys.argv[1]
     if command == "publish" and len(sys.argv) == 3:
         publish(env, sys.argv[2])
+        return
+    if command == "publish-live" and len(sys.argv) == 3:
+        publish(env, sys.argv[2], "Published")
+        print(f"[cloud] link: https://www.roblox.com/games/{env['ROBLOX_PLACE_ID']}")
         return 0
     if command == "run" and len(sys.argv) == 4:
         with open(sys.argv[3], encoding="utf-8") as handle:

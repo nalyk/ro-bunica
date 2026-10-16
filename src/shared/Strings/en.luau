@@ -172,4 +172,12 @@ return {
 	["product.weather_gold.desc"] = "For the whole village",
 	["product.weather_rainbow"] = "Rainbow",
 	["product.weather_rainbow.desc"] = "For the whole village",
+	-- daily reward and friends
+	["ui.daily"] = "Grandma's Gift",
+	["ui.dailyDay"] = "Day {1}",
+	["ui.dailyGot"] = "Today you got {1} lei",
+	["ui.dailyCome"] = "Come back tomorrow for the next day!",
+	["ui.dailyThanks"] = "Thank you, Bunica!",
+	["ui.invite"] = "Invite friends",
+	["ui.inviteHint"] = "+10% lei for every friend",
 }

@@ -37,6 +37,7 @@ export type Profile = {
 	passes: { [string]: boolean }, -- permisele Robux deja aplicate (efectele permanente, o singură dată)
 	receipts: { string }, -- PurchaseId-urile procesate (anti-dublare la ProcessReceipt)
 	funnel: { [string]: boolean }, -- pașii din funnel-ul primelor minute deja măsurați
+	daily: { lastDay: number, streak: number }, -- recompensa zilnică: ultima zi UTC luată și seria
 }
 
 local DataTemplate = {}
@@ -64,6 +65,7 @@ function DataTemplate.new(): Profile
 		passes = {},
 		receipts = {},
 		funnel = {},
+		daily = { lastDay = -1, streak = 0 },
 	}
 end
 

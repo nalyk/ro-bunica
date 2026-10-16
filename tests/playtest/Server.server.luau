@@ -478,6 +478,14 @@ step("3c. Magazinul pe Robux: permisele și produsele, cu prețurile de la Roblo
 	call("closePanel", "StorePanel")
 end)
 
+step("3d. Darul Bunicii: fereastra seriei de 7 zile", function()
+	call("daily")
+	task.wait(1.2)
+	log("SNAP darul-bunicii")
+	task.wait(0.8)
+	call("closePanel", "DailyPopup")
+end)
+
 step("4. Cumpără o sămânță", function()
 	local lei = me.profile.lei
 	call("fire", "BuySeed", "CartofelAgent")

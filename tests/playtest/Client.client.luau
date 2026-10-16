@@ -472,6 +472,13 @@ function ops.loading(stage: string): { [string]: any }
 	end
 end
 
+-- Fereastra recompensei zilnice, pentru captură (ziua 3 din 7)
+function ops.daily(): boolean
+	local DailyPopup = (require :: any)(controllers:WaitForChild("DailyPopup"))
+	DailyPopup.show({ day = 3, lei = 400 })
+	return true
+end
+
 local command = ReplicatedStorage:WaitForChild("PlaytestCmd") :: RemoteEvent
 local reply = ReplicatedStorage:WaitForChild("PlaytestReply") :: RemoteEvent
 command.OnClientEvent:Connect(function(id: number, op: string, args: { any })

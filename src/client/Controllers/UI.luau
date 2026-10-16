@@ -324,6 +324,14 @@ function UI.show(panel: GuiObject, visible: boolean)
 	if panel.Visible == visible then
 		return
 	end
+	if visible and panel.Name == "Panel" and panel.Parent then
+		-- un singur panou deschis odată: deschiderea unuia le închide pe celelalte
+		for _, other in panel.Parent:GetChildren() do
+			if other ~= panel and other.Name == "Panel" and other:IsA("GuiObject") then
+				other.Visible = false
+			end
+		end
+	end
 	panel.Visible = visible
 	if visible then
 		Motion.pop(panel)

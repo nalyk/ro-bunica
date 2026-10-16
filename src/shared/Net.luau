@@ -28,6 +28,7 @@ local NAMES = {
 	"Shop", -- (stock: {[string]: number}, nextRestockAt: number)
 	"Tutorial", -- (stage: string, data: {any}?) pașii din primul minut
 	"Replay", -- (best: BestThrow) lovitura nopții, reluată la răsărit
+	"Daily", -- (claim: {day, lei, seed?}, serverTime) recompensa zilnică
 }
 
 local FOLDER_NAME = "Remotes"

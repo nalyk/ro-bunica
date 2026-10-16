@@ -184,4 +184,12 @@ return {
 	["product.weather_gold.desc"] = "Pentru tot satul",
 	["product.weather_rainbow"] = "Curcubeu",
 	["product.weather_rainbow.desc"] = "Pentru tot satul",
+	-- recompensa zilnică și prietenii
+	["ui.daily"] = "Darul Bunicii",
+	["ui.dailyDay"] = "Ziua {1}",
+	["ui.dailyGot"] = "Azi ai primit {1} lei",
+	["ui.dailyCome"] = "Vino mâine pentru ziua următoare!",
+	["ui.dailyThanks"] = "Mulțumesc, Bunico!",
+	["ui.invite"] = "Cheamă prieteni",
+	["ui.inviteHint"] = "+10% lei pentru fiecare prieten",
 }

@@ -259,7 +259,19 @@ local function buildLeft(screen: ScreenGui)
 	column.BackgroundTransparency = 1
 	column.AnchorPoint = Vector2.new(0, 0.5)
 	column.Position = UDim2.new(0, 8, 0.5, 0)
-	column.Size = UDim2.fromOffset(88, 424)
+	column.Size = UDim2.fromOffset(88, 528)
+	-- pe ecrane joase (telefon culcat) coloana se micșorează ca să încapă între bani și cutia de apărare
+	local columnScale = Instance.new("UIScale")
+	columnScale.Parent = column
+	local function fit()
+		local camera = workspace.CurrentCamera
+		local height = if camera then camera.ViewportSize.Y else 720
+		columnScale.Scale = math.clamp((height - 150) / 528, 0.55, 1)
+	end
+	fit()
+	if workspace.CurrentCamera then
+		workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(fit)
+	end
 	column.Parent = screen
 	UI.list(column, Enum.FillDirection.Vertical, 6)
 	local function hora()
@@ -275,6 +287,17 @@ local function buildLeft(screen: ScreenGui)
 		roundButton(column, 2, "cellar", "🧺", ClientState.t("ui.cellar"), "wheat", CellarPanel.toggle)
 	HudController.buttons.hora =
 		roundButton(column, 3, "hora", "💃", ClientState.t("ui.hora"), "plum", hora)
+	local function invite()
+		local player = game:GetService("Players").LocalPlayer
+		local social = game:GetService("SocialService")
+		local ok, can = pcall(social.CanSendGameInviteAsync, social, player)
+		if ok and can then
+			pcall(social.PromptGameInvite, social, player)
+		end
+	end
+	HudController.actions.invite = invite
+	HudController.buttons.invite =
+		roundButton(column, 5, "family", "👪", ClientState.t("ui.invite"), "ie", invite)
 	HudController.buttons.upgrades =
 		roundButton(column, 4, "yard", "🔨", ClientState.t("ui.upgrades"), "sky", UpgradePanel.toggle)
 end

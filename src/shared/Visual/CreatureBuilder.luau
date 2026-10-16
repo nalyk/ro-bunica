@@ -5,6 +5,7 @@
 local CollectionService = game:GetService("CollectionService")
 
 local ArtLibrary = require(script.Parent.ArtLibrary)
+local MutationVisuals = require(script.Parent.MutationVisuals)
 local Config = script.Parent.Parent.Config
 local Creatures = require(Config.Creatures)
 local Mutations = require(Config.Mutations)
@@ -81,28 +82,8 @@ local function buildProcedural(creatureId: string): Model
 end
 
 local function applyMutation(model: Model, mutationId: string?)
-	if not mutationId then
-		return
-	end
-	local mutation = Mutations.byId[mutationId]
-	if not mutation then
-		return
-	end
-	local highlight = Instance.new("Highlight")
-	highlight.FillColor = mutation.color
-	highlight.FillTransparency = 0.55
-	highlight.OutlineColor = mutation.color
-	highlight.OutlineTransparency = 0.2
-	highlight.DepthMode = Enum.HighlightDepthMode.Occluded
-	highlight.Parent = model
-	local primary = model.PrimaryPart
-	if primary then
-		local light = Instance.new("PointLight")
-		light.Color = mutation.color
-		light.Range = 10
-		light.Brightness = 1.5
-		light.Parent = primary
-	end
+	local mutation = mutationId and Mutations.byId[mutationId]
+	MutationVisuals.apply(model, mutationId, if mutation then mutation.color else nil)
 end
 
 -- Așază modelul cu baza (cu tot cu detaliile de dedesubt) exact pe `pivot`.

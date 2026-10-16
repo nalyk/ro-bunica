@@ -97,7 +97,7 @@ local function render()
 end
 
 function CellarPanel.toggle()
-	panel.Visible = not panel.Visible
+	UI.show(panel, not panel.Visible)
 	if panel.Visible then
 		render()
 	end
@@ -105,7 +105,7 @@ end
 
 function CellarPanel.start()
 	panel, scroll = UI.panel(ClientState.t("ui.cellar"), function()
-		panel.Visible = false
+		UI.show(panel, false)
 	end)
 	ClientState.onChanged(function()
 		if panel.Visible then

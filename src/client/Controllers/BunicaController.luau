@@ -7,6 +7,7 @@ local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
+local Typography = require(Shared.Visual.Typography)
 local BunicaLines = require(Shared.Config.BunicaLines)
 local Sounds = require(Shared.Config.Sounds)
 local ClientState = require(script.Parent.ClientState)
@@ -259,7 +260,7 @@ local function showBubble(model: Model, key: string)
 	label.Size = UDim2.new(1, -16, 1, -8)
 	label.Position = UDim2.fromOffset(8, 4)
 	label.BackgroundTransparency = 1
-	label.Font = Enum.Font.FredokaOne
+	label.FontFace = Typography.body
 	label.TextScaled = true
 	label.TextColor3 = INK
 	label.Text = ClientState.t(key)

@@ -15,6 +15,8 @@ local Rarities = require(Shared.Config.Rarities)
 local Mutations = require(Shared.Config.Mutations)
 local GameState = require(Shared.GameState)
 local CreatureBuilder = require(Shared.Visual.CreatureBuilder)
+local MutationVisuals = require(Shared.Visual.MutationVisuals)
+local Typography = require(Shared.Visual.Typography)
 local Economy = require(Shared.Domain.Economy)
 local ClientState = require(script.Parent.ClientState)
 
@@ -52,7 +54,7 @@ local function labelCreature(model: Model)
 	local name = Instance.new("TextLabel")
 	name.BackgroundTransparency = 1
 	name.Size = UDim2.fromScale(1, 0.5)
-	name.Font = Enum.Font.FredokaOne
+	name.FontFace = Typography.display
 	name.TextScaled = true
 	name.TextStrokeTransparency = 0.2
 	name.TextColor3 = if mutation
@@ -80,6 +82,7 @@ local function onCreature(instance: Instance)
 		return
 	end
 	labelCreature(instance)
+	MutationVisuals.animate(instance, os.clock) -- curcubeul curge prin spectru (local)
 	local primary = instance.PrimaryPart
 	if primary and primary.Anchored then
 		animated[instance] =

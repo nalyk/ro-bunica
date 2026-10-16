@@ -6,6 +6,104 @@
     "file": "art/audio/atlas.ogg",
     "moderation": "Reviewing"
   },
+  "icon.alarm": {
+    "id": "108436430172555",
+    "type": "Image",
+    "sha": "e4454b9956889637",
+    "file": "build/icons/alarm.png",
+    "moderation": "Reviewing"
+  },
+  "icon.cellar": {
+    "id": "93499059436277",
+    "type": "Image",
+    "sha": "3ec91757687fe189",
+    "file": "build/icons/cellar.png",
+    "moderation": "Reviewing"
+  },
+  "icon.check": {
+    "id": "91920829448398",
+    "type": "Image",
+    "sha": "38456062e2313fc6",
+    "file": "build/icons/check.png",
+    "moderation": "Reviewing"
+  },
+  "icon.close": {
+    "id": "86947657421551",
+    "type": "Image",
+    "sha": "a7ecf21abbffeaf4",
+    "file": "build/icons/close.png",
+    "moderation": "Reviewing"
+  },
+  "icon.day": {
+    "id": "127107373086418",
+    "type": "Image",
+    "sha": "657d439ced639068",
+    "file": "build/icons/day.png",
+    "moderation": "Reviewing"
+  },
+  "icon.family": {
+    "id": "107350247087205",
+    "type": "Image",
+    "sha": "316a52072132d85b",
+    "file": "build/icons/family.png",
+    "moderation": "Reviewing"
+  },
+  "icon.hora": {
+    "id": "109147768974289",
+    "type": "Image",
+    "sha": "4c06de123e8d5c7e",
+    "file": "build/icons/hora.png",
+    "moderation": "Reviewing"
+  },
+  "icon.lei": {
+    "id": "122308643957770",
+    "type": "Image",
+    "sha": "dcad2d70466d9659",
+    "file": "build/icons/lei.png",
+    "moderation": "Reviewing"
+  },
+  "icon.night": {
+    "id": "118960675804400",
+    "type": "Image",
+    "sha": "6327f3e004b5186b",
+    "file": "build/icons/night.png",
+    "moderation": "Reviewing"
+  },
+  "icon.rage": {
+    "id": "78523316872039",
+    "type": "Image",
+    "sha": "9151e34fb1f811e9",
+    "file": "build/icons/rage.png",
+    "moderation": "Reviewing"
+  },
+  "icon.rollingpin": {
+    "id": "119832676297021",
+    "type": "Image",
+    "sha": "c7a0c1810f9cdf8a",
+    "file": "build/icons/rollingpin.png",
+    "moderation": "Reviewing"
+  },
+  "icon.seeds": {
+    "id": "99839164664805",
+    "type": "Image",
+    "sha": "20163d0924e4d491",
+    "file": "build/icons/seeds.png",
+    "moderation": "Reviewing"
+  },
+  "icon.shop": {
+    "id": "96386376746897",
+    "type": "Image",
+    "sha": "faa04c377155ba16",
+    "file": "build/icons/shop.png",
+    "moderation": "Reviewing"
+  },
+  "icon.slipper": {
+    "id": "113988371370098",
+    "type": "Image",
+    "sha": "1734ddee404b7b0b",
+    "file": "build/icons/slipper.png",
+    "moderation": "Reviewing"
+  },
   "test.textured": {
     "id": "110014834648756",
     "type": "Model",

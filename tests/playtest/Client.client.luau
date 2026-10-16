@@ -267,6 +267,61 @@ function ops.cue(name: string): { [string]: any }
 	return { now = now, at = at }
 end
 
+-- Testul de font: fiecare candidat scrie diacritice românești și chirilice (pentru captură)
+function ops.fontTest(seconds: number): boolean
+	local fonts = {
+		"FredokaOne",
+		"LuckiestGuy",
+		"Bangers",
+		"Cartoon",
+		"Nunito",
+		"Montserrat",
+		"BuilderSans",
+		"Arimo",
+		"Roboto",
+		"SourceSans",
+		"GothamSSm",
+		"Fondamento",
+		"PermanentMarker",
+		"Kalam",
+		"Sarpanch",
+		"DenkOne",
+	}
+	local gui = Instance.new("ScreenGui")
+	gui.Name = "FontTest"
+	gui.DisplayOrder = 100
+	local frame = Instance.new("Frame")
+	frame.Size = UDim2.fromScale(1, 1)
+	frame.BackgroundColor3 = Color3.fromRGB(255, 244, 222)
+	frame.Parent = gui
+	local list = Instance.new("UIGridLayout")
+	list.CellSize = UDim2.new(0.5, -6, 0, 34)
+	list.CellPadding = UDim2.fromOffset(6, 4)
+	list.Parent = frame
+	for _, name in fonts do
+		local ok, font = pcall(function()
+			return (Enum.Font :: any)[name]
+		end)
+		local label = Instance.new("TextLabel")
+		label.BackgroundTransparency = 1
+		label.TextScaled = true
+		label.TextXAlignment = Enum.TextXAlignment.Left
+		label.TextColor3 = Color3.fromRGB(58, 34, 24)
+		label.Text = name .. ": Bunica ș ț ă î â ȘȚ Бабушка ёЖ 128"
+		if ok and font then
+			label.Font = font
+		else
+			label.Text = name .. ": (lipsește)"
+		end
+		label.Parent = frame
+	end
+	gui.Parent = player.PlayerGui
+	task.delay(seconds, function()
+		gui:Destroy()
+	end)
+	return true
+end
+
 local command = ReplicatedStorage:WaitForChild("PlaytestCmd") :: RemoteEvent
 local reply = ReplicatedStorage:WaitForChild("PlaytestReply") :: RemoteEvent
 command.OnClientEvent:Connect(function(id: number, op: string, args: { any })

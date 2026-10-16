@@ -244,6 +244,10 @@ step("1a. Galeria: creatura proprie, vecinii, Bunica, casa", function()
 		(cf * CFrame.new(-25, 14, -5)).Position
 	)
 	photograph("sat", cf.Position, (cf * CFrame.new(0, 45, -110)).Position)
+	call("fontTest", 3)
+	task.wait(1.5)
+	log("SNAP fonturi")
+	task.wait(2)
 end)
 
 step("1b. Primul minut: hoțul vine, jucătorul îl nimerește cu papucul", function()

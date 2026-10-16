@@ -8,6 +8,7 @@ local Lighting = game:GetService("Lighting")
 local Shared = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
 local World = require(Shared.Config.World)
 local Hora = require(Shared.Config.Hora)
+local Typography = require(Shared.Visual.Typography)
 
 export type PlotGeometry = {
 	index: number,
@@ -233,7 +234,7 @@ local function buildPlot(index: number, parent: Instance): PlotGeometry
 	label.Size = UDim2.fromScale(1, 1)
 	label.BackgroundTransparency = 1
 	label.TextScaled = true
-	label.Font = Enum.Font.FredokaOne
+	label.FontFace = Typography.display
 	label.TextColor3 = PALETTE.stitch
 	label.Text = ""
 	label.Parent = surface

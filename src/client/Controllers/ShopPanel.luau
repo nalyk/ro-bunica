@@ -64,7 +64,7 @@ local function render()
 end
 
 function ShopPanel.toggle()
-	panel.Visible = not panel.Visible
+	UI.show(panel, not panel.Visible)
 	if panel.Visible then
 		render()
 	end
@@ -72,7 +72,7 @@ end
 
 function ShopPanel.start()
 	panel, scroll = UI.panel(ClientState.t("ui.shop"), function()
-		panel.Visible = false
+		UI.show(panel, false)
 	end)
 	restockLabel = UI.label({
 		Size = UDim2.new(0.4, 0, 0, 24),

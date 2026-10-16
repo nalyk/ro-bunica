@@ -262,6 +262,7 @@ step("1a. Galeria: creatura proprie, vecinii, Bunica, casa", function()
 		(cf * CFrame.new(0, 6, World.plotSize.Z / 2 - 9)).Position,
 		(cf * CFrame.new(-25, 14, -5)).Position
 	)
+	photograph("sat", cf.Position, (cf * CFrame.new(0, 45, -110)).Position)
 	-- proiectilele sculptate (papucul, făcălețul), trimise prin evenimentul real, plutind încet fără gravitație
 	local spot = (cf * CFrame.new(-12, 4, -22)).Position
 	for i, kind in { "Slipper", "RollingPin" } do
@@ -287,7 +288,6 @@ step("1a. Galeria: creatura proprie, vecinii, Bunica, casa", function()
 			"proiectil fără model texturat: " .. line
 		)
 	end
-	photograph("sat", cf.Position, (cf * CFrame.new(0, 45, -110)).Position)
 	call("fontTest", 3)
 	task.wait(1.5)
 	log("SNAP fonturi")

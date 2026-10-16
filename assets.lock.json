@@ -259,9 +259,9 @@
     "moderation": "Approved"
   },
   "world.Beci": {
-    "id": "89037383262498",
+    "id": "88582491830104",
     "type": "Model",
-    "sha": "5fc1962bf47c7170",
+    "sha": "ea9551cc0ffcb1d8",
     "file": "build/art/world.Beci.glb",
     "moderation": "Approved"
   },
@@ -280,9 +280,9 @@
     "moderation": "Approved"
   },
   "world.FloareaSoarelui": {
-    "id": "104346566196090",
+    "id": "119230594197402",
     "type": "Model",
-    "sha": "2a2a2ca02d05e00d",
+    "sha": "7c3199003beb5bad",
     "file": "build/art/world.FloareaSoarelui.glb",
     "moderation": "Approved"
   },
@@ -301,9 +301,9 @@
     "moderation": "Approved"
   },
   "world.Nuc": {
-    "id": "81696330778131",
+    "id": "71966698833815",
     "type": "Model",
-    "sha": "ede93c017440a3de",
+    "sha": "938a4dc2f092222c",
     "file": "build/art/world.Nuc.glb",
     "moderation": "Approved"
   },
@@ -350,16 +350,16 @@
     "moderation": "Approved"
   },
   "world.Tabla": {
-    "id": "96079570460892",
+    "id": "113880549730245",
     "type": "Model",
-    "sha": "4d684ae7f86341e8",
+    "sha": "8bf70a0bf5e198a0",
     "file": "build/art/world.Tabla.glb",
     "moderation": "Approved"
   },
   "world.Visin": {
-    "id": "122193919030075",
+    "id": "140396994005487",
     "type": "Model",
-    "sha": "2e3e44ce991bdd08",
+    "sha": "0beebe217623a7a8",
     "file": "build/art/world.Visin.glb",
     "moderation": "Approved"
   }

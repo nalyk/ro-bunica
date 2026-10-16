@@ -19,6 +19,7 @@ local UI = require(script.Parent.UI)
 local ShopPanel = require(script.Parent.ShopPanel)
 local CellarPanel = require(script.Parent.CellarPanel)
 local UpgradePanel = require(script.Parent.UpgradePanel)
+local StorePanel = require(script.Parent.StorePanel)
 local SlipperController = require(script.Parent.SlipperController)
 
 local HudController = {}
@@ -102,6 +103,19 @@ local function buildTop(screen: ScreenGui)
 		Theme.swatches.wheat.dark,
 		2.5
 	)
+	-- „+” pe pilula banilor: magazinul pe Robux
+	local plus = UI.button({
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = UDim2.new(1, -4, 1, -6),
+		Size = UDim2.fromOffset(34, 34),
+		Text = "+",
+		swatch = "vine",
+		Parent = moneyPill,
+	}, StorePanel.toggle)
+	local plusCorner = plus:FindFirstChildOfClass("UICorner") :: UICorner
+	plusCorner.CornerRadius = UDim.new(0.5, 0)
+	HudController.actions.store = StorePanel.toggle
+	HudController.buttons.store = plus
 	incomeLabel = UI.label({
 		Position = UDim2.new(0, if coin then 64 else 16, 0.62, 0),
 		Size = UDim2.new(1, -80, 0.32, 0),

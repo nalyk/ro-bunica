@@ -42,8 +42,16 @@ local function recountFriends()
 	end
 end
 
+-- Multiplicatori în plus pe venit (permisul 2× lei), puși de MonetizationService
+local boosts: { [Player]: number? } = {}
+
+function EconomyService.setBoost(player: Player, factor: number?)
+	boosts[player] = factor
+	StateService.markDirty(player)
+end
+
 function EconomyService.multiplier(player: Player): number
-	return Economy.friendMultiplier(friendCounts[player] or 0)
+	return Economy.friendMultiplier(friendCounts[player] or 0) * (boosts[player] or 1)
 end
 
 function EconomyService.addLei(owner: Owner, amount: number)
@@ -174,6 +182,7 @@ function EconomyService.start()
 		friendCounts[player] = nil
 		leaderstatsLei[player] = nil
 		leaderstatsDefends[player] = nil
+		boosts[player] = nil
 		actionLimiter:forget(player.UserId)
 	end)
 	PlotService.onOwnerAdded(function(owner)

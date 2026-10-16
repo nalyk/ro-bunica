@@ -85,7 +85,8 @@ Vocea Bunicii: `docs/VOICE.md` (Gemini TTS gratuit, 4 voci proiectate în `art/v
 ## Planul de terminare (`docs/PLAN_FINAL.md`)
 
 - [x] 1. Îmbunătățiri pe lei (2026-10-17): `Config/Upgrades` + `Domain/Upgrades` (testat), `UpgradeService`, panoul „Ograda” (buton în HUD, D-pad dreapta pe gamepad), 5 iconițe noi. Piedestale (până la 20), straturi (până la 10), beci (+10), papuci (3 → 5), reîncărcare mai rapidă, Grivei (încetinește hoții din ogradă; modificatori de viteză comuni în RaidService, deci nu se calcă cu încetinirea de cărat), Bunica mai ageră. Grivei e sculptat (concept „jucărie netedă” → TRELLIS, 19k), stă în fața prispei și sare când latră. Verificat: unit, e2e 29/29, playtest 26/26.
-- [ ] 2. Vânzări pe Robux. - [ ] 3. Măsurători. - [ ] 4. Revenire și social. - [ ] 5. Sunet și voce. - [ ] 6. Performanță și finisaj.
+- [x] 2. Vânzări pe Robux (2026-10-17): 5 permise create în Creator Dashboard și puse în vânzare (VIP Bunica 299, 2× lei 199, Papucul de Aur 149, Beci mare 99, Grădinar 149) și 4 produse (Pungă de lei 25, Sac de lei 99, Ladă de lei 249, Îngrășământ fermecat 29), toate cu iconițe generate (`tools/store_icons.py`), prețuri fixe (fără Managed Pricing). `Config/Monetization`, `Domain/Monetization` (testat), `MonetizationService` (ProcessReceipt idempotent, chitanțele în profil, salvare imediată), magazinul din joc (butonul „+” de pe bani), Papucul de Aur vizibil în zbor. Produsele „Semințe proaspete”, „Culesul de aur” și „Curcubeu” sunt pregătite în cod (id 0, ascunse): crearea lor în Dashboard a fost blocată de sistemul de permisiuni; le creează omul și se completează id-ul. Verificat: unit, e2e 30/30, playtest 27/27.
+- [ ] - [ ] 3. Măsurători. - [ ] 4. Revenire și social. - [ ] 5. Sunet și voce. - [ ] 6. Performanță și finisaj.
 
 ## Lansare publică (2026-10-16)
 

@@ -162,6 +162,21 @@ local function giveStarter(owner: Owner)
 end
 
 -- Folosit de vreme: aplică o funcție pe fiecare plantă în creștere.
+-- Îngrășământul: toate plantele din ogradă termină de crescut acum (ecloziunea vine la următorul pas)
+function GardenService.fertilize(owner: Owner): number
+	local count = 0
+	for _, plant in owner.profile.beds do
+		local required = Growth.requiredSeconds(plant)
+		if required < math.huge and plant.grown < required then
+			plant.grown = required
+			count += 1
+		end
+	end
+	renderBeds(owner)
+	StateService.markDirty(owner.player)
+	return count
+end
+
 -- Redesenează straturile (după o îmbunătățire care deblochează straturi)
 function GardenService.refreshBeds(owner: Owner)
 	renderBeds(owner)

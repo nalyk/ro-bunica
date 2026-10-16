@@ -468,6 +468,16 @@ step("3b. Panoul Ograda: cumpără un piedestal cu lei", function()
 	task.wait(1)
 end)
 
+step("3c. Magazinul pe Robux: permisele și produsele, cu prețurile de la Roblox", function()
+	local store = call("openPanel", "StorePanel")
+	log(string.format("magazin: %d rânduri", store.rows))
+	check(store.rows >= 9, "magazinul nu listează permisele și produsele")
+	task.wait(2.5) -- prețurile vin de la Roblox
+	log("SNAP magazin")
+	task.wait(1)
+	call("closePanel", "StorePanel")
+end)
+
 step("4. Cumpără o sămânță", function()
 	local lei = me.profile.lei
 	call("fire", "BuySeed", "CartofelAgent")

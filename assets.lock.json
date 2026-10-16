@@ -335,6 +335,90 @@
     "file": "build/art/prop.Papuc.glb",
     "moderation": "Approved"
   },
+  "store.bigcellar": {
+    "id": "80660212904702",
+    "type": "Image",
+    "sha": "c5751c7cc6af0261",
+    "file": "build/store_items/bigcellar_256.png",
+    "moderation": "Reviewing"
+  },
+  "store.doublelei": {
+    "id": "119000210514128",
+    "type": "Image",
+    "sha": "e269896a83c0faf8",
+    "file": "build/store_items/doublelei_256.png",
+    "moderation": "Reviewing"
+  },
+  "store.fertilizer": {
+    "id": "130124842076458",
+    "type": "Image",
+    "sha": "3b6945b1cecb577a",
+    "file": "build/store_items/fertilizer_256.png",
+    "moderation": "Reviewing"
+  },
+  "store.gardener": {
+    "id": "111362503744493",
+    "type": "Image",
+    "sha": "368d8e963ad152aa",
+    "file": "build/store_items/gardener_256.png",
+    "moderation": "Reviewing"
+  },
+  "store.goldslipper": {
+    "id": "137369694948990",
+    "type": "Image",
+    "sha": "8ffc73af3fc60bda",
+    "file": "build/store_items/goldslipper_256.png",
+    "moderation": "Reviewing"
+  },
+  "store.lei_l": {
+    "id": "87385654916078",
+    "type": "Image",
+    "sha": "5f8b22f75b04cd85",
+    "file": "build/store_items/lei_l_256.png",
+    "moderation": "Reviewing"
+  },
+  "store.lei_m": {
+    "id": "140226833333047",
+    "type": "Image",
+    "sha": "44c0a1e177813f3f",
+    "file": "build/store_items/lei_m_256.png",
+    "moderation": "Reviewing"
+  },
+  "store.lei_s": {
+    "id": "73314582134496",
+    "type": "Image",
+    "sha": "4ec9d119438e39d5",
+    "file": "build/store_items/lei_s_256.png",
+    "moderation": "Reviewing"
+  },
+  "store.restock": {
+    "id": "123639893169382",
+    "type": "Image",
+    "sha": "cb31849d341cfb51",
+    "file": "build/store_items/restock_256.png",
+    "moderation": "Reviewing"
+  },
+  "store.vip": {
+    "id": "99155751330952",
+    "type": "Image",
+    "sha": "6b0e86b092d67205",
+    "file": "build/store_items/vip_256.png",
+    "moderation": "Reviewing"
+  },
+  "store.weather_gold": {
+    "id": "71012243957352",
+    "type": "Image",
+    "sha": "fe43087f445a83a6",
+    "file": "build/store_items/weather_gold_256.png",
+    "moderation": "Reviewing"
+  },
+  "store.weather_rainbow": {
+    "id": "121140704017709",
+    "type": "Image",
+    "sha": "c267e9fa6e673d58",
+    "file": "build/store_items/weather_rainbow_256.png",
+    "moderation": "Reviewing"
+  },
   "test.textured": {
     "id": "110014834648756",
     "type": "Model",

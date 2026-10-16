@@ -82,6 +82,14 @@ function DataService.get(player: Player): Profile?
 end
 
 -- Apelat când profilul e gata; și pentru jucătorii deja încărcați.
+-- Salvează acum (după o cumpărare pe Robux, ca plata și efectul ei să nu se piardă la o cădere)
+function DataService.save(player: Player)
+	local profile = profiles[player]
+	if profile then
+		profile:Save()
+	end
+end
+
 function DataService.onLoaded(callback: (Player, Profile) -> ())
 	table.insert(loadedCallbacks, callback)
 	for player, profile in profiles do

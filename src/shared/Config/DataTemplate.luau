@@ -34,6 +34,8 @@ export type Profile = {
 	tutorialThiefDone: boolean, -- hoțul din primul minut a fost prins
 	stats: { steals: number, defends: number, hatched: number },
 	uidCounter: number,
+	passes: { [string]: boolean }, -- permisele Robux deja aplicate (efectele permanente, o singură dată)
+	receipts: { string }, -- PurchaseId-urile procesate (anti-dublare la ProcessReceipt)
 }
 
 local DataTemplate = {}
@@ -58,6 +60,8 @@ function DataTemplate.new(): Profile
 		tutorialThiefDone = false,
 		stats = { steals = 0, defends = 0, hatched = 0 },
 		uidCounter = 0,
+		passes = {},
+		receipts = {},
 	}
 end
 

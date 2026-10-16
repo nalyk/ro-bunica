@@ -67,6 +67,41 @@ local function dressProjectile(part: BasePart, kind: string): boolean
 	return true
 end
 
+local GOLD = Color3.fromRGB(255, 205, 80)
+
+-- Papucul de Aur (permis): papucul devine auriu și strălucește, urma și sclipiciul sunt aurii
+local function gild(part: BasePart)
+	for _, d in part:GetDescendants() do
+		if d:IsA("SurfaceAppearance") then
+			d.Color = GOLD
+			d.EmissiveTint = GOLD
+			d.EmissiveStrength = 0.35
+		elseif d:IsA("BasePart") and not d:FindFirstChildWhichIsA("SurfaceAppearance") then
+			d.Color = GOLD
+		elseif d:IsA("Trail") then
+			d.Color = ColorSequence.new(GOLD)
+			d.Lifetime = 0.5
+		end
+	end
+	local sparkle = Instance.new("ParticleEmitter")
+	sparkle.Color = ColorSequence.new(GOLD)
+	sparkle.LightEmission = 1
+	sparkle.Rate = 40
+	sparkle.Lifetime = NumberRange.new(0.3, 0.6)
+	sparkle.Speed = NumberRange.new(0.5, 2)
+	sparkle.SpreadAngle = Vector2.new(180, 180)
+	sparkle.Size = NumberSequence.new({
+		NumberSequenceKeypoint.new(0, 0.25),
+		NumberSequenceKeypoint.new(1, 0),
+	})
+	sparkle.Parent = part
+end
+
+local function isGolden(userId: number?): boolean
+	local thrower = userId and Players:GetPlayerByUserId(userId)
+	return thrower ~= nil and thrower:GetAttribute("GoldenSlipper") == true
+end
+
 local function makeProjectile(kind: string): BasePart
 	local part = Instance.new("Part")
 	part.Anchored = true
@@ -155,8 +190,12 @@ local function onProjectile(info: { [string]: any })
 	else
 		Sfx.play(Sounds.throwWhoosh, info.origin, 0.5, 0.9 + math.random() * 0.2)
 	end
+	local part = makeProjectile(info.kind)
+	if info.kind == "Slipper" and isGolden(info.throwerUserId) then
+		gild(part)
+	end
 	flying[info.id] = {
-		part = makeProjectile(info.kind),
+		part = part,
 		origin = info.origin,
 		velocity = info.velocity,
 		gravity = info.gravity,

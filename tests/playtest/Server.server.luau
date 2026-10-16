@@ -204,6 +204,48 @@ step("1. Sămânța de start eclozează pe un piedestal", function()
 	check(containsText(seen.hud, "lei"), "HUD-ul nu afișează leii")
 end)
 
+-- Galeria vizuală: camera se oprește în fața modelelor, cu o captură pentru fiecare (verificare cu ochiul)
+local function photograph(name: string, target: Vector3, from: Vector3)
+	call("lookAt", target, from, 2.5)
+	task.wait(1.2)
+	log("SNAP galerie-" .. name)
+	task.wait(1.4)
+end
+
+step("1a. Galeria: creatura proprie, vecinii, Bunica, casa", function()
+	local cf = me.plot.geometry.cframe
+	for key in me.profile.pedestals do
+		local model = CreatureService.modelAt(me, key)
+		if model then
+			local p = model:GetPivot().Position
+			photograph(
+				"creatura",
+				p + Vector3.new(0, 1.8, 0),
+				(CFrame.new(p) * cf.Rotation * CFrame.new(1.5, 3, -9)).Position
+			)
+		end
+		break
+	end
+	local npc = nearestNpcPlots(me.plot)[1]
+	if npc then
+		local plotCf = npc.geometry.cframe
+		local target = (plotCf * CFrame.new(18, 1.5, -10)).Position
+		photograph("vecini", target, (plotCf * CFrame.new(10, 9, -34)).Position)
+	end
+	local bunica = me.plot.geometry.bunicaCFrame.Position
+	photograph(
+		"bunica",
+		bunica + Vector3.new(0, 2.5, 0),
+		(cf * CFrame.new(-2, 5, World.plotSize.Z / 2 - 30)).Position
+	)
+	photograph(
+		"casa",
+		(cf * CFrame.new(0, 6, World.plotSize.Z / 2 - 9)).Position,
+		(cf * CFrame.new(-25, 14, -5)).Position
+	)
+	photograph("sat", cf.Position, (cf * CFrame.new(0, 45, -110)).Position)
+end)
+
 step("1b. Primul minut: hoțul vine, jucătorul îl nimerește cu papucul", function()
 	check(
 		waitFor(function()

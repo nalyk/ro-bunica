@@ -26,6 +26,47 @@ return function(Spec: any, services: { [string]: any })
 		end)
 	end)
 
+	describe("Modelele", function()
+		it(
+			"toate modelele din ArtAssets sunt încărcate ca șabloane, colorate pe sloturi, cu contur",
+			function()
+				local ArtAssets = require(Shared.Config.ArtAssets)
+				local ArtLibrary = require(Shared.Visual.ArtLibrary)
+				for key, art in ArtAssets do
+					local model = ArtLibrary.get(key)
+					expect(model ~= nil).toBeTruthy()
+					local m = model :: Model
+					local ink = m:FindFirstChild("ink") :: MeshPart?
+					expect(ink ~= nil).toBeTruthy()
+					expect((ink :: MeshPart).CastShadow).toBe(false)
+					for slot, color in art.palette do
+						local part = m:FindFirstChild(slot) :: MeshPart?
+						expect(part ~= nil).toBeTruthy()
+						expect((part :: MeshPart).Color).toBe(color)
+					end
+					expect(m.PrimaryPart ~= nil).toBeTruthy()
+				end
+			end
+		)
+		it("creaturile cu model sunt construite din model, nu din forma procedurală", function()
+			local found = 0
+			for _, model in CollectionService:GetTagged("Creature") do
+				if model:FindFirstChild("ink") then
+					found += 1
+				end
+			end
+			local ArtAssets = require(Shared.Config.ArtAssets)
+			local creatureModels = 0
+			for key in ArtAssets do
+				if string.sub(key, 1, 9) == "creature." then
+					creatureModels += 1
+				end
+			end
+			print("[e2e] creaturi construite din model: " .. found)
+			expect(creatureModels == 0 or found > 0).toBeTruthy()
+		end)
+	end)
+
 	describe("Lumea", function()
 		it("are toate ogrăzile cu straturi, piedestale și beci", function()
 			local village = Workspace:FindFirstChild("Village")

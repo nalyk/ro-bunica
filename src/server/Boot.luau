@@ -6,6 +6,7 @@ local Shared = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
 local Net = require(Shared.Net)
 
 local ORDER = {
+	"ArtService", -- întâi: modelele trebuie să existe când se construiește satul
 	"DataService",
 	"PlotService",
 	"StateService",

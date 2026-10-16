@@ -4,6 +4,7 @@
 
 local CollectionService = game:GetService("CollectionService")
 
+local ArtLibrary = require(script.Parent.ArtLibrary)
 local Config = script.Parent.Parent.Config
 local Creatures = require(Config.Creatures)
 local Mutations = require(Config.Mutations)
@@ -141,8 +142,8 @@ end
 function CreatureBuilder.build(record: Record, pivot: CFrame): Model
 	local creature = Creatures.byId[record.id]
 	assert(creature, "Creatură necunoscută: " .. record.id)
-	-- Modelele finale vor fi încărcate din `modelId`; până atunci folosim placeholder-ul procedural.
-	local model = buildProcedural(record.id)
+	-- Modelul final (art/creatures, încărcat de ArtService); fără el, forma procedurală
+	local model = ArtLibrary.get("creature." .. record.id) or buildProcedural(record.id)
 	model.Name = record.id
 
 	local size = Sizes.byId[record.size]

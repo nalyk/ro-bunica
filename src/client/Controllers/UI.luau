@@ -3,6 +3,8 @@
 
 local Players = game:GetService("Players")
 
+local Music = require(script.Parent.Music)
+
 local UI = {}
 
 UI.colors = table.freeze({
@@ -84,7 +86,10 @@ function UI.button(props: { [string]: any }, onClick: () -> ()): TextButton
 	padding.PaddingTop = UDim.new(0, 4)
 	padding.PaddingBottom = UDim.new(0, 4)
 	padding.Parent = button
-	button.Activated:Connect(onClick)
+	button.Activated:Connect(function()
+		Music.cue("tap", { quantize = false, volume = 0.6 })
+		onClick()
+	end)
 	return button
 end
 

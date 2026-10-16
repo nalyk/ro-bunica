@@ -6,6 +6,7 @@ local TweenService = game:GetService("TweenService")
 local Shared = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
 local Net = require(Shared.Net)
 local ClientState = require(script.Parent.ClientState)
+local Music = require(script.Parent.Music)
 local UI = require(script.Parent.UI)
 
 local NotifyController = {}
@@ -75,6 +76,8 @@ function NotifyController.start()
 		pop(bannerColumn, ClientState.t(key, args), UI.colors.stitch, 5)
 	end)
 	Net.get("Alarm").OnClientEvent:Connect(function()
+		Music.alarm(25)
+		Music.cue("alarm")
 		pop(bannerColumn, "🐓 " .. ClientState.t("notify.Alarm"), UI.colors.night, 4)
 	end)
 end

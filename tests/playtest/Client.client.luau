@@ -234,6 +234,46 @@ function ops.query(): { [string]: any }
 	}
 end
 
+-- Dirijorul muzical: starea straturilor (pentru verificarea sincronizării) și un efect de probă
+function ops.music(): { [string]: any }
+	local SoundService = game:GetService("SoundService")
+	local folder = SoundService:FindFirstChild("BunicaAudio")
+	local Music = (require :: any)(controllers:WaitForChild("Music"))
+	local AudioAtlas = require(Shared.Config.AudioAtlas)
+	local layers = {}
+	if folder then
+		for _, name in { "zi", "noapte", "pericol", "urmarire" } do
+			local p = folder:FindFirstChild("Layer_" .. name) :: AudioPlayer?
+			local f = folder:FindFirstChild("Layer_" .. name, true)
+			local fader: AudioFader? = nil
+			for _, child in folder:GetChildren() do
+				if child:IsA("AudioFader") and child.Name == "Layer_" .. name then
+					fader = child
+				end
+			end
+			local _ = f
+			if p and p:IsA("AudioPlayer") then
+				local region = AudioAtlas.regions["music." .. name]
+				layers[name] = {
+					ready = p.IsReady,
+					playing = p.IsPlaying,
+					offset = p.TimePosition - region.start,
+					volume = if fader then fader.Volume else -1,
+				}
+			end
+		end
+	end
+	return { enabled = Music.isEnabled(), mixer = SoundService:GetMixerTime(), layers = layers }
+end
+
+function ops.cue(name: string): { [string]: any }
+	local SoundService = game:GetService("SoundService")
+	local Music = (require :: any)(controllers:WaitForChild("Music"))
+	local now = SoundService:GetMixerTime()
+	local at = Music.cue(name)
+	return { now = now, at = at }
+end
+
 local command = ReplicatedStorage:WaitForChild("PlaytestCmd") :: RemoteEvent
 local reply = ReplicatedStorage:WaitForChild("PlaytestReply") :: RemoteEvent
 command.OnClientEvent:Connect(function(id: number, op: string, args: { any })

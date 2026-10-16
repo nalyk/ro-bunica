@@ -7,6 +7,7 @@ local Net = require(Shared.Net)
 local Controllers = script.Controllers
 local ORDER = {
 	"ClientState",
+	"Music",
 	"NotifyController",
 	"ShopPanel",
 	"CellarPanel",

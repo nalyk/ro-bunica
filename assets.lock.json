@@ -1,0 +1,16 @@
+{
+  "audio.atlas": {
+    "id": "94705666578776",
+    "type": "Audio",
+    "sha": "3814b3c4184c0bc7",
+    "file": "art/audio/atlas.ogg",
+    "moderation": "Reviewing"
+  },
+  "creature.CartofelAgent": {
+    "id": "117125148265624",
+    "type": "Model",
+    "sha": "",
+    "file": "art/creatures/cartofel_agent.py",
+    "moderation": "MODERATION_STATE_APPROVED"
+  }
+}

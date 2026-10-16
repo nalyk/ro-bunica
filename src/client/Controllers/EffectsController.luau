@@ -13,6 +13,7 @@ local Slipper = require(Shared.Domain.Slipper)
 local Juice = require(Shared.Config.Juice)
 local Sounds = require(Shared.Config.Sounds)
 local ClientState = require(script.Parent.ClientState)
+local Music = require(script.Parent.Music)
 local Sfx = require(script.Parent.Sfx)
 local Haptics = require(script.Parent.Haptics)
 local UI = require(script.Parent.UI)
@@ -114,7 +115,13 @@ local function shake(strength: number, seconds: number)
 end
 
 local function onProjectile(info: { [string]: any })
-	Sfx.play(Sounds.throwWhoosh, info.origin, 0.5, 0.9 + math.random() * 0.2)
+	if info.throwerUserId == localPlayer.UserId and Music.isEnabled() then
+		-- aruncarea mea: muzica trece în urmărire, iar fluieratul papucului e al nostru (fără cuantizare)
+		Music.chase(8)
+		Music.cue("whoosh", { quantize = false, volume = 0.7 })
+	else
+		Sfx.play(Sounds.throwWhoosh, info.origin, 0.5, 0.9 + math.random() * 0.2)
+	end
 	flying[info.id] = {
 		part = makeProjectile(info.kind),
 		origin = info.origin,
@@ -210,7 +217,13 @@ local function onHit(info: { [string]: any })
 	local position: Vector3 = info.position
 	burst(position, heavy)
 	comicText(position, ClientState.t("juice." .. tostring(info.kind)), heavy)
-	Sfx.play(if heavy then Sounds.rollingPinHit else Sounds.slipperHit, position, 1)
+	local near = Workspace.CurrentCamera ~= nil
+		and (Workspace.CurrentCamera.CFrame.Position - position).Magnitude < 90
+	if near and Music.isEnabled() then
+		Music.cue("pleosc", { pitch = if heavy then -5 else 0 }) -- semnătura: aceeași lovitură, pe ritm
+	else
+		Sfx.play(if heavy then Sounds.rollingPinHit else Sounds.slipperHit, position, 1)
+	end
 	Sfx.play(Sounds.thiefScream, position, 0.7, 1 + math.random() * 0.15)
 	task.delay(1.1, function()
 		Sfx.play(Sounds.bodyFall, position, 0.7)

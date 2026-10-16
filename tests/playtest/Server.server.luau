@@ -591,6 +591,45 @@ step("15d. „Bunica se supără”: pastila din HUD, sămânța exclusivă, plo
 	LiveEventService.stop()
 end)
 
+step("15e. Muzica: atlasul se încarcă, straturile cântă sincron, efectele cad pe ritm", function()
+	check(
+		waitFor(function()
+			return call("music").enabled
+		end, 30),
+		"dirijorul nu a pornit (atlasul audio nu s-a încărcat?)"
+	)
+	local info = call("music")
+	local offsets = {}
+	for name, layer in info.layers do
+		check(layer.ready and layer.playing, "stratul " .. name .. " nu cântă")
+		table.insert(offsets, layer.offset)
+	end
+	check(#offsets == 4, "lipsesc straturi: " .. #offsets)
+	table.sort(offsets)
+	check(
+		offsets[#offsets] - offsets[1] < 0.1,
+		"straturile nu sunt sincrone: " .. offsets[1] .. " … " .. offsets[#offsets]
+	)
+	DayNightService.forcePhase("Night")
+	check(
+		waitFor(function()
+			local layers = call("music").layers
+			return layers.noapte.volume > 0.8 and layers.zi.volume < 0.2
+		end, 5),
+		"noaptea nu a trecut pe stratul de noapte"
+	)
+	local cue = call("cue", "pleosc")
+	check(cue.at ~= nil and cue.at >= cue.now and cue.at - cue.now < 0.2, "efectul nu s-a programat pe ritm")
+	log(
+		string.format(
+			"muzică: decalaj maxim între straturi %.3f s; efect la +%.3f s",
+			offsets[#offsets] - offsets[1],
+			cue.at - cue.now
+		)
+	)
+	DayNightService.forcePhase(nil)
+end)
+
 step("16. Fără erori de script (server și client)", function()
 	local serverErrors = {}
 	for _, entry in LogService:GetLogHistory() do

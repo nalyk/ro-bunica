@@ -84,6 +84,7 @@ Vocea Bunicii: `docs/VOICE.md` (Gemini TTS gratuit, 4 voci proiectate în `art/v
 
 ## Decizii luate
 
+- Titlul public (2026-10-16): „Don't Steal from Bunica!” (RO: „Nu fura de la Bunica!”). Omul îl setează în Creator Dashboard când face locul public; cheia API nu are `universe:write`.
 - Ograda există doar cât proprietarul e pe server; papucul îl aruncă proprietarul; Bunica NPC apără slab când lipsește proprietarul.
 - Creatura cărată rămâne în profilul proprietarului până la depunere (anti-duplicare).
 - Furturi doar noaptea; scut de 60 s după furt; protecție 20 min pentru jucători noi.

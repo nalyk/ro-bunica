@@ -1,5 +1,7 @@
 # BUNICA — Game Design Document (v2)
 
+Titlul public pe Roblox: **„Don't Steal from Bunica!”** (în română: „Nu fura de la Bunica!”); BUNICA rămâne numele proiectului.
+
 Sursa de adevăr pentru design. Înlocuiește pitch-ul din `BUNICA — Roblox Game Concept.md` (păstrat ca istoric).
 Starea construcției: `docs/PROGRESS.md`. Arhitectura și convențiile de cod: `docs/ARCHITECTURE.md`.
 

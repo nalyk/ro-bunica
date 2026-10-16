@@ -66,6 +66,18 @@ Rezultate pasul 6: e2e 25/25 (vremea și sămânța exclusivă, papucii din cer 
 - Vocea reală a Bunicii: înregistrări (ideal o bunică reală) + încărcare de asset-uri (cheia actuală nu are dreptul `asset:write`).
 - Texte ES, PT-BR, RU scrise de mână; modelele finale prin `modelId`; Ungheni ca decor (GDD §19).
 
+## Prezentare: modele, UI/UX, sunet (din 2026-10-16)
+
+Planul și cercetarea: `docs/PRESENTATION.md`. Pașii P1–P5:
+
+- [ ] P1 Fluxul de asset-uri (`art/`, `tools/art.py`, `tools/assets.py`, `AssetIds.luau`, încărcare pe server cu fallback). Începutul: `art/lib/kit.py` și primul personaj (`art/creatures/cartofel_agent.py`), verificate în Blender 4.3 fără interfață.
+- [ ] P2 Modele (17 creaturi, mutații ca spectacol, Bunica, Hoțomanul, satul, lumina pe faze).
+- [ ] P3 UI/UX (tokeni, componente, mișcare cu resorturi, iconițe, HUD, gamepad, test de font).
+- [ ] P4 Sunet (graful audio nou, muzică adaptivă din melodii Mikuli, PLEOSC!, SFX, ambianță, vocea Bunicii).
+- [ ] P5 Verificare (planșe de contact, capturi de playtest, e2e).
+
+Blocaj: încărcarea asset-urilor cere permisiunea „assets” (Read + Write) pe cheia API, pe care o adaugă omul.
+
 ## Decizii luate
 
 - Ograda există doar cât proprietarul e pe server; papucul îl aruncă proprietarul; Bunica NPC apără slab când lipsește proprietarul.

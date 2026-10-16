@@ -8,6 +8,7 @@ Joc Roblox construit de un singur om cu agenți AI. Răspunde în română.
 2. `docs/GDD.md` — designul (sursa de adevăr).
 3. `docs/ARCHITECTURE.md` — structura și convențiile de cod.
 4. `docs/VISION.md` — direcția strategică (cercetarea din 2026-10-12): cei trei piloni și pașii 1–7. Aprobați pentru lucru: pașii 1–6; pasul 7 (Configs/Experiments/Analytics/Server Authority) doar la cerere.
+5. `docs/PRESENTATION.md` — modele, UI/UX și sunet (cercetarea din 2026-10-16): direcția artistică, fluxul Blender → Open Cloud și pașii P1–P5.
 
 Reguli:
 

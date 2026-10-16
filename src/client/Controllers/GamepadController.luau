@@ -1,6 +1,6 @@
 --!strict
 -- Gamepad (consolă, controller pe PC): R2 aruncă spre ținta din centrul ecranului, L1 comută făcălețul,
--- Y = Furia Bunicii, X = taraba, D-pad sus = beciul, D-pad jos = hora, B închide panoul deschis.
+-- Y = Furia Bunicii, D-pad stânga = taraba, D-pad sus = beciul, D-pad jos = hora (X rămâne pentru prompt-uri: furat, plantat), B închide panoul deschis.
 -- Cât timp se joacă cu gamepad-ul: ținta din centru și glifele butoanelor (Xbox sau PlayStation, din
 -- UserInputService:GetImageForKeyCode) pe butoanele din HUD; la deschiderea unui panou, selecția UI sare pe
 -- primul lui buton, ca D-pad-ul să navigheze imediat.
@@ -23,7 +23,8 @@ local BINDINGS: { Binding } = {
 	{ key = Enum.KeyCode.ButtonR2, hud = "throw", short = "R2" },
 	{ key = Enum.KeyCode.ButtonL1, hud = "pin", short = "L1" },
 	{ key = Enum.KeyCode.ButtonY, hud = "rage", short = "Y" },
-	{ key = Enum.KeyCode.ButtonX, hud = "shop", short = "X" },
+	-- nu X: e tasta prompt-urilor (furat, plantat) pe gamepad
+	{ key = Enum.KeyCode.DPadLeft, hud = "shop", short = "←" },
 	{ key = Enum.KeyCode.DPadUp, hud = "cellar", short = "↑" },
 	{ key = Enum.KeyCode.DPadDown, hud = "hora", short = "↓" },
 }

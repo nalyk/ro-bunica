@@ -58,6 +58,13 @@ function ArtService.init()
 		folder = created
 	end
 	local target = folder :: Folder
+	-- ecranul de încărcare (ReplicatedFirst) citește progresul: câte modele sunt așteptate și când e gata
+	local expected = 0
+	for _ in ArtAssets do
+		expected += 1
+	end
+	target:SetAttribute("Expected", expected)
+	target:SetAttribute("Ready", false)
 	local pending = 0
 	for key, art in ArtAssets do
 		if target:FindFirstChild(key) then
@@ -82,6 +89,7 @@ function ArtService.init()
 	if pending > 0 then
 		warn("[ArtService] modele neîncărcate la timp:", pending)
 	end
+	target:SetAttribute("Ready", true)
 end
 
 return ArtService

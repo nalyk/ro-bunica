@@ -237,6 +237,48 @@
     "file": "build/icons/slipper.png",
     "moderation": "Reviewing"
   },
+  "loading.bg": {
+    "id": "103474259719328",
+    "type": "Image",
+    "sha": "fa492aa8b81bcc42",
+    "file": "build/loading/bg.png",
+    "moderation": "Reviewing"
+  },
+  "loading.bunica": {
+    "id": "94262410637998",
+    "type": "Image",
+    "sha": "c687bd5ddcc05583",
+    "file": "build/loading/bunica.png",
+    "moderation": "Reviewing"
+  },
+  "loading.hotoman": {
+    "id": "91438061616868",
+    "type": "Image",
+    "sha": "0a3cd14c081d169a",
+    "file": "build/loading/hotoman.png",
+    "moderation": "Reviewing"
+  },
+  "loading.logo_en": {
+    "id": "86390713523626",
+    "type": "Image",
+    "sha": "37dfe266a3f9097b",
+    "file": "build/loading/logo_en.png",
+    "moderation": "Reviewing"
+  },
+  "loading.logo_ro": {
+    "id": "92700095246639",
+    "type": "Image",
+    "sha": "9a9689280305ebf0",
+    "file": "build/loading/logo_ro.png",
+    "moderation": "Reviewing"
+  },
+  "loading.stitch": {
+    "id": "77134673235801",
+    "type": "Image",
+    "sha": "2296521d3e5cf01c",
+    "file": "build/loading/stitch.png",
+    "moderation": "Reviewing"
+  },
   "prop.Facalet": {
     "id": "137982069008185",
     "type": "Model",

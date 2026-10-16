@@ -187,6 +187,17 @@ local myActor = Actors.forPlayer(player)
 log("ograda jucătorului: " .. me.plot.index)
 log("articulații: " .. table.concat(call("jointInfo", me.plot.index), " | "))
 
+step("0. Ecranul de încărcare se termină singur și reface interfața Roblox", function()
+	check(
+		waitFor(function()
+			return not call("loading", "state").present
+		end, 45),
+		"ecranul de încărcare nu s-a închis"
+	)
+	local state = call("loading", "state")
+	check(state.playerList and state.chat, "lista de jucători sau chatul n-au revenit după încărcare")
+end)
+
 step("1. Sămânța de start eclozează pe un piedestal", function()
 	check(
 		waitFor(function()
@@ -797,6 +808,24 @@ step("15e. Muzica: atlasul se încarcă, straturile cântă sincron, efectele ca
 		)
 	)
 	DayNightService.forcePhase(nil)
+end)
+
+step("15b. Ecranul de încărcare (demonstrație: capturi și înregistrare video)", function()
+	log("VIDEO incarcare")
+	call("loading", "demo")
+	for i = 1, 14 do
+		log(string.format("SNAP incarcare-%02d", i))
+		task.wait(0.9)
+	end
+	check(
+		waitFor(function()
+			return call("loading", "demoState").stage == "done"
+		end, 10),
+		"demonstrația ecranului de încărcare nu s-a terminat"
+	)
+	local state = call("loading", "state")
+	check(not state.present, "ecranul de încărcare a rămas pe ecran")
+	check(state.playerList and state.chat, "interfața Roblox n-a revenit după demonstrație")
 end)
 
 step("16. Fără erori de script (server și client)", function()

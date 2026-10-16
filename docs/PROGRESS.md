@@ -82,6 +82,13 @@ Planul și cercetarea: `docs/PRESENTATION.md`. Pașii P1–P5:
 Permisiunea „assets” a fost adăugată pe 2026-10-16; încărcarea și `InsertService:LoadAsset` sunt verificate (detalii în PRESENTATION.md).
 Vocea Bunicii: `docs/VOICE.md` (Gemini TTS gratuit, 4 voci proiectate în `art/voice/voices.json`, replici în `art/voice/takes/`; buget maximum 2 $, o singură dată). Următorul pas: audiția vocilor B, C, D după resetarea cotei zilnice, apoi omul alege vocea.
 
+## Lansare publică (2026-10-16)
+
+- Jocul e public: https://www.roblox.com/games/5300295145 („Don't Steal from Bunica!”, gen Simulation / Incremental Simulator). Pagina: descriere EN și RO, iconița (Bunica cu papucul), două imagini (afiș + toate creaturile) pe prima pagină și pe pagina jocului, titlul și imaginile în română. Imaginile sunt compuse de `tools/store_art.py` din straturile ecranului de încărcare.
+- Ecranul de încărcare (`src/first`, ReplicatedFirst): satul la apus, benzi de cusătură care curg, logo-ul care cade cu turtire și lucire, Bunica, Hoțomanul care se furișează și ia papucul („PLEOSC!”), bara „cusută” cu papucul pe vârf, sfaturi, perdele brodate la final; progres real (modelele din `ArtTemplates`, personajul), minim 4,5 s, maxim 40 s; respectă Reduced Motion. Straturile: `tools/loading.py build|upload`.
+- Cheia `bunica-ci` are acum și `universe` (read/write), datastores, ordered datastores și messaging; vizibilitatea s-a pus prin API. Numele locului cere `universe.place:write`; s-a făcut din Creator Dashboard.
+- Publicul e „16+ și prieteni de încredere”: pentru sub 16 ani Roblox cere 250 de jucători activi sau o taxă rambursabilă de 1.000 Robux (nu plătim fără acordul omului).
+
 ## Decizii luate
 
 - Titlul public (2026-10-16): „Don't Steal from Bunica!” (RO: „Nu fura de la Bunica!”). Omul îl setează în Creator Dashboard când face locul public; cheia API nu are `universe:write`.

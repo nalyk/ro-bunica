@@ -446,6 +446,32 @@ function ops.gamepad(stage: string): { [string]: any }
 	end
 end
 
+-- Ecranul de încărcare: starea celui real (de la pornire) și o demonstrație pentru capturi
+local loadingDemo: any = nil
+function ops.loading(stage: string): { [string]: any }
+	local gui = player.PlayerGui:FindFirstChild("BunicaLoading")
+	if stage == "state" then
+		local StarterGui = game:GetService("StarterGui")
+		return {
+			present = gui ~= nil,
+			playerList = StarterGui:GetCoreGuiEnabled(Enum.CoreGuiType.PlayerList),
+			chat = StarterGui:GetCoreGuiEnabled(Enum.CoreGuiType.Chat),
+		}
+	elseif stage == "demo" then
+		local LoadingScreen = (require :: any)(
+			game:GetService("ReplicatedFirst"):WaitForChild("Loading"):WaitForChild("LoadingScreen")
+		)
+		loadingDemo = LoadingScreen.play({ demo = true, demoSeconds = 11 })
+		return { started = true }
+	else
+		return {
+			stage = if loadingDemo then loadingDemo.stage() else "none",
+			progress = if loadingDemo then loadingDemo.progress() else 0,
+			present = gui ~= nil,
+		}
+	end
+end
+
 local command = ReplicatedStorage:WaitForChild("PlaytestCmd") :: RemoteEvent
 local reply = ReplicatedStorage:WaitForChild("PlaytestReply") :: RemoteEvent
 command.OnClientEvent:Connect(function(id: number, op: string, args: { any })

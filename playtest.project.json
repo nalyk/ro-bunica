@@ -37,6 +37,11 @@
       "$properties": {
         "Technology": "ShadowMap"
       }
+    },
+    "ReplicatedFirst": {
+      "Loading": {
+        "$path": "src/first"
+      }
     }
   }
 }

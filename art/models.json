@@ -113,7 +113,7 @@
  },
  "world.Tabla": {
   "remote": "world/Tabla_20k.glb",
-  "height": 2.5
+  "height": 2.6
  },
  "char.Bunica": {
   "remote": "bunica_20k.glb",
@@ -128,6 +128,16 @@
  "world.PedestalLow": {
   "remote": "world/low_Pedestal_3k.glb",
   "height": 0.9,
+  "tris": 19000
+ },
+ "world.RaftLow": {
+  "remote": "world/low_Raft_3k.glb",
+  "height": 2.0,
+  "tris": 19000
+ },
+ "world.FloareaLow": {
+  "remote": "world/low_FloareaSoarelui_6k.glb",
+  "height": 6,
   "tris": 19000
  }
 }

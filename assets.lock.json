@@ -306,5 +306,26 @@
     "sha": "460ceadf413d2d38",
     "file": "build/art/world.Raft.glb",
     "moderation": "Approved"
+  },
+  "world.RaftLow": {
+    "id": "76203266407974",
+    "type": "Model",
+    "sha": "dfb02435a6e40378",
+    "file": "build/art/world.RaftLow.glb",
+    "moderation": "Approved"
+  },
+  "world.Tabla": {
+    "id": "96079570460892",
+    "type": "Model",
+    "sha": "4d684ae7f86341e8",
+    "file": "build/art/world.Tabla.glb",
+    "moderation": "Approved"
+  },
+  "world.Visin": {
+    "id": "122193919030075",
+    "type": "Model",
+    "sha": "2e3e44ce991bdd08",
+    "file": "build/art/world.Visin.glb",
+    "moderation": "Approved"
   }
 }

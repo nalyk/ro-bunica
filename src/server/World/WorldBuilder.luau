@@ -264,14 +264,17 @@ local function buildPlot(index: number, parent: Instance): PlotGeometry
 		pedestal:SetAttribute("PedestalKey", tostring(i))
 		pedestals[tostring(i)] = pedestal
 		-- felia de buștean cu ștergar, cu fața la nivelul coliziunii (0,6): baza puțin sub pământ
-		if
-			placeArt(
-				"world.PedestalLow",
-				cf * CFrame.new(position + Vector3.new(0, -0.3, 0)) * CFrame.Angles(0, math.rad(i * 37), 0),
-				model
-			)
-		then
+		local art = placeArt(
+			"world.PedestalLow",
+			cf * CFrame.new(position + Vector3.new(0, -0.3, 0)) * CFrame.Angles(0, math.rad(i * 37), 0),
+			model
+		)
+		if art then
 			hide({ pedestal })
+			local link = Instance.new("ObjectValue") -- CreatureService estompează modelul la piedestalele blocate
+			link.Name = "Art"
+			link.Value = art
+			link.Parent = pedestal
 		end
 	end
 
@@ -285,6 +288,10 @@ local function buildPlot(index: number, parent: Instance): PlotGeometry
 			Parent = model,
 		})
 		table.insert(showcase, shelf)
+		-- raftul sculptat (cu ștergar), cu scândura la nivelul raftului vechi
+		if placeArt("world.RaftLow", shelf.CFrame * CFrame.new(0, 0.3 - 2.0, 0), model) then
+			hide({ shelf })
+		end
 	end
 
 	local deposit = part({
@@ -303,6 +310,8 @@ local function buildPlot(index: number, parent: Instance): PlotGeometry
 	-- decor: nuci în colțurile din spate, floarea-soarelui lângă gardul din stânga
 	placeArt("world.Nuc", cf * CFrame.new(-30, 0, 24) * CFrame.Angles(0, math.rad(index * 47), 0), model)
 	placeArt("world.Nuc", cf * CFrame.new(31, 0, 27) * CFrame.Angles(0, math.rad(index * 83), 0), model)
+	placeArt("world.Visin", cf * CFrame.new(-33, 0, 10) * CFrame.Angles(0, math.rad(index * 61), 0), model)
+	placeArt("world.Visin", cf * CFrame.new(35, 0, 9) * CFrame.Angles(0, math.rad(index * 29), 0), model)
 	for k, zz in { -22, -9, 4 } do
 		placeArt(
 			"world.FloareaSoarelui",
@@ -323,6 +332,12 @@ local function buildPlot(index: number, parent: Instance): PlotGeometry
 		Color = PALETTE.houseWall,
 		Parent = model,
 	})
+	-- tăblița sculptată: scândura cu chenar albastru; textul rămâne pe piesa veche (invizibilă), puțin în față
+	if placeArt("world.Tabla", signPart.CFrame * CFrame.new(0, -1.3, 0), model) then
+		signPart.CFrame *= CFrame.new(0, 0, -0.75)
+		signPart.Transparency = 1
+		signPart.CanCollide = false
+	end
 	local surface = Instance.new("SurfaceGui")
 	surface.Face = Enum.NormalId.Front
 	surface.PixelsPerStud = 40

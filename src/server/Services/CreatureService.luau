@@ -107,7 +107,11 @@ function CreatureService.render(owner: Owner)
 			pedestal.Transparency = 1
 			for _, d in art:GetDescendants() do
 				if d:IsA("BasePart") then
-					d.Transparency = fade
+					-- pornind de la transparența inițială: piesele ascunse ale șablonului (baza) rămân ascunse
+					local stored = d:GetAttribute("BaseTransparency")
+					local base: number = if type(stored) == "number" then stored else d.Transparency
+					d:SetAttribute("BaseTransparency", base)
+					d.Transparency = 1 - (1 - base) * (1 - fade)
 				end
 			end
 		else

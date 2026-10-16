@@ -144,6 +144,12 @@ return table.freeze({
 		ink = nil,
 		size = Vector3.new(15.41, 18.0, 13.007),
 	},
+	["world.Visin"] = {
+		assetId = 122193919030075,
+		palette = {},
+		ink = nil,
+		size = Vector3.new(9.162, 11.0, 8.077),
+	},
 	["world.FloareaSoarelui"] = {
 		assetId = 104346566196090,
 		palette = {},
@@ -155,6 +161,12 @@ return table.freeze({
 		palette = {},
 		ink = nil,
 		size = Vector3.new(4.106, 2.0, 1.475),
+	},
+	["world.Tabla"] = {
+		assetId = 96079570460892,
+		palette = {},
+		ink = nil,
+		size = Vector3.new(11.226, 2.6, 1.418),
 	},
 	["char.Bunica"] = { assetId = 100490284919264, palette = {}, ink = nil, size = Vector3.new(0, 6.2, 0) },
 	["world.GardLow"] = {
@@ -168,5 +180,11 @@ return table.freeze({
 		palette = {},
 		ink = nil,
 		size = Vector3.new(4.188, 0.9, 4.349),
+	},
+	["world.RaftLow"] = {
+		assetId = 76203266407974,
+		palette = {},
+		ink = nil,
+		size = Vector3.new(4.125, 2.0, 1.446),
 	},
 } :: { [string]: Art })

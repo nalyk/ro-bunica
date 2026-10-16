@@ -71,7 +71,7 @@ Rezultate pasul 6: e2e 25/25 (vremea și sămânța exclusivă, papucii din cer 
 Planul și cercetarea: `docs/PRESENTATION.md`. Pașii P1–P5:
 
 - [ ] P1 Fluxul de asset-uri (`art/`, `tools/art.py`, `tools/assets.py`, `AssetIds.luau`, încărcare pe server cu fallback). Începutul: `art/lib/kit.py` și primul personaj (`art/creatures/cartofel_agent.py`), verificate în Blender 4.3 fără interfață.
-- [~] P2 Modele: 16 creaturi și Bunica sculptate (concept Codex → TRELLIS.2 → Roblox), în joc și verificate (e2e 27/27, playtest 23/23). Rămân: satul (în lot), Hoțomanul, refacerile (vezi docs/ART_PIPELINE.md).
+- [~] P2 Modele: 16 creaturi și Bunica sculptate (concept Codex → TRELLIS.2 → Roblox), în joc și verificate (e2e 27/27, playtest 23/23). Satul sculptat e în joc: casa, poarta, tăblița, fântâna cu cumpănă în vatră, beciul, nucii, vișinii, floarea-soarelui, gardul de nuiele, piedestalele-buștean și rafturile de vitrină (ultimele trei la ~3k triunghiuri). Modelele sunt doar vizuale, puse de `placeArt` peste piesele vechi, care rămân coliziuni invizibile; piedestalele blocate estompează modelul (legătura `Art`). Rămân: straturile (CuMesh eșuează pe Strat), Hoțomanul (concept `art/concepts/characters/hotoman_v2.png`, în coada GPU), refacerile Mamaligator/BranzoiSumo/Martisorel (alte semințe, în coada GPU).
 - [ ] P2 (rest) Modele (17 creaturi, mutații ca spectacol, Bunica, Hoțomanul, satul, lumina pe faze).
 - [~] P3 UI/UX: sistem de design (Theme, Motion, butoane „de jucărie”, panouri cu panglică), HUD nou, notificări, iconițe Codex, Nunito, lumină cinematică (SkyCycle/LightingDirector). Rămân: navigarea cu gamepad, previzualizări 3D în tarabă.
 - [ ] P3 (rest) UI/UX (tokeni, componente, mișcare cu resorturi, iconițe, HUD, gamepad, test de font).

@@ -54,6 +54,12 @@ return table.freeze({
 		ink = nil,
 		size = Vector3.new(3.436, 5.0, 3.232),
 	},
+	["creature.Mamaligator"] = {
+		assetId = 113637658530694,
+		palette = {},
+		ink = nil,
+		size = Vector3.new(3.5, 5.0, 4.573),
+	},
 	["creature.BranzoiSumo"] = {
 		assetId = 135436137426014,
 		palette = {},

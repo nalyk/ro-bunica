@@ -6,6 +6,8 @@
   per MeshPart; la creaturi țintim mai puțin, pentru telefoane.
 - Scară: înălțimea totală devine `--height` studs; pivotul la mijlocul bazei; fața spre -Y (→ -Z în Roblox).
 - Textura (baseColor) e redimensionată la `--texture` px și împachetată în GLB.
+- `--trim-base`: taie soclul din concept (piedestalul îl dă jocul). Fața de sus a soclului = cel mai înalt plan
+  orizontal mare din sfertul de jos; se șterge tot ce e sub ea (talpa picioarelor rămâne deschisă, nu se vede).
 """
 
 import math
@@ -26,6 +28,7 @@ height = opt("--height", 4.0)
 max_tris = opt("--tris", 9000, int)
 texture = opt("--texture", 1024, int)
 preview = opt("--preview", None, str)
+trim_base = "--trim-base" in argv
 
 bpy.ops.wm.read_factory_settings(use_empty=True)
 bpy.ops.import_scene.gltf(filepath=src)
@@ -38,6 +41,31 @@ if len(meshes) > 1:
     bpy.ops.object.join()
 obj = bpy.context.view_layer.objects.active
 bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+
+if trim_base:
+    import bmesh
+
+    zs = [v.co.z for v in obj.data.vertices]
+    z0, z1 = min(zs), max(zs)
+    bm = bmesh.new()
+    bm.from_mesh(obj.data)
+    # aria fețelor orizontale (în sus) pe felii de 0,5 % din înălțime, în sfertul de jos
+    bins = {}
+    for f in bm.faces:
+        c = f.calc_center_median()
+        if f.normal.z > 0.9 and c.z < z0 + 0.25 * (z1 - z0):
+            k = int((c.z - z0) / (z1 - z0) * 200)
+            bins[k] = bins.get(k, 0) + f.calc_area()
+    # plasele TRELLIS au pereți dubli: și fundul soclului are fețe în sus; fața soclului = cel mai înalt plan mare
+    big = max(bins.values())
+    top = z0 + (max(k for k, area in bins.items() if area > 0.3 * big) + 1) / 200 * (z1 - z0)
+    drop = [f for f in bm.faces if f.calc_center_median().z < top + 0.004 * (z1 - z0)]
+    bmesh.ops.delete(bm, geom=drop, context="FACES")
+    loose = [v for v in bm.verts if not v.link_faces]
+    bmesh.ops.delete(bm, geom=loose, context="VERTS")
+    bm.to_mesh(obj.data)
+    bm.free()
+    print("TRIM", round((top - z0) / (z1 - z0), 3))
 
 tris = sum(len(p.vertices) - 2 for p in obj.data.polygons)
 if tris > max_tris:

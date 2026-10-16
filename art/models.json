@@ -32,8 +32,9 @@
   "height": 5
  },
  "creature.Mamaligator": {
-  "remote": "creatures/Mamaligator_20k.glb",
-  "height": 5
+  "remote": "creatures/s11_Mamaligator_40k.glb",
+  "height": 5,
+  "trimBase": true
  },
  "creature.BranzoiSumo": {
   "remote": "creatures/BranzoiSumo_20k.glb",
@@ -133,11 +134,6 @@
  "world.RaftLow": {
   "remote": "world/low_Raft_3k.glb",
   "height": 2.0,
-  "tris": 19000
- },
- "world.FloareaLow": {
-  "remote": "world/low_FloareaSoarelui_6k.glb",
-  "height": 6,
   "tris": 19000
  }
 }

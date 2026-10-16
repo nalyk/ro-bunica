@@ -76,6 +76,13 @@
     "file": "build/art/creature.GogoasaNinja.glb",
     "moderation": "Approved"
   },
+  "creature.Mamaligator": {
+    "id": "113637658530694",
+    "type": "Model",
+    "sha": "653dba607aefd9e2",
+    "file": "build/art/creature.Mamaligator.glb",
+    "moderation": "Approved"
+  },
   "creature.Martisorel": {
     "id": "87830607716052",
     "type": "Model",

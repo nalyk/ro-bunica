@@ -73,5 +73,15 @@ apoi imagine → 3D texturat.
 - **Iconițe UI:** `tools/icons.py` (master + referință, fond #00FF00 decupat, 256 px) → `UiIcons.luau`.
 - **Fonturi:** Nunito (ș, ț și chirilice). Doar Regular vine cu clientul; **Black (900) a înghețat Studio
   sub Wine**, Bold merge.
-- **De refăcut:** Mămăligator (CuMesh pică de 3 ori, seed nou), Brânzoi (găuri închise, culoare spre
-  portocaliu), Mărțișorel (textură pătată), Hoțomanul (concept încă negenerat).
+- **Pete negre la 20k:** re-coacerea texturii de către TRELLIS după decimare poate lăsa texeli negri
+  (Mămăligator). Atunci se ia nivelul de 40k și îl decimează `post3d.py` la 19k (colaps cu UV-urile
+  păstrate, fără re-coacere): rezultatul e curat. În `art/models.json`: `"remote": "…_40k.glb"`.
+- **Găuri adânci în concept:** TRELLIS modelează găurile brânzei ca cavități reale, care ies negre chiar
+  și la 40k. Se repară din concept (Brânzoi v2: pori mici, puțin adânci), nu din semințe.
+- **Socluri din concept:** `"trimBase": true` → `post3d.py --trim-base` taie soclul (cel mai înalt plan
+  orizontal mare din sfertul de jos; plasele au pereți dubli, deci și fundul soclului are fețe în sus).
+  Piedestalul îl dă jocul.
+- **Satul:** `WorldBuilder.placeArt` pune modelele (doar vizuale) peste piesele vechi, care rămân coliziuni
+  invizibile. Gardul, piedestalele și rafturile folosesc nivelul de ~3k (`low_*`), fără pierderi vizibile.
+- **De refăcut:** Brânzoi (concept v2 în coadă), Mărțișorel (textură pătată, seed 23 în coadă), straturile
+  (CuMesh pică, seed 31 în coadă), Hoțomanul (concept `art/concepts/characters/hotoman_v2.png`, în coadă).

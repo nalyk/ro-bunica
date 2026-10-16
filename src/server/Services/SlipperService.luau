@@ -172,6 +172,11 @@ local function applyHit(projectile: Projectile, victim: Actor, root: BasePart, d
 	projectile.hits += 1
 	local params = projectile.params
 	local distance = (root.Position - projectile.origin).Magnitude
+	local thrower = projectile.thrower
+	if thrower then
+		-- înainte de RaidService.onHit: ascultătorii lui (clasamentul din EconomyService) citesc statistica
+		projectile.owner.profile.stats.defends += 1 -- statistica e a celui care aruncă
+	end
 	RaidService.onHit(
 		victim,
 		knockbackFor(defended, root.Position, params.knockbackSpeed),
@@ -183,10 +188,8 @@ local function applyHit(projectile: Projectile, victim: Actor, root: BasePart, d
 			distance = distance,
 		}
 	)
-	local thrower = projectile.thrower
 	if thrower then
 		addNervi(thrower, Defense.nervi.perHit)
-		projectile.owner.profile.stats.defends += 1 -- statistica e a celui care aruncă
 		Messenger.notify(thrower.player, "notify.Defended", { victim.name })
 		if not bestThrow or distance > bestThrow.distance then
 			bestThrow = {

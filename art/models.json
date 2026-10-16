@@ -147,5 +147,15 @@
   "height": 6.4,
   "split": "hotoman",
   "tris": 22000
+ },
+ "prop.Facalet": {
+  "remote": "props/Facalet_40k.glb",
+  "height": 0.75,
+  "tris": 2500
+ },
+ "prop.Papuc": {
+  "remote": "props/v2_Papuc_40k.glb",
+  "height": 1.1,
+  "tris": 6000
  }
 }

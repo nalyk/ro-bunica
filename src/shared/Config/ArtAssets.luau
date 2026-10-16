@@ -200,4 +200,16 @@ return table.freeze({
 		size = Vector3.new(4.125, 2.0, 1.446),
 	},
 	["char.Hotoman"] = { assetId = 87786986565213, palette = {}, ink = nil, size = Vector3.new(0, 6.4, 0) },
+	["prop.Facalet"] = {
+		assetId = 137982069008185,
+		palette = {},
+		ink = nil,
+		size = Vector3.new(0.763, 0.75, 4.413),
+	},
+	["prop.Papuc"] = {
+		assetId = 129252523117926,
+		palette = {},
+		ink = nil,
+		size = Vector3.new(2.191, 1.1, 1.324),
+	},
 } :: { [string]: Art })

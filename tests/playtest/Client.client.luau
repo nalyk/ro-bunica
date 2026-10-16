@@ -362,6 +362,30 @@ function ops.fontTest(seconds: number): boolean
 	return true
 end
 
+-- Proiectilele în zbor (EffectsController): modelul sculptat cu textura lui (SurfaceAppearance) pe fiecare piesă
+function ops.projectiles(): { string }
+	local found = {}
+	for _, child in workspace:GetChildren() do
+		if child.Name == "Projectile" and child:IsA("BasePart") then
+			local meshes, textured = 0, 0
+			for _, d in child:GetDescendants() do
+				if d:IsA("MeshPart") then
+					meshes += 1
+					if d:FindFirstChildWhichIsA("SurfaceAppearance") then
+						textured += 1
+					end
+				end
+			end
+			local model = child:FindFirstChildWhichIsA("Model")
+			table.insert(
+				found,
+				string.format("%s: %d/%d texturate", model and model.Name or "?", textured, meshes)
+			)
+		end
+	end
+	return found
+end
+
 local command = ReplicatedStorage:WaitForChild("PlaytestCmd") :: RemoteEvent
 local reply = ReplicatedStorage:WaitForChild("PlaytestReply") :: RemoteEvent
 command.OnClientEvent:Connect(function(id: number, op: string, args: { any })

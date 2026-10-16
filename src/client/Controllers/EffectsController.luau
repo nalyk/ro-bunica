@@ -10,6 +10,7 @@ local Workspace = game:GetService("Workspace")
 local Shared = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
 local Net = require(Shared.Net)
 local Slipper = require(Shared.Domain.Slipper)
+local ArtLibrary = require(Shared.Visual.ArtLibrary)
 local Juice = require(Shared.Config.Juice)
 local Sounds = require(Shared.Config.Sounds)
 local ClientState = require(script.Parent.ClientState)
@@ -37,13 +38,45 @@ local shakeStrength = 0
 
 local STITCH_RED = Color3.fromRGB(200, 30, 40)
 
+-- Modelul sculptat (papucul roșu cu pompon, făcălețul), sudat pe piesa-rădăcină invizibilă a proiectilului,
+-- cu centrul de rotație în mijlocul lui. false dacă șablonul lipsește (rămâne forma simplă).
+local function dressProjectile(part: BasePart, kind: string): boolean
+	local model = ArtLibrary.get(if kind == "RollingPin" then "prop.Facalet" else "prop.Papuc")
+	if not model then
+		return false
+	end
+	part.Transparency = 1
+	part.Size = Vector3.new(0.2, 0.2, 0.2)
+	local box = model:GetBoundingBox()
+	local center = model:GetPivot():ToObjectSpace(box)
+	model:PivotTo(part.CFrame * center:Inverse())
+	for _, d in model:GetDescendants() do
+		if d:IsA("BasePart") then
+			d.Anchored = false
+			d.CanCollide = false
+			d.CanQuery = false
+			d.CanTouch = false
+			d.Massless = true
+			local weld = Instance.new("WeldConstraint")
+			weld.Part0 = part
+			weld.Part1 = d
+			weld.Parent = d
+		end
+	end
+	model.Parent = part
+	return true
+end
+
 local function makeProjectile(kind: string): BasePart
 	local part = Instance.new("Part")
 	part.Anchored = true
 	part.CanCollide = false
 	part.CanQuery = false
 	part.CanTouch = false
-	if kind == "RollingPin" then
+	local dressed = dressProjectile(part, kind)
+	if dressed then
+		part.Name = "Projectile" -- modelul sculptat e sudat pe rădăcină
+	elseif kind == "RollingPin" then
 		part.Shape = Enum.PartType.Cylinder
 		part.Size = Vector3.new(3.2, 0.8, 0.8)
 		part.Color = Color3.fromRGB(215, 175, 120)

@@ -10,6 +10,7 @@ local ServerScriptService = game:GetService("ServerScriptService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Net = require(Shared.Net)
 local World = require(Shared.Config.World)
 local Creatures = require(Shared.Config.Creatures)
 local Economy = require(Shared.Domain.Economy)
@@ -212,6 +213,24 @@ local function photograph(name: string, target: Vector3, from: Vector3)
 	task.wait(1.4)
 end
 
+-- Drumul parcurs de hoțul din tutorial (rig sculptat, mers prin Humanoid), eșantionat tot timpul scenei:
+-- verificarea nu depinde de momentul în care ajunge testul la pasul 1b
+local thiefPath = 0
+task.spawn(function()
+	local last: Vector3? = nil
+	while not me.profile.tutorialThiefDone do
+		local thief = TutorialService.thiefOf(me)
+		local root = thief and Actors.root(thief)
+		if root then
+			if last then
+				thiefPath += Vector3.new(root.Position.X - last.X, 0, root.Position.Z - last.Z).Magnitude
+			end
+			last = root.Position
+		end
+		task.wait(0.2)
+	end
+end)
+
 step("1a. Galeria: creatura proprie, vecinii, Bunica, casa", function()
 	local cf = me.plot.geometry.cframe
 	for key in me.profile.pedestals do
@@ -243,6 +262,31 @@ step("1a. Galeria: creatura proprie, vecinii, Bunica, casa", function()
 		(cf * CFrame.new(0, 6, World.plotSize.Z / 2 - 9)).Position,
 		(cf * CFrame.new(-25, 14, -5)).Position
 	)
+	-- proiectilele sculptate (papucul, făcălețul), trimise prin evenimentul real, plutind încet fără gravitație
+	local spot = (cf * CFrame.new(-12, 4, -22)).Position
+	for i, kind in { "Slipper", "RollingPin" } do
+		Net.get("Projectile"):FireAllClients({
+			id = -100 - i,
+			kind = kind,
+			origin = spot + cf.RightVector * (if i == 1 then -2.2 else 2.2),
+			velocity = Vector3.new(0, 0.05, 0),
+			gravity = 0,
+			lifetime = 8,
+			startTime = workspace:GetServerTimeNow(),
+			throwerUserId = 0,
+			plotIndex = me.plot.index,
+		})
+	end
+	photograph("proiectile", spot, (cf * CFrame.new(-12, 5.5, -30)).Position)
+	local projectiles = call("projectiles") :: { string }
+	log("proiectile: " .. table.concat(projectiles, "; "))
+	check(#projectiles == 2, "clientul nu are cele două proiectile sculptate")
+	for _, line in projectiles do
+		check(
+			string.match(line, "^prop%.") ~= nil and not string.find(line, " 0/", 1, true),
+			"proiectil fără model texturat: " .. line
+		)
+	end
 	photograph("sat", cf.Position, (cf * CFrame.new(0, 45, -110)).Position)
 	call("fontTest", 3)
 	task.wait(1.5)
@@ -272,7 +316,6 @@ step("1b. Primul minut: hoțul vine, jucătorul îl nimerește cu papucul", func
 	)
 	-- Hoțomanul sculptat fuge cu creatura: captură de aproape și verificare că rig-ul propriu chiar merge
 	local thiefModel = Actors.characterOf(TutorialService.thiefOf(me)) :: Model
-	local before = thiefRoot.Position
 	-- camera în fața lui, pe direcția de mers (spre drum), ușor din lateral, ca să se vadă și creatura cărată
 	call(
 		"lookAt",
@@ -283,7 +326,7 @@ step("1b. Primul minut: hoțul vine, jucătorul îl nimerește cu papucul", func
 	task.wait(1)
 	log("SNAP hotoman-fuge")
 	task.wait(0.4)
-	local moved = Vector3.new(thiefRoot.Position.X - before.X, 0, thiefRoot.Position.Z - before.Z).Magnitude
+	local moved = thiefPath
 	local box, size = thiefModel:GetBoundingBox()
 	local feet = box.Position.Y - size.Y / 2
 	-- solul de sub el (drumul nu e la nivelul ogrăzii): rază în jos, fără hoț și creatura lui
@@ -302,7 +345,7 @@ step("1b. Primul minut: hoțul vine, jucătorul îl nimerește cu papucul", func
 			if hit then hit.Instance:GetFullName() else "-"
 		)
 	)
-	check(moved > 2, string.format("hoțul nu merge (%.1f studs în 1,4 s)", moved))
+	check(moved > 15, string.format("hoțul nu merge (%.1f studs parcurși în toată scena)", moved))
 	check(
 		math.abs(feet - floor) < 0.5,
 		string.format("tălpile hoțului nu sunt pe sol (%.2f față de %.2f)", feet, floor)

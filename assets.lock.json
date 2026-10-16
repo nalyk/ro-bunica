@@ -237,6 +237,20 @@
     "file": "build/icons/slipper.png",
     "moderation": "Reviewing"
   },
+  "prop.Facalet": {
+    "id": "137982069008185",
+    "type": "Model",
+    "sha": "7754d9fe57569931",
+    "file": "build/art/prop.Facalet.glb",
+    "moderation": "Approved"
+  },
+  "prop.Papuc": {
+    "id": "129252523117926",
+    "type": "Model",
+    "sha": "9a14f500c19980a2",
+    "file": "build/art/prop.Papuc.glb",
+    "moderation": "Approved"
+  },
   "test.textured": {
     "id": "110014834648756",
     "type": "Model",

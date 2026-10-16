@@ -93,4 +93,7 @@ apoi imagine → 3D texturat.
   `post3d.py --color-gain`, factori măsurați pe zonele deschise ale corpului (concept vs textură), apoi
   ajustați la ochi (Brânzoi: 1, 1,32, 1,22).
 - **CuMesh pică la orice sămânță** (straturile): detaliile granulare din concept (firimituri de pământ) fac
-  plasa imposibil de simplificat. Conceptul v2 cu brazde netede a trecut din prima.
+  plasa imposibil de simplificat. Conceptul v2 cu brazde netede a trecut din prima. La fel papucul: fibrele
+  pomponului și ale pâslei → CuMesh pică; v2 „jucărie netedă” (pompon din bucle mari) a trecut.
+- **Recuzita care zboară** (`prop.Papuc`, `prop.Facalet`): puține triunghiuri, dar nu sub ~6k pe forme curbe
+  cu textură detaliată (la 2,5k papucul își rupe textura în cioburi; făcălețul, un cilindru, merge la 2,5k).

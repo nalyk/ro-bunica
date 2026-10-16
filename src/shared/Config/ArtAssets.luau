@@ -138,6 +138,12 @@ return table.freeze({
 		ink = nil,
 		size = Vector3.new(4.06, 0.9, 4.239),
 	},
+	["world.Strat"] = {
+		assetId = 79843349937534,
+		palette = {},
+		ink = nil,
+		size = Vector3.new(4.708, 1.0, 4.976),
+	},
 	["world.Beci"] = {
 		assetId = 89037383262498,
 		palette = {},

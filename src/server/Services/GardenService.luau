@@ -18,6 +18,7 @@ local CreatureService = require(script.Parent.CreatureService)
 local StateService = require(script.Parent.StateService)
 local WeatherService = require(script.Parent.WeatherService)
 local Messenger = require(script.Parent.Messenger)
+local ArtFade = require(script.Parent.Parent.World.ArtFade)
 
 type Owner = PlotService.Owner
 
@@ -44,7 +45,7 @@ end
 
 local function renderBeds(owner: Owner)
 	for key, bed in owner.plot.geometry.beds do
-		bed.Transparency = if (tonumber(key) or 0) <= owner.profile.bedCount then 0 else 0.7
+		ArtFade.set(bed, if (tonumber(key) or 0) <= owner.profile.bedCount then 0 else 0.7)
 		updateBedVisual(owner, key)
 	end
 end

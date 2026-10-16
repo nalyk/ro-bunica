@@ -92,4 +92,5 @@ apoi imagine → 3D texturat.
 - **Culoarea deviată spre cald** (Brânzoi v2: G 153 în loc de 212 pe corp): `"colorGain": [r, g, b]` →
   `post3d.py --color-gain`, factori măsurați pe zonele deschise ale corpului (concept vs textură), apoi
   ajustați la ochi (Brânzoi: 1, 1,32, 1,22).
-- **De refăcut:** straturile (CuMesh pică la toate semințele: conceptul trebuie refăcut).
+- **CuMesh pică la orice sămânță** (straturile): detaliile granulare din concept (firimituri de pământ) fac
+  plasa imposibil de simplificat. Conceptul v2 cu brazde netede a trecut din prima.

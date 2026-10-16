@@ -9,6 +9,7 @@ local Shared = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
 local World = require(Shared.Config.World)
 local Hora = require(Shared.Config.Hora)
 local ArtLibrary = require(Shared.Visual.ArtLibrary)
+local ArtFade = require(script.Parent.ArtFade)
 local Typography = require(Shared.Visual.Typography)
 
 export type PlotGeometry = {
@@ -247,6 +248,12 @@ local function buildPlot(index: number, parent: Instance): PlotGeometry
 		})
 		bed:SetAttribute("BedKey", tostring(i))
 		beds[tostring(i)] = bed
+		-- stratul sculptat (ramă de lemn, brazde); GardenService îl estompează când e blocat
+		local art = placeArt("world.Strat", cf * CFrame.new(position), model)
+		if art then
+			hide({ bed })
+			ArtFade.link(bed, art)
+		end
 	end
 
 	local pedestals: { [string]: BasePart } = {}
@@ -271,10 +278,7 @@ local function buildPlot(index: number, parent: Instance): PlotGeometry
 		)
 		if art then
 			hide({ pedestal })
-			local link = Instance.new("ObjectValue") -- CreatureService estompează modelul la piedestalele blocate
-			link.Name = "Art"
-			link.Value = art
-			link.Parent = pedestal
+			ArtFade.link(pedestal, art) -- CreatureService estompează modelul la piedestalele blocate
 		end
 	end
 

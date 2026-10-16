@@ -94,8 +94,9 @@
   "height": 0.9
  },
  "world.Strat": {
-  "remote": "world/Strat_20k.glb",
-  "height": 1.0
+  "remote": "world/v2_Strat_40k.glb",
+  "height": 1.0,
+  "tris": 6000
  },
  "world.Beci": {
   "remote": "world/Beci_20k.glb",

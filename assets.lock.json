@@ -328,6 +328,13 @@
     "file": "build/art/world.RaftLow.glb",
     "moderation": "Approved"
   },
+  "world.Strat": {
+    "id": "79843349937534",
+    "type": "Model",
+    "sha": "4d6477993d2b0bb0",
+    "file": "build/art/world.Strat.glb",
+    "moderation": "Approved"
+  },
   "world.Tabla": {
     "id": "96079570460892",
     "type": "Model",

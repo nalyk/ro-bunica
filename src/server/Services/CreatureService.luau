@@ -6,6 +6,7 @@ local Shared = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
 local CreatureBuilder = require(Shared.Visual.CreatureBuilder)
 local Economy = require(Shared.Domain.Economy)
 local PlotService = require(script.Parent.PlotService)
+local ArtFade = require(script.Parent.Parent.World.ArtFade)
 
 type Owner = PlotService.Owner
 
@@ -99,24 +100,7 @@ function CreatureService.render(owner: Owner)
 	renderShowcase(owner)
 	-- Piedestalele blocate se văd estompate
 	for key, pedestal in owner.plot.geometry.pedestals do
-		local fade = if (tonumber(key) or 0) <= owner.profile.pedestalCount then 0 else 0.7
-		local link = pedestal:FindFirstChild("Art") :: ObjectValue?
-		local art = link and link.Value
-		if art then
-			-- piedestal sculptat: coliziunea rămâne invizibilă, se estompează modelul
-			pedestal.Transparency = 1
-			for _, d in art:GetDescendants() do
-				if d:IsA("BasePart") then
-					-- pornind de la transparența inițială: piesele ascunse ale șablonului (baza) rămân ascunse
-					local stored = d:GetAttribute("BaseTransparency")
-					local base: number = if type(stored) == "number" then stored else d.Transparency
-					d:SetAttribute("BaseTransparency", base)
-					d.Transparency = 1 - (1 - base) * (1 - fade)
-				end
-			end
-		else
-			pedestal.Transparency = fade
-		end
+		ArtFade.set(pedestal, if (tonumber(key) or 0) <= owner.profile.pedestalCount then 0 else 0.7)
 	end
 end
 

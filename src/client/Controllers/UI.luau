@@ -74,6 +74,15 @@ function UI.label(props: { [string]: any }): TextLabel
 	return label
 end
 
+-- Text cu mărime plafonată: rândurile au aceeași mărime de literă (TextScaled singur ar mări textele scurte);
+-- textele prea lungi se micșorează în continuare (telefoane).
+function UI.capText(label: TextLabel, maxSize: number): TextLabel
+	local constraint = Instance.new("UITextSizeConstraint")
+	constraint.MaxTextSize = maxSize
+	constraint.Parent = label
+	return label
+end
+
 -- Iconița `name` (art/ui/icons) ca ImageLabel, sau nil dacă nu e încă încărcată.
 function UI.icon(name: string, props: { [string]: any }?): ImageLabel?
 	local id = UiIcons[name]
@@ -244,6 +253,7 @@ function UI.panel(title: string, onClose: () -> ()): (Frame, ScrollingFrame, Tex
 	panel.Position = UDim2.fromScale(0.5, 0.52)
 	panel.Size = UDim2.fromScale(0.6, 0.7)
 	panel.BackgroundColor3 = Theme.paper
+	panel.ZIndex = 10 -- deasupra HUD-ului (același ScreenGui, ZIndex pe frați)
 	panel.Visible = false
 	panel.Parent = UI.screen()
 	local corner = Instance.new("UICorner")

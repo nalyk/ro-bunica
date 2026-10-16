@@ -379,8 +379,14 @@ step("2. Leii cresc din venitul creaturilor", function()
 end)
 
 step("3. Taraba se deschide și listează semințe", function()
-	local rows = call("openShop")
-	check(rows > 0, "taraba nu are rânduri")
+	local shop = call("openPanel", "ShopPanel")
+	log(string.format("taraba: %d rânduri, %d previzualizări 3D", shop.rows, shop.previews))
+	check(shop.rows > 0, "taraba nu are rânduri")
+	check(shop.previews == shop.rows, "nu toate rândurile tarabei au creatura în 3D")
+	task.wait(0.6)
+	log("SNAP taraba")
+	task.wait(1)
+	call("closePanel", "ShopPanel")
 end)
 
 step("4. Cumpără o sămânță", function()
@@ -475,6 +481,15 @@ step("9. Jucătorul depune creatura furată în beciul lui", function()
 	end
 	check(found, "creatura furată nu e în inventarul jucătorului")
 	check(me.profile.stats.steals == 1, "statistica de furturi nu a crescut")
+	-- Beciul: fiecare creatură (expusă sau ascunsă) cu miniatura ei 3D
+	local cellar = call("openPanel", "CellarPanel")
+	log(string.format("beciul: %d rânduri, %d previzualizări 3D", cellar.rows, cellar.previews))
+	check(cellar.rows >= 2, "beciul nu listează creaturile")
+	check(cellar.previews == cellar.rows, "nu toate rândurile beciului au creatura în 3D")
+	task.wait(0.6)
+	log("SNAP beci")
+	task.wait(1)
+	call("closePanel", "CellarPanel")
 end)
 
 -- Botul: al doilea „jucător”, cu ograda lui

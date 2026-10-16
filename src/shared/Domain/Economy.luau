@@ -71,6 +71,11 @@ function Economy.formatShort(value: number): string
 			return text .. pair.suffix
 		end
 	end
+	-- sub 10, fracțiile contează (venitul unei creaturi mici: 0,5/s, nu „0/s”)
+	if abs < 10 and value ~= math.floor(value) then
+		local text = string.format("%.1f", math.floor(value * 10) / 10)
+		return (string.gsub(text, "%.0$", ""))
+	end
 	return tostring(math.floor(value))
 end
 

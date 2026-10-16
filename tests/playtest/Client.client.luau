@@ -34,7 +34,13 @@ Net.get("Notify").OnClientEvent:Connect(function(key)
 	table.insert(notifications, key)
 end)
 LogService.MessageOut:Connect(function(message, messageType)
-	if messageType == Enum.MessageType.MessageError and not string.find(message, "PLAYTEST", 1, true) then
+	-- „Failed to upload TexturePack”: Studio local împachetează texturile modelelor și poate primi 429 (nu e
+	-- o eroare a jocului și nu apare pe serverele reale; la fel ca pe server)
+	if
+		messageType == Enum.MessageType.MessageError
+		and not string.find(message, "PLAYTEST", 1, true)
+		and not string.find(message, "Failed to upload TexturePack", 1, true)
+	then
 		table.insert(clientErrors, message)
 	end
 end)
@@ -220,11 +226,13 @@ function ops.lookAt(target: Vector3, from: Vector3, seconds: number): boolean
 	return true
 end
 
-function ops.openShop(): number
-	local ShopPanel = (require :: any)(controllers:WaitForChild("ShopPanel"))
-	ShopPanel.toggle()
-	task.wait(0.5)
-	local rows = 0
+-- Deschide un panou (taraba „ShopPanel” sau beciul „CellarPanel”; rămâne deschis pentru captură) și numără
+-- rândurile și previzualizările 3D cu model
+function ops.openPanel(controller: string): { [string]: number }
+	local module = (require :: any)(controllers:WaitForChild(controller))
+	module.toggle()
+	task.wait(0.8)
+	local rows, previews = 0, 0
 	local gui = player.PlayerGui:FindFirstChild("BunicaUI")
 	for _, panel in (gui and gui:GetChildren() or {}) :: { Instance } do
 		if panel.Name == "Panel" and (panel :: Frame).Visible then
@@ -232,12 +240,21 @@ function ops.openShop(): number
 			for _, child in (scroll and scroll:GetChildren() or {}) :: { Instance } do
 				if child:IsA("Frame") then
 					rows += 1
+					local viewport = child:FindFirstChildWhichIsA("ViewportFrame", true)
+					if viewport and viewport:FindFirstChildWhichIsA("Model") and viewport.CurrentCamera then
+						previews += 1
+					end
 				end
 			end
 		end
 	end
-	ShopPanel.toggle()
-	return rows
+	return { rows = rows, previews = previews }
+end
+
+function ops.closePanel(controller: string): boolean
+	local module = (require :: any)(controllers:WaitForChild(controller))
+	module.toggle()
+	return true
 end
 
 function ops.query(): { [string]: any }

@@ -403,6 +403,49 @@ function ops.projectiles(): { string }
 	return found
 end
 
+-- Modul gamepad (fără controller fizic): ținta, glifele, acțiunile legate și selecția în panouri
+function ops.gamepad(stage: string): { [string]: any }
+	local Gamepad = (require :: any)(controllers:WaitForChild("GamepadController"))
+	local GuiService = game:GetService("GuiService")
+	local ContextActionService = game:GetService("ContextActionService")
+	local gui = player.PlayerGui:WaitForChild("BunicaUI")
+	if stage == "on" then
+		Gamepad.setActive(true)
+		task.wait(0.3)
+		local glyphs = 0
+		for _, d in gui:GetDescendants() do
+			if d.Name == "GamepadGlyph" and (d :: ImageLabel).Visible then
+				glyphs += 1
+			end
+		end
+		local reticle = gui:FindFirstChild("GamepadReticle") :: Frame?
+		return {
+			glyphs = glyphs,
+			reticle = reticle ~= nil and reticle.Visible,
+			bound = ContextActionService:GetBoundActionInfo("BunicaGamepad").inputTypes ~= nil,
+			closeBound = ContextActionService:GetBoundActionInfo("BunicaClosePanel").inputTypes ~= nil,
+		}
+	elseif stage == "shop" then
+		local Hud = (require :: any)(controllers:WaitForChild("HudController"))
+		Hud.actions.shop()
+		task.wait(0.8)
+		local selected = GuiService.SelectedObject
+		local panel = selected and selected:FindFirstAncestor("Panel")
+		local reticle = gui:FindFirstChild("GamepadReticle") :: Frame?
+		return {
+			selected = if selected then selected:GetFullName() else "nimic",
+			inPanel = panel ~= nil and (panel :: Frame).Visible,
+			reticleHidden = reticle ~= nil and not reticle.Visible,
+		}
+	else
+		local Hud = (require :: any)(controllers:WaitForChild("HudController"))
+		Hud.actions.shop()
+		task.wait(0.4)
+		Gamepad.setActive(false)
+		return { selected = if GuiService.SelectedObject then "rămas" else "nimic" }
+	end
+end
+
 local command = ReplicatedStorage:WaitForChild("PlaytestCmd") :: RemoteEvent
 local reply = ReplicatedStorage:WaitForChild("PlaytestReply") :: RemoteEvent
 command.OnClientEvent:Connect(function(id: number, op: string, args: { any })

@@ -90,6 +90,11 @@ local function throw(screenPosition: Vector2, viewport: boolean)
 	end
 end
 
+-- Aruncare spre un punct al ecranului în coordonate de viewport (gamepad: ținta fixă, camera ochește)
+function SlipperController.throwAtViewport(point: Vector2)
+	throw(point, true)
+end
+
 function SlipperController.start()
 	local touchStarts: { [InputObject]: { at: number, position: Vector2 } } = {}
 

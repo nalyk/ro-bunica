@@ -387,6 +387,29 @@ step("3. Taraba se deschide și listează semințe", function()
 	log("SNAP taraba")
 	task.wait(1)
 	call("closePanel", "ShopPanel")
+	-- Gamepad: ținta în centru, glifele pe butoanele HUD-ului, selecția sare în panou
+	local pad = call("gamepad", "on")
+	log(
+		string.format(
+			"gamepad: %d glife, țintă %s, acțiuni legate %s/%s",
+			pad.glyphs,
+			tostring(pad.reticle),
+			tostring(pad.bound),
+			tostring(pad.closeBound)
+		)
+	)
+	check(pad.glyphs == 6 and pad.reticle and pad.bound and pad.closeBound, "modul gamepad incomplet")
+	task.wait(0.5)
+	log("SNAP gamepad")
+	task.wait(1)
+	local padShop = call("gamepad", "shop")
+	log("gamepad, selecția în tarabă: " .. tostring(padShop.selected))
+	check(padShop.inPanel and padShop.reticleHidden, "la gamepad, selecția nu e în tarabă")
+	task.wait(0.4)
+	log("SNAP gamepad-taraba")
+	task.wait(1)
+	local padOff = call("gamepad", "off")
+	check(padOff.selected == "nimic", "selecția UI a rămas după închiderea tarabei")
 end)
 
 step("4. Cumpără o sămânță", function()

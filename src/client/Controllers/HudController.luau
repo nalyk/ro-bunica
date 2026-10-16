@@ -22,6 +22,10 @@ local SlipperController = require(script.Parent.SlipperController)
 
 local HudController = {}
 
+-- Acțiunile HUD-ului și butoanele lor, pentru gamepad (GamepadController leagă tastele și pune glifele)
+HudController.actions = {} :: { [string]: () -> () }
+HudController.buttons = {} :: { [string]: GuiObject }
+
 local leiLabel: TextLabel
 local incomeLabel: TextLabel
 local moneyPill: Frame
@@ -243,11 +247,18 @@ local function buildLeft(screen: ScreenGui)
 	column.Size = UDim2.fromOffset(88, 320)
 	column.Parent = screen
 	UI.list(column, Enum.FillDirection.Vertical, 6)
-	roundButton(column, 1, "seeds", "🌱", ClientState.t("ui.shop"), "vine", ShopPanel.toggle)
-	roundButton(column, 2, "cellar", "🧺", ClientState.t("ui.cellar"), "wheat", CellarPanel.toggle)
-	roundButton(column, 3, "hora", "💃", ClientState.t("ui.hora"), "plum", function()
+	local function hora()
 		Net.get("Hora"):FireServer()
-	end)
+	end
+	HudController.actions.shop = ShopPanel.toggle
+	HudController.actions.cellar = CellarPanel.toggle
+	HudController.actions.hora = hora
+	HudController.buttons.shop =
+		roundButton(column, 1, "seeds", "🌱", ClientState.t("ui.shop"), "vine", ShopPanel.toggle)
+	HudController.buttons.cellar =
+		roundButton(column, 2, "cellar", "🧺", ClientState.t("ui.cellar"), "wheat", CellarPanel.toggle)
+	HudController.buttons.hora =
+		roundButton(column, 3, "hora", "💃", ClientState.t("ui.hora"), "plum", hora)
 end
 
 local function buildDefense(screen: ScreenGui)
@@ -285,6 +296,18 @@ local function buildDefense(screen: ScreenGui)
 	nerviFill.Size = UDim2.fromScale(0, 1)
 	nerviFill.Parent = bar
 	barCorner:Clone().Parent = nerviFill
+	local function togglePin()
+		if (ClientState.state.nervi or 0) >= Defense.rollingPin.cost then
+			SlipperController.arm(
+				if SlipperController.armed() == "RollingPin" then "Slipper" else "RollingPin"
+			)
+		end
+	end
+	local function rage()
+		if (ClientState.state.nervi or 0) >= Defense.rage.cost then
+			Net.get("Rage"):FireServer()
+		end
+	end
 	pinButton = UI.button({
 		Position = UDim2.fromOffset(10, 82),
 		Size = UDim2.new(0.5, -14, 0, 56),
@@ -292,13 +315,7 @@ local function buildDefense(screen: ScreenGui)
 		Text = ClientState.t("ui.rollingPin"),
 		swatch = "wheat",
 		Parent = box,
-	}, function()
-		if (ClientState.state.nervi or 0) >= Defense.rollingPin.cost then
-			SlipperController.arm(
-				if SlipperController.armed() == "RollingPin" then "Slipper" else "RollingPin"
-			)
-		end
-	end)
+	}, togglePin)
 	rageButton = UI.button({
 		Position = UDim2.new(0.5, 4, 0, 82),
 		Size = UDim2.new(0.5, -14, 0, 56),
@@ -306,11 +323,12 @@ local function buildDefense(screen: ScreenGui)
 		Text = ClientState.t("ui.rage"),
 		swatch = "ie",
 		Parent = box,
-	}, function()
-		if (ClientState.state.nervi or 0) >= Defense.rage.cost then
-			Net.get("Rage"):FireServer()
-		end
-	end)
+	}, rage)
+	HudController.actions.pin = togglePin
+	HudController.actions.rage = rage
+	HudController.buttons.pin = pinButton
+	HudController.buttons.rage = rageButton
+	HudController.buttons.throw = box -- nu rândul de papuci: renderSlippers îl golește
 end
 
 local function renderSlippers(ammo: number, maxAmmo: number)

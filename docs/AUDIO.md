@@ -73,6 +73,15 @@ păstrează a doua: coada reverberației din bucla anterioară e inclusă, deci 
   ~9 GB și sistemul îl oprește. Folosirea lui: „cover” al stratului nostru (melodia și structura
   noastră, timbre realiste). Rezultatul intră în atlas din `art/audio/stems/<strat>_<bpm>.wav`.
 
+## Decizia (2026-10-16)
+
+**Rămânem pe sinteza noastră.** ACE-Step a fost testat local (16 s în 17 minute pe procesor; fidelitate 0,6).
+Timbrele sunau mai real, dar piesa și-a pierdut secunda mărită (Sol# a devenit Sol), deci melodia nu
+mai suna moldovenesc, iar ritmul s-a schimbat. Omul: „rezultatul nu e impecabil, iar noi trebuie să
+livrăm IMPECABIL”. Revenim la ACE-Step mai târziu: fidelitate ~0,85, caption cu „F to G sharp”,
+rulat peste noapte. Mediul pregătit: `acevenv` + `acestep/` în scratchpad, plus patch-ul bfloat16 și
+`ACESTEP_GENERATION_TIMEOUT=7200`.
+
 ## Pașii următori
 
 1. Verificare în Studio: încărcarea atlasului, sincronizarea straturilor, `Play(atTime)`, regiunile.

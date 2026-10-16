@@ -14,6 +14,7 @@ local ORDER = {
 	"SlipperController",
 	"HudController",
 	"WorldController",
+	"LightingDirector",
 	"EffectsController",
 	"TutorialController",
 	"BunicaController",

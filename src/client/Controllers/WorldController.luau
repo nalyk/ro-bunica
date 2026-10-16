@@ -3,11 +3,9 @@
 -- lumina de zi/noapte și particulele de vreme. Nimic de aici nu afectează jocul pe server.
 
 local CollectionService = game:GetService("CollectionService")
-local Lighting = game:GetService("Lighting")
 local Players = game:GetService("Players")
 local ProximityPromptService = game:GetService("ProximityPromptService")
 local RunService = game:GetService("RunService")
-local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
@@ -232,26 +230,6 @@ end
 
 -- Lumină și vreme ---------------------------------------------------------------
 
-local LIGHTING = {
-	Day = {
-		ClockTime = 16.5,
-		Brightness = 2.2,
-		Ambient = Color3.fromRGB(120, 105, 90),
-		OutdoorAmbient = Color3.fromRGB(150, 135, 115),
-	},
-	Night = {
-		ClockTime = 0.5,
-		Brightness = 1,
-		Ambient = Color3.fromRGB(60, 60, 110),
-		OutdoorAmbient = Color3.fromRGB(70, 70, 130),
-	},
-}
-
-local function applyPhase(phase: string?)
-	local goal = LIGHTING[phase or "Day"] or LIGHTING.Day
-	TweenService:Create(Lighting, TweenInfo.new(3, Enum.EasingStyle.Sine), goal):Play()
-end
-
 local weatherPart: Part? = nil
 
 local WEATHER_PARTICLES: { [string]: { color: Color3, rate: number, speed: number, size: number } } = {
@@ -326,8 +304,6 @@ function WorldController.start()
 
 	ClientState.onChanged(refreshBedPrompts)
 
-	applyPhase(GameState.get(GameState.Attributes.Phase))
-	GameState.changed(GameState.Attributes.Phase, applyPhase)
 	applyWeather(GameState.get(GameState.Attributes.Weather))
 	GameState.changed(GameState.Attributes.Weather, applyWeather)
 

@@ -82,6 +82,49 @@ def contact_sheet(keys):
     return sheet
 
 
+MODELS = os.path.join(ART, "models.json")
+REMOTE = "ai-esempla:trellis2/work/out/"
+
+
+def build_textured(filter_):
+    """Modelele texturate (concept AI → TRELLIS.2 pe ai-esempla) din art/models.json."""
+    if not os.path.exists(MODELS):
+        return True
+    models = json.load(open(MODELS, encoding="utf-8"))
+    ok = True
+    for key, spec in models.items():
+        if filter_ and filter_ not in key:
+            continue
+        raw = os.path.join(OUT, "_raw", spec["remote"])
+        os.makedirs(os.path.dirname(raw), exist_ok=True)
+        if not os.path.exists(raw):
+            got = subprocess.run(["scp", "-q", "-o", "BatchMode=yes", REMOTE + spec["remote"], raw])
+            if got.returncode != 0:
+                print(f"[art] {key:34} lipsește pe stație ({spec['remote']})")
+                continue
+        digest = hashlib.sha256(open(raw, "rb").read() + json.dumps(spec, sort_keys=True).encode()
+                                + open(os.path.join(ROOT, "tools", "post3d.py"), "rb").read()).hexdigest()[:16]
+        stamp = os.path.join(OUT, key + ".stamp")
+        if os.path.exists(stamp) and open(stamp).read() == digest:
+            print(f"[art] {key:34} neschimbat")
+            continue
+        glb, png = os.path.join(OUT, key + ".glb"), os.path.join(OUT, key + ".png")
+        result = subprocess.run(["blender", "-b", "-P", os.path.join(ROOT, "tools", "post3d.py"), "--", raw, glb,
+                                 "--height", str(spec["height"]), "--tris", str(spec.get("tris", 19000)),
+                                 "--texture", "1024", "--preview", png], capture_output=True, text=True, timeout=600)
+        line = next((l for l in result.stdout.splitlines() if l.startswith("POST ")), None)
+        if not line:
+            ok = False
+            print(f"[art] {key:34} EROARE\n" + "\n".join((result.stdout + result.stderr).splitlines()[-10:]))
+            continue
+        info = eval(line[5:])
+        json.dump({"name": key, "tris": info["tris"], "size": info["size"], "palette": {}, "ink": None,
+                   "textured": True}, open(os.path.join(OUT, key + ".json"), "w"), indent=1)
+        open(stamp, "w").write(digest)
+        print(f"[art] {key:34} {info['tris']} tri, {info['size']} (texturat)")
+    return ok
+
+
 def build(filter_):
     os.makedirs(OUT, exist_ok=True)
     jobs = [s for s in sources() if not filter_ or filter_ in s[0]]
@@ -92,7 +135,9 @@ def build(filter_):
             if error:
                 failed = True
                 print(error)
-    sheet = contact_sheet([k for k, _, _ in jobs])
+    failed = not build_textured(filter_) or failed
+    textured = list(json.load(open(MODELS, encoding="utf-8"))) if os.path.exists(MODELS) else []
+    sheet = contact_sheet([k for k, _, _ in jobs] + [k for k in textured if not filter_ or filter_ in k])
     if sheet:
         print("[art] planșa:", sheet)
     return not failed
@@ -110,12 +155,12 @@ def write_luau():
              "-- conturul („ink”) și mărimea. Lipsa unei chei = jocul folosește forma procedurală.", "",
              "export type Art = { assetId: number, palette: { [string]: Color3 }, ink: Color3?, size: Vector3 }",
              "", "return table.freeze({"]
-    for key, path, _ in sources():
+    for key in all_keys():
         meta_path = os.path.join(OUT, key + ".json")
         if key not in lock or not os.path.exists(meta_path):
             continue
         meta = json.load(open(meta_path))
-        pal = ", ".join(f"{slot} = {color3(c)}" for slot, c in sorted(meta["palette"].items()))
+        pal = ", ".join(f"{slot} = {color3(c)}" for slot, c in sorted(meta["palette"].items())) or ""
         ink = color3(meta["ink"]) if meta.get("ink") else "nil"
         sx, sy, sz = meta["size"]
         lines.append(f'\t["{key}"] = {{ assetId = {lock[key]["id"]}, palette = {{ {pal} }}, ink = {ink}, '
@@ -128,9 +173,16 @@ def write_luau():
     print("[art] scris", os.path.relpath(LUAU, ROOT))
 
 
+def all_keys():
+    keys = [k for k, _, _ in sources()]
+    if os.path.exists(MODELS):
+        keys += list(json.load(open(MODELS, encoding="utf-8")))
+    return keys
+
+
 def upload(filter_):
     env = cloud.load_env()
-    for key, _, _ in sources():
+    for key in all_keys():
         if filter_ and filter_ not in key:
             continue
         glb = os.path.join(OUT, key + ".glb")

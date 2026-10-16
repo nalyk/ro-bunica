@@ -1,0 +1,122 @@
+{
+ "creature.CartofelAgent": {
+  "remote": "creatures/CartofelAgent_10k.glb",
+  "height": 4
+ },
+ "creature.ArdeiasIute": {
+  "remote": "creatures/ArdeiasIute_10k.glb",
+  "height": 4
+ },
+ "creature.CovrigSkater": {
+  "remote": "creatures/CovrigSkater_10k.glb",
+  "height": 4
+ },
+ "creature.GogoasaNinja": {
+  "remote": "creatures/GogoasaNinja_10k.glb",
+  "height": 4.5
+ },
+ "creature.CeapaTurbo": {
+  "remote": "creatures/CeapaTurbo_10k.glb",
+  "height": 4.5
+ },
+ "creature.StrugurelFurios": {
+  "remote": "creatures/StrugurelFurios_10k.glb",
+  "height": 4.5
+ },
+ "creature.PepeneBoxer": {
+  "remote": "creatures/PepeneBoxer_10k.glb",
+  "height": 5
+ },
+ "creature.SarmalinaBallerina": {
+  "remote": "creatures/SarmalinaBallerina_10k.glb",
+  "height": 5
+ },
+ "creature.Mamaligator": {
+  "remote": "creatures/Mamaligator_10k.glb",
+  "height": 5
+ },
+ "creature.BranzoiSumo": {
+  "remote": "creatures/BranzoiSumo_10k.glb",
+  "height": 5.5
+ },
+ "creature.PlacintonioBombardino": {
+  "remote": "creatures/PlacintonioBombardino_10k.glb",
+  "height": 5.5
+ },
+ "creature.ColtunasPirat": {
+  "remote": "creatures/ColtunasPirat_10k.glb",
+  "height": 5.5
+ },
+ "creature.CozonacRobot": {
+  "remote": "creatures/CozonacRobot_10k.glb",
+  "height": 6
+ },
+ "creature.DovleacDJ": {
+  "remote": "creatures/DovleacDJ_10k.glb",
+  "height": 6
+ },
+ "creature.Papucel": {
+  "remote": "creatures/Papucel_10k.glb",
+  "height": 5.5
+ },
+ "creature.Martisorel": {
+  "remote": "creatures/Martisorel_10k.glb",
+  "height": 5.5
+ },
+ "creature.RetetaSecreta": {
+  "remote": "creatures/RetetaSecreta_10k.glb",
+  "height": 6.5
+ },
+ "world.Casa": {
+  "remote": "world/Casa_10k.glb",
+  "height": 19
+ },
+ "world.Gard": {
+  "remote": "world/Gard_10k.glb",
+  "height": 4
+ },
+ "world.Poarta": {
+  "remote": "world/Poarta_10k.glb",
+  "height": 8
+ },
+ "world.Fantana": {
+  "remote": "world/Fantana_10k.glb",
+  "height": 15
+ },
+ "world.Pedestal": {
+  "remote": "world/Pedestal_10k.glb",
+  "height": 0.9
+ },
+ "world.Strat": {
+  "remote": "world/Strat_10k.glb",
+  "height": 1.0
+ },
+ "world.Beci": {
+  "remote": "world/Beci_10k.glb",
+  "height": 1.6
+ },
+ "world.Nuc": {
+  "remote": "world/Nuc_10k.glb",
+  "height": 18
+ },
+ "world.Visin": {
+  "remote": "world/Visin_10k.glb",
+  "height": 11
+ },
+ "world.FloareaSoarelui": {
+  "remote": "world/FloareaSoarelui_10k.glb",
+  "height": 6
+ },
+ "world.Raft": {
+  "remote": "world/Raft_10k.glb",
+  "height": 1.6
+ },
+ "world.Tabla": {
+  "remote": "world/Tabla_10k.glb",
+  "height": 2.5
+ },
+ "char.Bunica": {
+  "remote": "bunica_10k.glb",
+  "height": 6.2
+ }
+}

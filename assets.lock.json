@@ -5,5 +5,12 @@
     "sha": "3814b3c4184c0bc7",
     "file": "art/audio/atlas.ogg",
     "moderation": "Reviewing"
+  },
+  "test.textured": {
+    "id": "110014834648756",
+    "type": "Model",
+    "sha": "fc0059cfd35406c7",
+    "file": "../../../../tmp/claude-1000/-home-ubuntu-gits-ro-bunica/54c9a051-2fda-4663-a3b1-0262f7f8bb90/scratchpad/t3d/bunica_rbx.glb",
+    "moderation": "Approved"
   }
 }

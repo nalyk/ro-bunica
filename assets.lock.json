@@ -6,6 +6,13 @@
     "file": "art/audio/atlas.ogg",
     "moderation": "Reviewing"
   },
+  "char.Bunica": {
+    "id": "100490284919264",
+    "type": "Model",
+    "sha": "ca1a08e89156db7e",
+    "file": "build/art/char.Bunica.glb",
+    "moderation": "Approved"
+  },
   "creature.ArdeiasIute": {
     "id": "91778905031014",
     "type": "Model",

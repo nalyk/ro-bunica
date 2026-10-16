@@ -102,4 +102,5 @@ return table.freeze({
 		ink = nil,
 		size = Vector3.new(5.665, 6.5, 2.685),
 	},
+	["char.Bunica"] = { assetId = 100490284919264, palette = {}, ink = nil, size = Vector3.new(0, 6.2, 0) },
 } :: { [string]: Art })

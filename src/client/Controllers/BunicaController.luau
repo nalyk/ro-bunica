@@ -296,7 +296,8 @@ local function track(model: Model)
 		joints = joints,
 		current = {},
 		missing = missing,
-		face = if head then buildFace(head) else nil,
+		-- Bunica sculptată are fața pictată în textură: fără fața desenată 2D
+		face = if head and not model:GetAttribute("Sculpted") then buildFace(head) else nil,
 		throwUntil = 0,
 		phase = math.random() * 10,
 	}
@@ -327,7 +328,7 @@ end
 -- Cu StreamingEnabled, părțile modelului pot sosi după el: completăm articulațiile lipsă
 local function refreshJoints(rig: Rig)
 	rig.missing = Joints.collect(rig.model, JOINTS, rig.joints)
-	if not rig.face then
+	if not rig.face and not rig.model:GetAttribute("Sculpted") then
 		local head = rig.model:FindFirstChild("Head") :: BasePart?
 		if head then
 			rig.face = buildFace(head)

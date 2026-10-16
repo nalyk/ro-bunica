@@ -465,7 +465,8 @@ step("10. Botul fură de la jucător și e lovit de papucul jucătorului", funct
 	task.wait(0.6)
 	log("SNAP bunica-sarbatoreste")
 	local visuals = call("bunicaVisuals", me.plot.index)
-	check(visuals.face, "Bunica nu are fața desenată")
+	-- Bunica sculptată are fața pictată în textură; cea veche (R15) are fața desenată 2D
+	check(visuals.face or rig:GetAttribute("Sculpted") == true, "Bunica nu are fața desenată")
 	check(
 		((rig:GetAttribute("LineSeq") :: number?) or 0) > lineSeqBefore,
 		"Bunica nu a spus nimic la lovitură"

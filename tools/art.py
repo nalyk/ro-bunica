@@ -103,16 +103,26 @@ def build_textured(filter_):
                 print(f"[art] {key:34} lipsește pe stație ({spec['remote']})")
                 continue
         digest = hashlib.sha256(open(raw, "rb").read() + json.dumps(spec, sort_keys=True).encode()
-                                + open(os.path.join(ROOT, "tools", "post3d.py"), "rb").read()).hexdigest()[:16]
+                                + open(os.path.join(ROOT, "tools", "post3d.py"), "rb").read()
+                                + open(os.path.join(ROOT, "tools", "split_character.py"), "rb").read()).hexdigest()[:16]
         stamp = os.path.join(OUT, key + ".stamp")
         if os.path.exists(stamp) and open(stamp).read() == digest:
             print(f"[art] {key:34} neschimbat")
             continue
         glb, png = os.path.join(OUT, key + ".glb"), os.path.join(OUT, key + ".png")
-        result = subprocess.run(["blender", "-b", "-P", os.path.join(ROOT, "tools", "post3d.py"), "--", raw, glb,
-                                 "--height", str(spec["height"]), "--tris", str(spec.get("tris", 19000)),
-                                 "--texture", "1024", "--preview", png], capture_output=True, text=True, timeout=600)
-        line = next((l for l in result.stdout.splitlines() if l.startswith("POST ")), None)
+        if spec.get("split"):  # personaj animat: tăiat în corp, cap, brațe (cu pivoturi)
+            result = subprocess.run(["blender", "-b", "-P", os.path.join(ROOT, "tools", "split_character.py"), "--",
+                                     raw, glb, "--height", str(spec["height"]), "--preview", png],
+                                    capture_output=True, text=True, timeout=600)
+            pieces = [l.split() for l in result.stdout.splitlines() if l.startswith("PIECE ")]
+            line = (f"POST {{'tris': {sum(int(p[2]) for p in pieces)}, 'size': [0, {spec['height']}, 0]}}"
+                    if pieces else None)
+        else:
+            result = subprocess.run(["blender", "-b", "-P", os.path.join(ROOT, "tools", "post3d.py"), "--", raw, glb,
+                                     "--height", str(spec["height"]), "--tris", str(spec.get("tris", 19000)),
+                                     "--texture", "1024", "--preview", png], capture_output=True, text=True,
+                                    timeout=600)
+            line = next((l for l in result.stdout.splitlines() if l.startswith("POST ")), None)
         if not line:
             ok = False
             print(f"[art] {key:34} EROARE\n" + "\n".join((result.stdout + result.stderr).splitlines()[-10:]))

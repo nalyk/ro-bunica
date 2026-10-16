@@ -54,3 +54,24 @@ apoi imagine → 3D texturat.
 - **Cota gratuită ZeroGPU e mică** (câteva minute de GPU pe zi; o generare ≈ 40 s + export ≈ 120 s),
   deci 1–2 modele pe zi pe contul gratuit. HF PRO dă 25 de minute pe zi, dar costă bani și cere
   acordul omului.
+
+## Ce rulează acum (2026-10-16, seara)
+
+- **TRELLIS.2 local pe `ai-esempla` (RTX 5090)**, în Docker `bunica/trellis2:sm120` (detalii și capcane:
+  memoria `ai-esempla-gpu`). Lot: `~/trellis2/restart_batch.sh <listă> --seed 7 --faces 40000,20000
+  --texture 2048`. Textura e coaptă **după** decimare, pe fiecare nivel. La 10k, detaliile fine (găurile
+  brânzei) ieșeau în cioburi; la 20k (limita practică Roblox per MeshPart) rezultatul e curat.
+- **Decupajul conceptelor:** `tools/cutout.py` (umplere de la margini, plus găurile de alb perfect uniform:
+  gogoașa, covrigul, brațele în arc). Decupajul pe culoare ar fi șters albul iei.
+- **Creaturi:** `tools/art.py` (`art/models.json`) → `tools/post3d.py` (scară, pivot, textură 1024) →
+  urcare → `ArtAssets.luau`. Mutațiile nuanțează `SurfaceAppearance.Color` și `Emissive*`
+  (`Shared/Visual/MutationVisuals.luau`).
+- **Bunica:** `tools/split_character.py` taie plasa în Body, Head, LeftArm, RightArm (capul și mânecile
+  după poziție, mâinile după conectivitate și insule) și exportă pivoturile ca markeri. Serverul
+  (`BunicaService.buildSculpted`) face rig-ul cu motoarele Root/Neck/LeftShoulder/RightShoulder, deci
+  pozele procedurale vechi merg. Modelul e întors cu 180° față de `home` (rig-ul R15 vechi era rotit).
+- **Iconițe UI:** `tools/icons.py` (master + referință, fond #00FF00 decupat, 256 px) → `UiIcons.luau`.
+- **Fonturi:** Nunito (ș, ț și chirilice). Doar Regular vine cu clientul; **Black (900) a înghețat Studio
+  sub Wine**, Bold merge.
+- **De refăcut:** Mămăligator (CuMesh pică de 3 ori, seed nou), Brânzoi (găuri închise, culoare spre
+  portocaliu), Mărțișorel (textură pătată), Hoțomanul (concept încă negenerat).

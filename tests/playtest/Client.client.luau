@@ -99,6 +99,10 @@ function ops.holdPrompt(name: string, ownerUserId: number?, near: Vector3): stri
 	if not prompt.Enabled then
 		return "prompt dezactivat"
 	end
+	-- Implicit se arată doar prompt-ul cel mai apropiat (OnePerButton); cu pedestalele la 7 studs, agentul
+	-- poate sta mai aproape de creatura vecină și atunci apăsarea nu ajunge la țintă. Local, doar în test.
+	prompt.Exclusivity = Enum.ProximityPromptExclusivity.AlwaysShow
+	task.wait(0.1)
 	prompt:InputHoldBegin()
 	task.wait(prompt.HoldDuration + 0.4)
 	prompt:InputHoldEnd()

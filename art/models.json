@@ -117,6 +117,7 @@
  },
  "char.Bunica": {
   "remote": "bunica_20k.glb",
-  "height": 6.2
+  "height": 6.2,
+  "split": true
  }
 }

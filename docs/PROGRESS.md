@@ -71,8 +71,10 @@ Rezultate pasul 6: e2e 25/25 (vremea și sămânța exclusivă, papucii din cer 
 Planul și cercetarea: `docs/PRESENTATION.md`. Pașii P1–P5:
 
 - [ ] P1 Fluxul de asset-uri (`art/`, `tools/art.py`, `tools/assets.py`, `AssetIds.luau`, încărcare pe server cu fallback). Începutul: `art/lib/kit.py` și primul personaj (`art/creatures/cartofel_agent.py`), verificate în Blender 4.3 fără interfață.
-- [ ] P2 Modele (17 creaturi, mutații ca spectacol, Bunica, Hoțomanul, satul, lumina pe faze).
-- [ ] P3 UI/UX (tokeni, componente, mișcare cu resorturi, iconițe, HUD, gamepad, test de font).
+- [~] P2 Modele: 16 creaturi și Bunica sculptate (concept Codex → TRELLIS.2 → Roblox), în joc și verificate (e2e 27/27, playtest 23/23). Rămân: satul (în lot), Hoțomanul, refacerile (vezi docs/ART_PIPELINE.md).
+- [ ] P2 (rest) Modele (17 creaturi, mutații ca spectacol, Bunica, Hoțomanul, satul, lumina pe faze).
+- [~] P3 UI/UX: sistem de design (Theme, Motion, butoane „de jucărie”, panouri cu panglică), HUD nou, notificări, iconițe Codex, Nunito, lumină cinematică (SkyCycle/LightingDirector). Rămân: navigarea cu gamepad, previzualizări 3D în tarabă.
+- [ ] P3 (rest) UI/UX (tokeni, componente, mișcare cu resorturi, iconițe, HUD, gamepad, test de font).
 - [~] P4 Sunet: taraf sintetizat, atlas audio (asset 94705666578776), dirijor adaptiv și efecte pe ritm, verificate în Studio (22/22). Detalii și pași în `docs/AUDIO.md`. Rămân: calitatea timbrelor (ACE-Step), ambianța 3D, efectele în tot UI-ul, vocea.
 - [ ] P4 (rest) Sunet (graful audio nou, muzică adaptivă din melodii Mikuli, PLEOSC!, SFX, ambianță, vocea Bunicii).
 - [ ] P5 Verificare (planșe de contact, capturi de playtest, e2e).

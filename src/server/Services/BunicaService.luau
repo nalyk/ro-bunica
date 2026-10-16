@@ -7,6 +7,7 @@ local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
 
 local Shared = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
+local ArtLibrary = require(Shared.Visual.ArtLibrary)
 local Net = require(Shared.Net)
 local Defense = require(Shared.Config.Defense)
 local RateLimiter = require(Shared.Domain.RateLimiter)
@@ -70,39 +71,7 @@ local function now(): number
 	return Workspace:GetServerTimeNow()
 end
 
-local function buildRig(home: CFrame): Bunica
-	local description = Instance.new("HumanoidDescription")
-	local skin = Color3.fromRGB(234, 192, 160)
-	description.HeadColor = skin
-	description.LeftArmColor = skin
-	description.RightArmColor = skin
-	description.TorsoColor = Color3.fromRGB(40, 40, 70) -- vestă închisă
-	description.LeftLegColor = Color3.fromRGB(60, 30, 40) -- fustă lungă
-	description.RightLegColor = Color3.fromRGB(60, 30, 40)
-	local rig = Players:CreateHumanoidModelFromDescription(description, Enum.HumanoidRigType.R15)
-	rig.Name = "Bunica"
-	Rig.useMotors(rig)
-	local humanoid = rig:FindFirstChildOfClass("Humanoid") :: Humanoid
-	humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
-	local root = rig:FindFirstChild("HumanoidRootPart") :: BasePart
-	local head = rig:FindFirstChild("Head") :: BasePart
-
-	-- Basmaua roșie (placeholder până la modelul final)
-	local scarf = Instance.new("Part")
-	scarf.Name = "Basma"
-	scarf.Shape = Enum.PartType.Ball
-	scarf.Size = head.Size * 1.15
-	scarf.Color = Color3.fromRGB(200, 30, 40)
-	scarf.CanCollide = false
-	scarf.Massless = true
-	-- Spre ceafă și în sus, ca fața Bunicii să rămână la vedere
-	scarf.CFrame = head.CFrame * CFrame.new(0, 0.2, 0.3)
-	local weld = Instance.new("WeldConstraint")
-	weld.Part0 = head
-	weld.Part1 = scarf
-	weld.Parent = scarf
-	scarf.Parent = rig
-
+local function finishRig(rig: Model, humanoid: Humanoid, root: BasePart, head: BasePart, home: CFrame): Bunica
 	local billboard = Instance.new("BillboardGui")
 	billboard.Size = UDim2.fromOffset(60, 60)
 	billboard.StudsOffset = Vector3.new(0, 3.5, 0)
@@ -135,6 +104,115 @@ local function buildRig(home: CFrame): Bunica
 		lastLineAt = -math.huge,
 		signatureSaid = false,
 	}
+end
+
+-- Bunica sculptată (art/: concept Codex → TRELLIS.2 → tăiată în corp, cap, brațe): un rig propriu cu
+-- motoarele numite ca la R15 (Root, Neck, LeftShoulder, RightShoulder), puse în pivoturile exportate din
+-- Blender. Pozele procedurale din BunicaController merg la fel. Fața e pictată în textură (fără fața 2D).
+local function buildSculpted(home: CFrame): (Model?, Humanoid?, BasePart?, BasePart?)
+	local template = ArtLibrary.get("char.Bunica")
+	if not template then
+		return nil
+	end
+	local rig = Instance.new("Model")
+	rig.Name = "Bunica"
+	rig:SetAttribute("Sculpted", true)
+	local root = Instance.new("Part")
+	root.Name = "HumanoidRootPart"
+	root.Size = Vector3.new(2, 2, 1)
+	root.Transparency = 1
+	root.CanCollide = false
+	root.CanQuery = false
+	root.Anchored = true
+	root.CFrame = home * CFrame.new(0, 2.5, 0)
+	root.Parent = rig
+	rig.PrimaryPart = root
+	-- `home` e orientat pentru rig-ul R15 vechi (rotit 180°); modelul sculptat privește spre -Z, deci îl
+	-- întoarcem ca să stea cu fața spre drum (verificat în galeria playtest-ului)
+	local base = home * CFrame.Angles(0, math.pi, 0)
+	local pieces: { [string]: BasePart } = {}
+	local pivots: { [string]: Vector3 } = {}
+	for _, child in template:GetChildren() do
+		if child:IsA("BasePart") then
+			local world = base * child.CFrame
+			if string.sub(child.Name, 1, 6) == "Pivot_" then
+				pivots[string.sub(child.Name, 7)] = world.Position
+			else
+				child.CFrame = world
+				child.Anchored = false
+				child.Massless = true
+				child.CanCollide = false
+				child.CanQuery = false
+				child.Parent = rig
+				pieces[child.Name] = child
+			end
+		end
+	end
+	template:Destroy()
+	local body, head = pieces.Body, pieces.Head
+	if not (body and head and pieces.LeftArm and pieces.RightArm) then
+		rig:Destroy()
+		return nil
+	end
+	local function motor(name: string, part0: BasePart, part1: BasePart, pivot: Vector3)
+		local at = CFrame.new(pivot) * base.Rotation
+		local m = Instance.new("Motor6D")
+		m.Name = name
+		m.Part0 = part0
+		m.Part1 = part1
+		m.C0 = part0.CFrame:ToObjectSpace(at)
+		m.C1 = part1.CFrame:ToObjectSpace(at)
+		m.Parent = part1
+	end
+	motor("Root", root, body, root.Position)
+	motor("Neck", body, head, pivots.Neck or head.Position)
+	motor("LeftShoulder", body, pieces.LeftArm, pivots.LeftShoulder or pieces.LeftArm.Position)
+	motor("RightShoulder", body, pieces.RightArm, pivots.RightShoulder or pieces.RightArm.Position)
+	local humanoid = Instance.new("Humanoid")
+	humanoid.RequiresNeck = false
+	humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
+	humanoid.Parent = rig
+	return rig, humanoid, root, head
+end
+
+local function buildRig(home: CFrame): Bunica
+	local sRig, sHumanoid, sRoot, sHead = buildSculpted(home)
+	if sRig and sHumanoid and sRoot and sHead then
+		return finishRig(sRig, sHumanoid, sRoot, sHead, home)
+	end
+	local description = Instance.new("HumanoidDescription")
+	local skin = Color3.fromRGB(234, 192, 160)
+	description.HeadColor = skin
+	description.LeftArmColor = skin
+	description.RightArmColor = skin
+	description.TorsoColor = Color3.fromRGB(40, 40, 70) -- vestă închisă
+	description.LeftLegColor = Color3.fromRGB(60, 30, 40) -- fustă lungă
+	description.RightLegColor = Color3.fromRGB(60, 30, 40)
+	local rig = Players:CreateHumanoidModelFromDescription(description, Enum.HumanoidRigType.R15)
+	rig.Name = "Bunica"
+	Rig.useMotors(rig)
+	local humanoid = rig:FindFirstChildOfClass("Humanoid") :: Humanoid
+	humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
+	local root = rig:FindFirstChild("HumanoidRootPart") :: BasePart
+	local head = rig:FindFirstChild("Head") :: BasePart
+
+	-- Basmaua roșie (placeholder până la modelul final)
+	local scarf = Instance.new("Part")
+	scarf.Name = "Basma"
+	scarf.Shape = Enum.PartType.Ball
+	scarf.Size = head.Size * 1.15
+	scarf.Color = Color3.fromRGB(200, 30, 40)
+	scarf.CanCollide = false
+	scarf.Massless = true
+	-- Spre ceafă și în sus, ca fața Bunicii să rămână la vedere
+	scarf.CFrame = head.CFrame * CFrame.new(0, 0.2, 0.3)
+	local weld = Instance.new("WeldConstraint")
+	weld.Part0 = head
+	weld.Part1 = scarf
+	weld.Parent = scarf
+	scarf.Parent = rig
+
+	return finishRig(rig, humanoid, root, head, home)
 end
 
 -- Bunica spune o replică: clientul afișează bula (și vocea, când există) la schimbarea lui LineSeq.

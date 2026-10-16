@@ -229,5 +229,68 @@
     "sha": "fc0059cfd35406c7",
     "file": "../../../../tmp/claude-1000/-home-ubuntu-gits-ro-bunica/54c9a051-2fda-4663-a3b1-0262f7f8bb90/scratchpad/t3d/bunica_rbx.glb",
     "moderation": "Approved"
+  },
+  "world.Beci": {
+    "id": "89037383262498",
+    "type": "Model",
+    "sha": "5fc1962bf47c7170",
+    "file": "build/art/world.Beci.glb",
+    "moderation": "Approved"
+  },
+  "world.Casa": {
+    "id": "126439630205540",
+    "type": "Model",
+    "sha": "9df29750e6d2f547",
+    "file": "build/art/world.Casa.glb",
+    "moderation": "Approved"
+  },
+  "world.Fantana": {
+    "id": "88631495273280",
+    "type": "Model",
+    "sha": "f7d41d82aefb8773",
+    "file": "build/art/world.Fantana.glb",
+    "moderation": "Approved"
+  },
+  "world.FloareaSoarelui": {
+    "id": "104346566196090",
+    "type": "Model",
+    "sha": "2a2a2ca02d05e00d",
+    "file": "build/art/world.FloareaSoarelui.glb",
+    "moderation": "Approved"
+  },
+  "world.Gard": {
+    "id": "132083824665869",
+    "type": "Model",
+    "sha": "3173c5080aac3b34",
+    "file": "build/art/world.Gard.glb",
+    "moderation": "Approved"
+  },
+  "world.Nuc": {
+    "id": "81696330778131",
+    "type": "Model",
+    "sha": "ede93c017440a3de",
+    "file": "build/art/world.Nuc.glb",
+    "moderation": "Approved"
+  },
+  "world.Pedestal": {
+    "id": "82233070263864",
+    "type": "Model",
+    "sha": "bee1da66bca90e7b",
+    "file": "build/art/world.Pedestal.glb",
+    "moderation": "Approved"
+  },
+  "world.Poarta": {
+    "id": "113958077903414",
+    "type": "Model",
+    "sha": "98a17d5a367b2cbe",
+    "file": "build/art/world.Poarta.glb",
+    "moderation": "Approved"
+  },
+  "world.Raft": {
+    "id": "71439724980182",
+    "type": "Model",
+    "sha": "460ceadf413d2d38",
+    "file": "build/art/world.Raft.glb",
+    "moderation": "Approved"
   }
 }

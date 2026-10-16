@@ -69,7 +69,7 @@
  },
  "world.Casa": {
   "remote": "world/Casa_20k.glb",
-  "height": 19
+  "height": 13
  },
  "world.Gard": {
   "remote": "world/Gard_20k.glb",
@@ -81,7 +81,7 @@
  },
  "world.Fantana": {
   "remote": "world/Fantana_20k.glb",
-  "height": 15
+  "height": 10
  },
  "world.Pedestal": {
   "remote": "world/Pedestal_20k.glb",
@@ -93,7 +93,7 @@
  },
  "world.Beci": {
   "remote": "world/Beci_20k.glb",
-  "height": 1.6
+  "height": 2.4
  },
  "world.Nuc": {
   "remote": "world/Nuc_20k.glb",
@@ -109,7 +109,7 @@
  },
  "world.Raft": {
   "remote": "world/Raft_20k.glb",
-  "height": 1.6
+  "height": 2.0
  },
  "world.Tabla": {
   "remote": "world/Tabla_20k.glb",

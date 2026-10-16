@@ -687,6 +687,9 @@ step("16. Fără erori de script (server și client)", function()
 		if
 			entry.messageType == Enum.MessageType.MessageError
 			and not string.find(entry.message, "PLAYTEST", 1, true)
+			-- Studio (doar în sesiunea locală) împachetează texturile modelelor și poate primi 429: nu e o eroare
+			-- a jocului și nu apare pe serverele reale
+			and not string.find(entry.message, "Failed to upload TexturePack", 1, true)
 		then
 			table.insert(serverErrors, entry.message)
 		end

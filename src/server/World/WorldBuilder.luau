@@ -8,6 +8,7 @@ local Lighting = game:GetService("Lighting")
 local Shared = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
 local World = require(Shared.Config.World)
 local Hora = require(Shared.Config.Hora)
+local ArtLibrary = require(Shared.Visual.ArtLibrary)
 local Typography = require(Shared.Visual.Typography)
 
 export type PlotGeometry = {
@@ -40,6 +41,37 @@ local PALETTE = {
 	stitch = Color3.fromRGB(200, 30, 40), -- roșul broderiei
 	cellar = Color3.fromRGB(70, 45, 30),
 }
+
+-- Pune un model din art/ (șablon din ArtLibrary) cu baza pe `cf` și fața spre cf.LookVector; nil dacă lipsește.
+-- Modelele sunt doar vizuale (fără coliziuni); coliziunile rămân piesele invizibile din WorldBuilder.
+local function placeArt(key: string, cf: CFrame, parent: Instance): Model?
+	local model = ArtLibrary.get(key)
+	if not model then
+		return nil
+	end
+	model:PivotTo(cf)
+	local box, size = model:GetBoundingBox()
+	local offset = Vector3.new(
+		cf.Position.X - box.Position.X,
+		cf.Position.Y - (box.Position.Y - size.Y / 2),
+		cf.Position.Z - box.Position.Z
+	)
+	model:PivotTo(model:GetPivot() + offset)
+	model.Parent = parent
+	return model
+end
+
+-- Ascunde piesele vechi (rămân coliziuni invizibile)
+local function hide(parts: { BasePart })
+	for _, p in parts do
+		p.Transparency = 1
+		for _, child in p:GetChildren() do
+			if child:IsA("Decal") then
+				child.Transparency = 1
+			end
+		end
+	end
+end
 
 local function part(props: { [string]: any }): Part
 	local p = Instance.new("Part")
@@ -86,21 +118,26 @@ local function buildFence(model: Model, cf: CFrame)
 			Parent = model,
 		})
 	end
-	-- Stâlpii porții, vopsiți
+	-- Stâlpii porții, vopsiți (cu poarta sculptată devin coliziuni invizibile)
+	local gate = placeArt("world.Poarta", cf * CFrame.new(0, 0, -halfZ), model)
 	for _, sideX in { -gateHalf, gateHalf } do
-		part({
+		local post = part({
 			Name = "GatePost",
 			Size = Vector3.new(1.5, h + 3, 1.5),
 			CFrame = cf * CFrame.new(sideX, (h + 3) / 2, -halfZ),
 			Color = PALETTE.gate,
 			Parent = model,
 		})
+		if gate then
+			hide({ post })
+		end
 	end
 end
 
 local function buildHouse(model: Model, cf: CFrame)
 	local z = World.plotSize.Z / 2 - 9
-	part({
+	local art = placeArt("world.Casa", cf * CFrame.new(0, 0, z), model)
+	local walls = part({
 		Name = "HouseWalls",
 		Size = Vector3.new(26, 12, 12),
 		CFrame = cf * CFrame.new(0, 6, z),
@@ -126,7 +163,7 @@ local function buildHouse(model: Model, cf: CFrame)
 		Parent = model,
 	})
 	-- Prispa
-	part({
+	local porch = part({
 		Name = "Porch",
 		Size = Vector3.new(26, 1, 5),
 		CFrame = cf * CFrame.new(0, 0.5, z - 8.5),
@@ -134,6 +171,21 @@ local function buildHouse(model: Model, cf: CFrame)
 		Material = Enum.Material.WoodPlanks,
 		Parent = model,
 	})
+	if art then
+		-- casa sculptată: piesele vechi devin coliziuni invizibile, potrivite pe forma ei
+		local _, size = art:GetBoundingBox()
+		walls.Size = Vector3.new(size.X * 0.82, 12, size.Z * 0.55)
+		walls.CFrame = cf * CFrame.new(0, 6, z + size.Z * 0.18)
+		porch.Size = Vector3.new(size.X * 0.82, 1, 5)
+		local hidden: { BasePart } = { walls, porch }
+		for _, child in model:GetChildren() do
+			if child:IsA("BasePart") and (child.Name == "Roof" or child.Name == "Stitch") then
+				child.CanCollide = false
+				table.insert(hidden, child)
+			end
+		end
+		hide(hidden)
+	end
 end
 
 local function gridPositions(columns: number, rows: number, spacing: number, origin: Vector3): { Vector3 }
@@ -218,11 +270,29 @@ local function buildPlot(index: number, parent: Instance): PlotGeometry
 		Parent = model,
 	})
 
-	-- Tăblița cu numele proprietarului, deasupra porții
+	if placeArt("world.Beci", cf * CFrame.new(22, 0, World.plotSize.Z / 2 - 17), model) then
+		hide({ deposit })
+	end
+	-- decor: nuci în colțurile din spate, floarea-soarelui lângă gardul din stânga
+	placeArt("world.Nuc", cf * CFrame.new(-30, 0, 24) * CFrame.Angles(0, math.rad(index * 47), 0), model)
+	placeArt("world.Nuc", cf * CFrame.new(31, 0, 27) * CFrame.Angles(0, math.rad(index * 83), 0), model)
+	for k, zz in { -22, -9, 4 } do
+		placeArt(
+			"world.FloareaSoarelui",
+			cf * CFrame.new(-36.5, 0, zz) * CFrame.Angles(0, math.rad(k * 70), 0),
+			model
+		)
+	end
+
+	-- Tăblița cu numele proprietarului, deasupra porții (deasupra acoperișului porții sculptate)
 	local signPart = part({
 		Name = "Sign",
 		Size = Vector3.new(World.gateWidth + 2, 2.5, 0.5),
-		CFrame = cf * CFrame.new(0, World.fenceHeight + 3.5, -World.plotSize.Z / 2),
+		CFrame = cf * CFrame.new(
+			0,
+			World.fenceHeight + (if ArtLibrary.has("world.Poarta") then 6.2 else 3.5),
+			-World.plotSize.Z / 2
+		),
 		Color = PALETTE.houseWall,
 		Parent = model,
 	})
@@ -322,6 +392,15 @@ local function buildHearth(parent: Instance)
 		Color = PALETTE.gate,
 		Parent = hearth,
 	})
+	if placeArt("world.Fantana", CFrame.new(center + Vector3.new(0, -0.7, 0)), hearth) then
+		hide({ well })
+		for _, child in hearth:GetChildren() do
+			if child:IsA("BasePart") and (child.Name == "Stalp" or child.Name == "Acoperis") then
+				child.CanCollide = false
+				hide({ child })
+			end
+		end
+	end
 	hearth.Parent = parent
 end
 

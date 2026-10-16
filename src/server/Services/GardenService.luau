@@ -15,6 +15,7 @@ local Inventory = require(Shared.Domain.Inventory)
 local RateLimiter = require(Shared.Domain.RateLimiter)
 local PlotService = require(script.Parent.PlotService)
 local CreatureService = require(script.Parent.CreatureService)
+local Badges = require(script.Parent.Parent.Badges)
 local Analytics = require(script.Parent.Parent.Analytics)
 local StateService = require(script.Parent.StateService)
 local WeatherService = require(script.Parent.WeatherService)
@@ -86,6 +87,8 @@ local function hatch(owner: Owner, key: string): boolean
 	profile.beds[key] = nil
 	profile.stats.hatched += 1
 	Analytics.step(owner.player, profile, "StarterHatched")
+	Badges.award(owner.player, "hatch")
+	Badges.forRarity(owner.player, Creatures.byId[record.id].rarity)
 	if where == "pedestal" and pedestalKey then
 		CreatureService.renderKey(owner, pedestalKey)
 		CreatureService.refreshShowcase(owner)

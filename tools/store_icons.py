@@ -31,6 +31,13 @@ ITEMS = {
     "restock": "a market stall crate full of colourful seed packets with a circular refresh arrow",
     "weather_gold": "a golden sun shining over golden wheat, golden sparkles raining down",
     "weather_rainbow": "a bright rainbow arching over two small fluffy clouds",
+    # insignele (badges)
+    "badge_hatch": "a cracked seed shell with a tiny happy potato creature popping out, sparkles",
+    "badge_steal": "a brown burlap sack with a sneaky happy potato peeking out, a black domino mask on the sack",
+    "badge_defend": "a red felt slipper with a white pompom hitting a big comic star burst that says PLEOSC",
+    "badge_legend": "a golden star medal with a red-and-white embroidered ribbon",
+    "badge_hora": "three small cartoon villagers holding hands dancing in a circle, folk costumes",
+    "badge_million": "a tall stack of shiny gold coins with a small golden crown on top",
 }
 STYLE = ("Game store item icon for a cozy cartoon village game (Moldovan theme), premium mobile-game quality: chunky "
          "rounded shapes, thick dark-brown (#3A2218) outline of constant weight, soft 3D shading with light from "

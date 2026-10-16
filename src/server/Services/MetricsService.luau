@@ -3,6 +3,7 @@
 -- (Sursele și cheltuielile de lei și restul pașilor din funnel se măsoară acolo unde se întâmplă.)
 
 local Analytics = require(script.Parent.Parent.Analytics)
+local Badges = require(script.Parent.Parent.Badges)
 local PlotService = require(script.Parent.PlotService)
 local DayNightService = require(script.Parent.DayNightService)
 local RaidService = require(script.Parent.RaidService)
@@ -11,6 +12,7 @@ local MonetizationService = require(script.Parent.MonetizationService)
 local MetricsService = {}
 
 function MetricsService.start()
+	game:GetService("Players").PlayerRemoving:Connect(Badges.forget)
 	PlotService.onOwnerAdded(function(owner)
 		if owner.kind == "Player" then
 			Analytics.step(owner.player, owner.profile, "Joined")
@@ -32,6 +34,7 @@ function MetricsService.start()
 		if thrower and owner then
 			Analytics.step(thrower.player, owner.profile, "FirstDefend")
 			Analytics.event(thrower.player, "Defend")
+			Badges.award(thrower.player, "defend")
 		end
 	end)
 	MonetizationService.onPurchase(function(player, key, robux)

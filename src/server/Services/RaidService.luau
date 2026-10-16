@@ -17,6 +17,7 @@ local Inventory = require(Shared.Domain.Inventory)
 local CreatureBuilder = require(Shared.Visual.CreatureBuilder)
 local PlotService = require(script.Parent.PlotService)
 local CreatureService = require(script.Parent.CreatureService)
+local Badges = require(script.Parent.Parent.Badges)
 local Analytics = require(script.Parent.Parent.Analytics)
 local StateService = require(script.Parent.StateService)
 local DayNightService = require(script.Parent.DayNightService)
@@ -245,6 +246,8 @@ local function complete(actor: Actor, thief: Owner)
 	thief.profile.stats.steals += 1
 	Analytics.step(thief.player, thief.profile, "FirstSteal")
 	Analytics.event(thief.player, "Steal")
+	Badges.award(thief.player, "steal")
+	Badges.forRarity(thief.player, Creatures.byId[record.id].rarity)
 	owner.stolenTonight = (owner.stolenTonight or 0) + 1
 	if owner.kind == "Player" then
 		owner.shieldUntil = now() + RaidConfig.victimShieldSeconds

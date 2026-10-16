@@ -619,7 +619,10 @@ step("15e. Muzica: atlasul se încarcă, straturile cântă sincron, efectele ca
 		"noaptea nu a trecut pe stratul de noapte"
 	)
 	local cue = call("cue", "pleosc")
-	check(cue.at ~= nil and cue.at >= cue.now and cue.at - cue.now < 0.2, "efectul nu s-a programat pe ritm")
+	check(
+		cue.at ~= nil and cue.at >= cue.now and cue.at - cue.now < 0.2,
+		"efectul nu s-a programat pe ritm: now=" .. tostring(cue.now) .. " at=" .. tostring(cue.at)
+	)
 	log(
 		string.format(
 			"muzică: decalaj maxim între straturi %.3f s; efect la +%.3f s",

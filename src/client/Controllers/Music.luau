@@ -259,10 +259,10 @@ function Music.start()
 	buses.Music = fader("Music", 1, master)
 	buses.Sfx = fader("Sfx", 1, master)
 	for _, name in MusicState.LAYERS do
-		local f = fader("Layer_" .. name, 0, buses.Music)
-		layers[name] = { player = newPlayer("Layer_" .. name, f), fader = f }
+		local f = fader("Fader_" .. name, 0, buses.Music)
+		layers[name] = { player = newPlayer("Player_" .. name, f), fader = f }
 	end
-	local horaFader = fader("Layer_hora", 0, buses.Music)
+	local horaFader = fader("Fader_hora", 0, buses.Music)
 	hora = {
 		players = { newPlayer("Hora_A", horaFader), newPlayer("Hora_B", horaFader) },
 		fader = horaFader,
@@ -270,7 +270,8 @@ function Music.start()
 		active = 1,
 	}
 	for i = 1, SFX_VOICES do
-		table.insert(voices, { player = newPlayer("Sfx_" .. i, buses.Sfx), busyUntil = 0 })
+		-- ceasul mixerului poate fi orice număr (sub Wine l-am văzut negativ, ~ -2^32): doar diferențele contează
+		table.insert(voices, { player = newPlayer("Sfx_" .. i, buses.Sfx), busyUntil = -math.huge })
 	end
 	task.spawn(function()
 		local first = layers.zi.player

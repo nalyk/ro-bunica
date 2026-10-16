@@ -57,6 +57,12 @@ păstrează a doua: coada reverberației din bucla anterioară e inclusă, deci 
 - **API-uri cheie:** `SoundService:GetMixerTime()` și `AudioPlayer:Play(atTime)`/`Stop(atTime)`/
   `Cancel(id)` dau programare la precizie de eșantion. `PlaybackRegion`/`LoopRegion` sunt în
   secunde. `AudioWindSynthesizer` există ca instanță (vânt procedural); încă nu e folosit.
+- **Ceasul mixerului poate fi negativ.** În Studio sub Wine, `GetMixerTime()` a întors ≈ -2³² + 202 s.
+  Codul folosește doar diferențe de timp, iar valorile inițiale sunt `-math.huge`, niciodată `0`.
+- Verificat în Studio (playtest 22/22): straturile sincrone la 1 ms, PLEOSC! programat la +72 ms,
+  noaptea comută stratul. Atlasul (asset 94705666578776) a fost aprobat de moderare în câteva minute.
+- Când un fader și un player au același nume, `FindFirstChild` îl ia pe primul: nume distincte
+  (`Fader_x`, `Player_x`).
 - **Criticul AI** (Gemini ascultă) e util, dar zgomotos: inventează uneori detalii (o drâmbă care
   nu exista, „cuantizare 100%” deși exista umanizare). Contează doar observațiile care se repetă.
   Cota modelului `gemini-3.8-flash` pe planul gratuit se termină repede.

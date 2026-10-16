@@ -73,7 +73,8 @@ Planul și cercetarea: `docs/PRESENTATION.md`. Pașii P1–P5:
 - [ ] P1 Fluxul de asset-uri (`art/`, `tools/art.py`, `tools/assets.py`, `AssetIds.luau`, încărcare pe server cu fallback). Începutul: `art/lib/kit.py` și primul personaj (`art/creatures/cartofel_agent.py`), verificate în Blender 4.3 fără interfață.
 - [ ] P2 Modele (17 creaturi, mutații ca spectacol, Bunica, Hoțomanul, satul, lumina pe faze).
 - [ ] P3 UI/UX (tokeni, componente, mișcare cu resorturi, iconițe, HUD, gamepad, test de font).
-- [ ] P4 Sunet (graful audio nou, muzică adaptivă din melodii Mikuli, PLEOSC!, SFX, ambianță, vocea Bunicii).
+- [~] P4 Sunet: taraf sintetizat, atlas audio (asset 94705666578776), dirijor adaptiv și efecte pe ritm, verificate în Studio (22/22). Detalii și pași în `docs/AUDIO.md`. Rămân: calitatea timbrelor (ACE-Step), ambianța 3D, efectele în tot UI-ul, vocea.
+- [ ] P4 (rest) Sunet (graful audio nou, muzică adaptivă din melodii Mikuli, PLEOSC!, SFX, ambianță, vocea Bunicii).
 - [ ] P5 Verificare (planșe de contact, capturi de playtest, e2e).
 
 Permisiunea „assets” a fost adăugată pe 2026-10-16; încărcarea și `InsertService:LoadAsset` sunt verificate (detalii în PRESENTATION.md).

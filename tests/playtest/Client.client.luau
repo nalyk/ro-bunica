@@ -243,16 +243,9 @@ function ops.music(): { [string]: any }
 	local layers = {}
 	if folder then
 		for _, name in { "zi", "noapte", "pericol", "urmarire" } do
-			local p = folder:FindFirstChild("Layer_" .. name) :: AudioPlayer?
-			local f = folder:FindFirstChild("Layer_" .. name, true)
-			local fader: AudioFader? = nil
-			for _, child in folder:GetChildren() do
-				if child:IsA("AudioFader") and child.Name == "Layer_" .. name then
-					fader = child
-				end
-			end
-			local _ = f
-			if p and p:IsA("AudioPlayer") then
+			local p = folder:FindFirstChild("Player_" .. name) :: AudioPlayer?
+			local fader = folder:FindFirstChild("Fader_" .. name) :: AudioFader?
+			if p then
 				local region = AudioAtlas.regions["music." .. name]
 				layers[name] = {
 					ready = p.IsReady,

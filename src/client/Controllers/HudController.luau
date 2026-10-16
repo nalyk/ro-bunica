@@ -77,7 +77,7 @@ local function buildTop(screen: ScreenGui)
 	moneyPill = pill({
 		Name = "Money",
 		AnchorPoint = Vector2.new(1, 0),
-		Position = UDim2.new(0.5, -108, 0, 10),
+		Position = UDim2.new(0.5, -6, 0, 10),
 		Size = UDim2.fromOffset(228, 62),
 		Parent = screen,
 	}, "wheat")
@@ -110,8 +110,8 @@ local function buildTop(screen: ScreenGui)
 	-- cadranul zilei, sus la centru
 	phasePill = pill({
 		Name = "Phase",
-		AnchorPoint = Vector2.new(0.5, 0),
-		Position = UDim2.new(0.5, 0, 0, 12),
+		AnchorPoint = Vector2.new(0, 0),
+		Position = UDim2.new(0.5, 6, 0, 18),
 		Size = UDim2.fromOffset(196, 46),
 		Parent = screen,
 	}, "paper")

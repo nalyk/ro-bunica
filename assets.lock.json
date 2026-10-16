@@ -6,6 +6,118 @@
     "file": "art/audio/atlas.ogg",
     "moderation": "Reviewing"
   },
+  "creature.ArdeiasIute": {
+    "id": "91778905031014",
+    "type": "Model",
+    "sha": "fff36568d9df4e08",
+    "file": "build/art/creature.ArdeiasIute.glb",
+    "moderation": "Approved"
+  },
+  "creature.BranzoiSumo": {
+    "id": "135436137426014",
+    "type": "Model",
+    "sha": "7125d6d658d08532",
+    "file": "build/art/creature.BranzoiSumo.glb",
+    "moderation": "Approved"
+  },
+  "creature.CartofelAgent": {
+    "id": "101455736790877",
+    "type": "Model",
+    "sha": "0c5babe7b176be99",
+    "file": "build/art/creature.CartofelAgent.glb",
+    "moderation": "Approved"
+  },
+  "creature.CeapaTurbo": {
+    "id": "100176165623637",
+    "type": "Model",
+    "sha": "440f5944a8d75961",
+    "file": "build/art/creature.CeapaTurbo.glb",
+    "moderation": "Approved"
+  },
+  "creature.ColtunasPirat": {
+    "id": "102399163916647",
+    "type": "Model",
+    "sha": "44c3ca3ef25110ee",
+    "file": "build/art/creature.ColtunasPirat.glb",
+    "moderation": "Approved"
+  },
+  "creature.CovrigSkater": {
+    "id": "86820505541891",
+    "type": "Model",
+    "sha": "3080eb6ec9d94404",
+    "file": "build/art/creature.CovrigSkater.glb",
+    "moderation": "Approved"
+  },
+  "creature.CozonacRobot": {
+    "id": "124316993687533",
+    "type": "Model",
+    "sha": "543a7860fe049fca",
+    "file": "build/art/creature.CozonacRobot.glb",
+    "moderation": "Approved"
+  },
+  "creature.DovleacDJ": {
+    "id": "138458223048660",
+    "type": "Model",
+    "sha": "9697003940874443",
+    "file": "build/art/creature.DovleacDJ.glb",
+    "moderation": "Approved"
+  },
+  "creature.GogoasaNinja": {
+    "id": "109720620070039",
+    "type": "Model",
+    "sha": "af356adf39979de0",
+    "file": "build/art/creature.GogoasaNinja.glb",
+    "moderation": "Approved"
+  },
+  "creature.Martisorel": {
+    "id": "87830607716052",
+    "type": "Model",
+    "sha": "83a181276b612ce4",
+    "file": "build/art/creature.Martisorel.glb",
+    "moderation": "Approved"
+  },
+  "creature.Papucel": {
+    "id": "114552589034664",
+    "type": "Model",
+    "sha": "af00c5e2849d1e19",
+    "file": "build/art/creature.Papucel.glb",
+    "moderation": "Approved"
+  },
+  "creature.PepeneBoxer": {
+    "id": "126353718233028",
+    "type": "Model",
+    "sha": "833cc06b4f4998c8",
+    "file": "build/art/creature.PepeneBoxer.glb",
+    "moderation": "Approved"
+  },
+  "creature.PlacintonioBombardino": {
+    "id": "97858374299046",
+    "type": "Model",
+    "sha": "60c5e0647224efc8",
+    "file": "build/art/creature.PlacintonioBombardino.glb",
+    "moderation": "Approved"
+  },
+  "creature.RetetaSecreta": {
+    "id": "80428205584362",
+    "type": "Model",
+    "sha": "6c005d5cc2d412e9",
+    "file": "build/art/creature.RetetaSecreta.glb",
+    "moderation": "Approved"
+  },
+  "creature.SarmalinaBallerina": {
+    "id": "101739650950607",
+    "type": "Model",
+    "sha": "fdea893763b6e60a",
+    "file": "build/art/creature.SarmalinaBallerina.glb",
+    "moderation": "Approved"
+  },
+  "creature.StrugurelFurios": {
+    "id": "136869326640536",
+    "type": "Model",
+    "sha": "17c9d482024c876c",
+    "file": "build/art/creature.StrugurelFurios.glb",
+    "moderation": "Approved"
+  },
   "icon.alarm": {
     "id": "108436430172555",
     "type": "Image",

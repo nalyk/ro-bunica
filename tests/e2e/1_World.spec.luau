@@ -36,9 +36,13 @@ return function(Spec: any, services: { [string]: any })
 					local model = ArtLibrary.get(key)
 					expect(model ~= nil).toBeTruthy()
 					local m = model :: Model
-					local ink = m:FindFirstChild("ink") :: MeshPart?
-					expect(ink ~= nil).toBeTruthy()
-					expect((ink :: MeshPart).CastShadow).toBe(false)
+					if art.ink then -- modelele din primitive au contur; cele texturate (TRELLIS) au SurfaceAppearance
+						local ink = m:FindFirstChild("ink") :: MeshPart?
+						expect(ink ~= nil).toBeTruthy()
+						expect((ink :: MeshPart).CastShadow).toBe(false)
+					else
+						expect(m:FindFirstChildWhichIsA("SurfaceAppearance", true) ~= nil).toBeTruthy()
+					end
 					for slot, color in art.palette do
 						local part = m:FindFirstChild(slot) :: MeshPart?
 						expect(part ~= nil).toBeTruthy()
@@ -51,7 +55,7 @@ return function(Spec: any, services: { [string]: any })
 		it("creaturile cu model sunt construite din model, nu din forma procedurală", function()
 			local found = 0
 			for _, model in CollectionService:GetTagged("Creature") do
-				if model:FindFirstChild("ink") then
+				if model:FindFirstChild("ink") or model:FindFirstChildWhichIsA("SurfaceAppearance", true) then
 					found += 1
 				end
 			end

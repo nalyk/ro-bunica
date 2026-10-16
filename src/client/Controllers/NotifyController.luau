@@ -1,12 +1,12 @@
 --!strict
 -- Mesaje: notificări personale (jos), anunțuri pe server (sus) și alarma de hoț.
 
-local TweenService = game:GetService("TweenService")
-
 local Shared = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
 local Net = require(Shared.Net)
 local ClientState = require(script.Parent.ClientState)
+local Motion = require(script.Parent.Motion)
 local Music = require(script.Parent.Music)
+local Theme = require(script.Parent.Theme)
 local UI = require(script.Parent.UI)
 
 local NotifyController = {}
@@ -14,23 +14,48 @@ local NotifyController = {}
 local toastColumn: Frame
 local bannerColumn: Frame
 
-local function pop(container: Frame, text: string, color: Color3, seconds: number)
-	local item = UI.frame({
-		Size = UDim2.new(1, 0, 0, 40),
-		BackgroundColor3 = color,
-		Parent = container,
-	})
-	UI.label({
-		Size = UDim2.new(1, -16, 1, -8),
-		Position = UDim2.fromOffset(8, 4),
+-- Un mesaj: pastilă rotunjită cu contur de cerneală, iconiță opțională în stânga, apariție elastică.
+-- swatch: "paper" (personal), "ie" (anunț pentru tot serverul), "plum" (noaptea/hoțul)
+local function pop(container: Frame, text: string, swatchName: string, seconds: number, icon: string?)
+	local swatch = Theme.swatches[swatchName]
+	local item = Instance.new("Frame")
+	item.Size = UDim2.new(1, 0, 0, 44)
+	item.BackgroundColor3 = swatch.base
+	item.Parent = container
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0.5, 0)
+	corner.Parent = item
+	local stroke = Instance.new("UIStroke")
+	stroke.Color = Theme.ink
+	stroke.Thickness = Theme.stroke
+	stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	stroke.Parent = item
+	local gradient = Instance.new("UIGradient")
+	gradient.Rotation = 90
+	gradient.Color = ColorSequence.new(Color3.new(1, 1, 1), Color3.fromRGB(225, 225, 225))
+	gradient.Parent = item
+	local image = icon
+		and UI.icon(icon, { Size = UDim2.fromOffset(52, 52), Position = UDim2.fromOffset(-6, -4) })
+	if image then
+		image.Parent = item
+	end
+	local label = UI.label({
+		Size = UDim2.new(1, if image then -64 else -24, 1, -10),
+		Position = UDim2.fromOffset(if image then 52 else 12, 5),
 		Text = text,
-		TextColor3 = if color == UI.colors.linen then UI.colors.ink else UI.colors.linen,
+		TextColor3 = swatch.text,
 		Parent = item,
 	})
-	item.Size = UDim2.fromScale(1, 0)
-	TweenService:Create(item, TweenInfo.new(0.2, Enum.EasingStyle.Back), { Size = UDim2.new(1, 0, 0, 40) })
-		:Play()
+	if swatchName ~= "paper" then
+		local textStroke = Instance.new("UIStroke")
+		textStroke.Color = swatch.dark
+		textStroke.Thickness = 2
+		textStroke.Parent = label
+	end
+	Motion.pop(item)
 	task.delay(seconds, function()
+		Motion.scale(item, 0.6, Motion.presets.snappy)
+		task.wait(0.12)
 		item:Destroy()
 	end)
 	-- Maximum 4 mesaje vizibile
@@ -46,7 +71,8 @@ local function pop(container: Frame, text: string, color: Color3, seconds: numbe
 end
 
 function NotifyController.toast(text: string, color: Color3?)
-	pop(toastColumn, text, color or UI.colors.linen, 3)
+	local _ = color
+	pop(toastColumn, text, "paper", 3)
 end
 
 function NotifyController.start()
@@ -70,15 +96,15 @@ function NotifyController.start()
 	bannerLayout.VerticalAlignment = Enum.VerticalAlignment.Top
 
 	Net.get("Notify").OnClientEvent:Connect(function(key, args)
-		pop(toastColumn, ClientState.t(key, args), UI.colors.linen, 3)
+		pop(toastColumn, ClientState.t(key, args), "paper", 3)
 	end)
 	Net.get("Announce").OnClientEvent:Connect(function(key, args)
-		pop(bannerColumn, ClientState.t(key, args), UI.colors.stitch, 5)
+		pop(bannerColumn, ClientState.t(key, args), "ie", 5)
 	end)
 	Net.get("Alarm").OnClientEvent:Connect(function()
 		Music.alarm(25)
 		Music.cue("alarm")
-		pop(bannerColumn, "🐓 " .. ClientState.t("notify.Alarm"), UI.colors.night, 4)
+		pop(bannerColumn, ClientState.t("notify.Alarm"), "plum", 4, "alarm")
 	end)
 end
 

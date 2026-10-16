@@ -73,9 +73,11 @@ end
 
 local function buildTop(screen: ScreenGui)
 	-- banii, stânga sus (sub bara Roblox): pastilă aurie cu moneda
+	-- banii stau lângă cadranul zilei, sus la centru (stânga-sus e zona chatului Roblox)
 	moneyPill = pill({
 		Name = "Money",
-		Position = UDim2.fromOffset(12, 10),
+		AnchorPoint = Vector2.new(1, 0),
+		Position = UDim2.new(0.5, -108, 0, 10),
 		Size = UDim2.fromOffset(228, 62),
 		Parent = screen,
 	}, "wheat")
@@ -109,7 +111,7 @@ local function buildTop(screen: ScreenGui)
 	phasePill = pill({
 		Name = "Phase",
 		AnchorPoint = Vector2.new(0.5, 0),
-		Position = UDim2.new(0.5, 0, 0, 10),
+		Position = UDim2.new(0.5, 0, 0, 12),
 		Size = UDim2.fromOffset(196, 46),
 		Parent = screen,
 	}, "paper")

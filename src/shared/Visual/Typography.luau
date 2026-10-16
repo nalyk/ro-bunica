@@ -6,7 +6,9 @@
 local NUNITO = "rbxasset://fonts/families/Nunito.json"
 
 return table.freeze({
-	display = Font.new(NUNITO, Enum.FontWeight.Heavy), -- titluri, cifre, butoane
-	strong = Font.new(NUNITO, Enum.FontWeight.ExtraBold),
-	body = Font.new(NUNITO, Enum.FontWeight.Bold), -- texte lungi, bule de dialog
+	-- Doar Regular vine cu clientul; celelalte grosimi se descarcă. Cu Black (900) Studio sub Wine îngheța
+	-- tot procesul (bisecție 2026-10-16), deci folosim Bold, testat.
+	display = Font.new(NUNITO, Enum.FontWeight.Bold), -- titluri, cifre, butoane (plus contur)
+	strong = Font.new(NUNITO, Enum.FontWeight.Bold),
+	body = Font.new(NUNITO, Enum.FontWeight.Regular), -- texte lungi, bule de dialog
 })

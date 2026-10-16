@@ -123,7 +123,9 @@ def build_textured(filter_):
             result = subprocess.run(["blender", "-b", "-P", os.path.join(ROOT, "tools", "post3d.py"), "--", raw, glb,
                                      "--height", str(spec["height"]), "--tris", str(spec.get("tris", 19000)),
                                      "--texture", "1024", "--preview", png]
-                                    + (["--trim-base"] if spec.get("trimBase") else []), capture_output=True, text=True,
+                                    + (["--trim-base"] if spec.get("trimBase") else [])
+                                    + (["--color-gain", ",".join(str(g) for g in spec["colorGain"])]
+                                       if spec.get("colorGain") else []), capture_output=True, text=True,
                                     timeout=600)
             line = next((l for l in result.stdout.splitlines() if l.startswith("POST ")), None)
         if not line:

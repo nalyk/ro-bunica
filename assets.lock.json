@@ -28,9 +28,9 @@
     "moderation": "Approved"
   },
   "creature.BranzoiSumo": {
-    "id": "135436137426014",
+    "id": "76349532278722",
     "type": "Model",
-    "sha": "7125d6d658d08532",
+    "sha": "5591cf340cb582a3",
     "file": "build/art/creature.BranzoiSumo.glb",
     "moderation": "Approved"
   },
@@ -91,9 +91,9 @@
     "moderation": "Approved"
   },
   "creature.Martisorel": {
-    "id": "87830607716052",
+    "id": "106835030203233",
     "type": "Model",
-    "sha": "83a181276b612ce4",
+    "sha": "5639951a94af3571",
     "file": "build/art/creature.Martisorel.glb",
     "moderation": "Approved"
   },

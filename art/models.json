@@ -37,8 +37,13 @@
   "trimBase": true
  },
  "creature.BranzoiSumo": {
-  "remote": "creatures/BranzoiSumo_20k.glb",
-  "height": 5.5
+  "remote": "creatures/v2_BranzoiSumo_40k.glb",
+  "height": 5.5,
+  "colorGain": [
+   1.0,
+   1.32,
+   1.22
+  ]
  },
  "creature.PlacintonioBombardino": {
   "remote": "creatures/PlacintonioBombardino_20k.glb",
@@ -61,7 +66,7 @@
   "height": 3.2
  },
  "creature.Martisorel": {
-  "remote": "creatures/Martisorel_20k.glb",
+  "remote": "creatures/s23_Martisorel_40k.glb",
   "height": 5.5
  },
  "creature.RetetaSecreta": {

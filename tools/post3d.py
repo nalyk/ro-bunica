@@ -8,6 +8,8 @@
 - Textura (baseColor) e redimensionată la `--texture` px și împachetată în GLB.
 - `--trim-base`: taie soclul din concept (piedestalul îl dă jocul). Fața de sus a soclului = cel mai înalt plan
   orizontal mare din sfertul de jos; se șterge tot ce e sub ea (talpa picioarelor rămâne deschisă, nu se vede).
+- `--color-gain r,g,b`: corecție per canal a texturii (TRELLIS poate devia spre cald; factorii se măsoară pe
+  zonele deschise ale corpului, concept vs textură).
 """
 
 import math
@@ -29,6 +31,7 @@ max_tris = opt("--tris", 9000, int)
 texture = opt("--texture", 1024, int)
 preview = opt("--preview", None, str)
 trim_base = "--trim-base" in argv
+color_gain = [float(x) for x in opt("--color-gain", "1,1,1", str).split(",")]
 
 bpy.ops.wm.read_factory_settings(use_empty=True)
 bpy.ops.import_scene.gltf(filepath=src)
@@ -84,6 +87,17 @@ for v in vs:
 obj.name = obj.data.name = "body"
 for p in obj.data.polygons:
     p.use_smooth = True
+
+if color_gain != [1.0, 1.0, 1.0]:
+    for img in bpy.data.images:
+        if img.size[0] > 0:
+            px = list(img.pixels)
+            for i in range(0, len(px), 4):
+                px[i] = min(1.0, px[i] * color_gain[0])
+                px[i + 1] = min(1.0, px[i + 1] * color_gain[1])
+                px[i + 2] = min(1.0, px[i + 2] * color_gain[2])
+            img.pixels.foreach_set(px)
+            img.pack()
 
 for img in bpy.data.images:
     if img.size[0] > texture:

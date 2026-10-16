@@ -89,5 +89,7 @@ apoi imagine → 3D texturat.
   (Root, Neck, umeri, șolduri, Humanoid cu HipHeight); `Actors.createBot(name, at, "Hotoman")`. Mersul e
   procedural pe client (`StrideController`, atributul `Walks`); creatura cărată stă deasupra creștetului
   (`CarryHeight`). Mersul se verifică în playtest (sesiunile Luau din Open Cloud nu rulează fizica).
-- **De refăcut:** Brânzoi (concept v2 în coadă), Mărțișorel (seed 23 gata, de verificat), straturile
-  (CuMesh pică, seed 31 în coadă).
+- **Culoarea deviată spre cald** (Brânzoi v2: G 153 în loc de 212 pe corp): `"colorGain": [r, g, b]` →
+  `post3d.py --color-gain`, factori măsurați pe zonele deschise ale corpului (concept vs textură), apoi
+  ajustați la ochi (Brânzoi: 1, 1,32, 1,22).
+- **De refăcut:** straturile (CuMesh pică la toate semințele: conceptul trebuie refăcut).

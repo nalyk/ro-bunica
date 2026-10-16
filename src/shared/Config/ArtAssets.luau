@@ -61,10 +61,10 @@ return table.freeze({
 		size = Vector3.new(3.5, 5.0, 4.573),
 	},
 	["creature.BranzoiSumo"] = {
-		assetId = 135436137426014,
+		assetId = 76349532278722,
 		palette = {},
 		ink = nil,
-		size = Vector3.new(4.833, 5.5, 3.177),
+		size = Vector3.new(4.806, 5.5, 3.187),
 	},
 	["creature.PlacintonioBombardino"] = {
 		assetId = 97858374299046,
@@ -97,10 +97,10 @@ return table.freeze({
 		size = Vector3.new(4.388, 3.2, 4.758),
 	},
 	["creature.Martisorel"] = {
-		assetId = 87830607716052,
+		assetId = 106835030203233,
 		palette = {},
 		ink = nil,
-		size = Vector3.new(3.914, 5.5, 3.111),
+		size = Vector3.new(3.822, 5.5, 3.019),
 	},
 	["creature.RetetaSecreta"] = {
 		assetId = 80428205584362,

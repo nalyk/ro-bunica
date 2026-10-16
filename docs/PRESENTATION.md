@@ -151,9 +151,13 @@ Planșe de contact pentru toate modelele și capturi din playtest-ul din Studio 
 și playtest rămân verzi, iar sunetul se verifică prin AudioAnalyzer (nivel, sincronizarea
 straturilor) și prin spectrograme.
 
-## Ce trebuie de la om
-1. **Permisiunea „assets” (Read + Write) pe cheia API**: Creator Dashboard → Open Cloud → API Keys →
-   cheia existentă → Add API System → „Assets” → Read și Write. Valoarea cheii nu se schimbă.
-2. Opțional: **verificarea contului prin act de identitate** (limita de încărcări audio crește de la
-   100 la 2.000 pe lună).
-3. Opțional, dar e diferența dintre „bun” și „de neuitat”: **o voce reală pentru Bunica**.
+## Stare și ce trebuie de la om (actualizat 2026-10-16)
+1. ~~Permisiunea „assets” pe cheia API~~: **făcut.** Proba completă: GLB-ul Cartofel Agent a fost încărcat
+   prin `POST assets/v1/assets` (multipart: `request` + `fileContent`, `assetType: Model`, creator
+   `userId 1741390820` = nalyque). Moderarea l-a aprobat pe loc; asset `117125148265624`.
+   `InsertService:LoadAsset` a întors `Model › Model › MeshPart` de 5,09×4,00×2,61, cu capul în sus.
+   Culorile pe vertecși nu se văd din server, deci le verificăm în playtest-ul din Studio.
+2. Verificarea contului prin act de identitate (limita audio de la 100 la 2.000 pe lună): link-ul a fost dat
+   omului (roblox.com/my/account#!/info → „Continue with ID”); n-a confirmat încă.
+3. **Vocea Bunicii: Gemini TTS, voce proiectată, plan gratuit.** Totul e în `docs/VOICE.md`
+   (buget maximum 2 $, o singură dată; cota de 10 cereri pe zi; lecții de pronunție).

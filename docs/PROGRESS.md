@@ -76,7 +76,8 @@ Planul și cercetarea: `docs/PRESENTATION.md`. Pașii P1–P5:
 - [ ] P4 Sunet (graful audio nou, muzică adaptivă din melodii Mikuli, PLEOSC!, SFX, ambianță, vocea Bunicii).
 - [ ] P5 Verificare (planșe de contact, capturi de playtest, e2e).
 
-Blocaj: încărcarea asset-urilor cere permisiunea „assets” (Read + Write) pe cheia API, pe care o adaugă omul.
+Permisiunea „assets” a fost adăugată pe 2026-10-16; încărcarea și `InsertService:LoadAsset` sunt verificate (detalii în PRESENTATION.md).
+Vocea Bunicii: `docs/VOICE.md` (Gemini TTS gratuit, 4 voci proiectate în `art/voice/voices.json`, replici în `art/voice/takes/`; buget maximum 2 $, o singură dată). Următorul pas: audiția vocilor B, C, D după resetarea cotei zilnice, apoi omul alege vocea.
 
 ## Decizii luate
 

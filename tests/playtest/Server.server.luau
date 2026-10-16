@@ -409,7 +409,7 @@ step("3. Taraba se deschide și listează semințe", function()
 			tostring(pad.closeBound)
 		)
 	)
-	check(pad.glyphs == 6 and pad.reticle and pad.bound and pad.closeBound, "modul gamepad incomplet")
+	check(pad.glyphs == 7 and pad.reticle and pad.bound and pad.closeBound, "modul gamepad incomplet")
 	task.wait(0.5)
 	log("SNAP gamepad")
 	task.wait(1)
@@ -421,6 +421,51 @@ step("3. Taraba se deschide și listează semințe", function()
 	task.wait(1)
 	local padOff = call("gamepad", "off")
 	check(padOff.selected == "nimic", "selecția UI a rămas după închiderea tarabei")
+end)
+
+step("3b. Panoul Ograda: cumpără un piedestal cu lei", function()
+	me.profile.lei += 200
+	services.EconomyService.addLei(me, 0)
+	local before = me.profile.pedestalCount
+	local panel = call("openPanel", "UpgradePanel")
+	log(string.format("ograda: %d rânduri", panel.rows))
+	check(panel.rows == 7, "panoul Ograda nu are cele 7 îmbunătățiri")
+	call("fire", "BuyUpgrade", "pedestal")
+	check(
+		waitFor(function()
+			return me.profile.pedestalCount == before + 1
+		end, 5),
+		"piedestalul nu s-a cumpărat"
+	)
+	task.wait(0.8)
+	log("SNAP ograda")
+	task.wait(1)
+	call("closePanel", "UpgradePanel")
+	-- Grivei apare lângă prispă după cumpărare
+	me.profile.lei += 10000
+	services.EconomyService.addLei(me, 0)
+	call("fire", "BuyUpgrade", "dog")
+	check(
+		waitFor(function()
+			return me.plot.geometry.model:FindFirstChild("Grivei") ~= nil
+		end, 5),
+		"Grivei nu a apărut în ogradă"
+	)
+	local dog = me.plot.geometry.model:FindFirstChild("Grivei") :: Model
+	local dogAt = dog:GetPivot().Position
+	call(
+		"lookAt",
+		dogAt + Vector3.new(0, 1.6, 0),
+		-- din fața lui, dinspre drum (LookVector-ul ogrăzii arată spre drum), puțin din dreapta
+		dogAt
+			+ me.plot.geometry.cframe.LookVector * 9
+			+ me.plot.geometry.cframe.RightVector * 3
+			+ Vector3.new(0, 3.5, 0),
+		2
+	)
+	task.wait(1.2)
+	log("SNAP grivei")
+	task.wait(1)
 end)
 
 step("4. Cumpără o sămânță", function()

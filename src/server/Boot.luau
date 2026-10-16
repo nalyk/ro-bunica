@@ -19,6 +19,7 @@ local ORDER = {
 	"EconomyService",
 	"ShopService",
 	"SlipperService",
+	"UpgradeService",
 	"BunicaService",
 	"TutorialService",
 	"HoraService",

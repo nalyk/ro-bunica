@@ -150,5 +150,10 @@
   "remote": "props/v2_Papuc_40k.glb",
   "height": 1.1,
   "tris": 6000
+ },
+ "char.Grivei": {
+  "remote": "props/v2_Grivei_40k.glb",
+  "height": 3.2,
+  "tris": 19000
  }
 }

@@ -11,6 +11,7 @@ local ORDER = {
 	"NotifyController",
 	"ShopPanel",
 	"CellarPanel",
+	"UpgradePanel",
 	"SlipperController",
 	"HudController",
 	"WorldController",
@@ -20,6 +21,7 @@ local ORDER = {
 	"BunicaController",
 	"DanceController",
 	"StrideController",
+	"GriveiController",
 	"GamepadController",
 }
 

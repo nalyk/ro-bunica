@@ -27,6 +27,11 @@ ICONS = {
     "shop": "a village market stall with a striped red-white awning",
     "close": "a round red button with a white X",
     "check": "a round green button with a white check mark",
+    "pedestal": "a short wooden log-slice pedestal with a red-and-white embroidered towel draped over the top",
+    "dog": "the friendly head of a shaggy brown-and-white village dog barking, mouth open, small motion lines",
+    "sharp": "a pair of round wire grandma glasses with a sparkle on one lens",
+    "fastslipper": "a red felt slipper with a white pompom flying fast to the right, three white speed lines behind it",
+    "yard": "a small wooden toolbox with a hammer and a saw sticking out, a red ribbon bow on the handle",
 }
 STYLE = ("Game UI icon for a cozy cartoon village game (Moldovan theme), premium mobile-game quality: chunky rounded "
          "shapes, thick dark-brown (#3A2218) outline of constant weight, soft 3D shading with light from top-left, "

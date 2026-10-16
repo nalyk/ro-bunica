@@ -44,8 +44,10 @@ function SlipperController.predictedAmmo(): number
 	if ammo >= maxAmmo or not state.ammoRegenStart then
 		return ammo
 	end
-	local regenerated =
-		math.floor((Workspace:GetServerTimeNow() - state.ammoRegenStart) / Defense.slipper.regenSeconds)
+	local regenerated = math.floor(
+		(Workspace:GetServerTimeNow() - state.ammoRegenStart)
+			/ (state.ammoRegenSeconds or Defense.slipper.regenSeconds)
+	)
 	return math.min(ammo + math.max(regenerated, 0), maxAmmo)
 end
 

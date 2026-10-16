@@ -10,6 +10,7 @@ local Shared = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
 local Net = require(Shared.Net)
 local Defense = require(Shared.Config.Defense)
 local RateLimiter = require(Shared.Domain.RateLimiter)
+local Upgrades = require(Shared.Domain.Upgrades)
 local PlotService = require(script.Parent.PlotService)
 local RaidService = require(script.Parent.RaidService)
 local SlipperService = require(script.Parent.SlipperService)
@@ -370,7 +371,8 @@ local function tick(dt: number)
 			end
 		end
 		if visible then
-			bunica.suspicion = math.min(bunica.suspicion + config.suspicionPerSecond * dt, 1)
+			local sharp = Upgrades.suspicionMultiplier(owner.profile) -- îmbunătățirea „Bunica mai ageră”
+			bunica.suspicion = math.min(bunica.suspicion + config.suspicionPerSecond * sharp * dt, 1)
 		else
 			bunica.suspicion = math.max(bunica.suspicion - config.suspicionDecayPerSecond * dt, 0)
 		end

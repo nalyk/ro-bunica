@@ -18,6 +18,7 @@ local Typography = require(Shared.Visual.Typography)
 local UI = require(script.Parent.UI)
 local ShopPanel = require(script.Parent.ShopPanel)
 local CellarPanel = require(script.Parent.CellarPanel)
+local UpgradePanel = require(script.Parent.UpgradePanel)
 local SlipperController = require(script.Parent.SlipperController)
 
 local HudController = {}
@@ -244,7 +245,7 @@ local function buildLeft(screen: ScreenGui)
 	column.BackgroundTransparency = 1
 	column.AnchorPoint = Vector2.new(0, 0.5)
 	column.Position = UDim2.new(0, 8, 0.5, 0)
-	column.Size = UDim2.fromOffset(88, 320)
+	column.Size = UDim2.fromOffset(88, 424)
 	column.Parent = screen
 	UI.list(column, Enum.FillDirection.Vertical, 6)
 	local function hora()
@@ -253,12 +254,15 @@ local function buildLeft(screen: ScreenGui)
 	HudController.actions.shop = ShopPanel.toggle
 	HudController.actions.cellar = CellarPanel.toggle
 	HudController.actions.hora = hora
+	HudController.actions.upgrades = UpgradePanel.toggle
 	HudController.buttons.shop =
 		roundButton(column, 1, "seeds", "🌱", ClientState.t("ui.shop"), "vine", ShopPanel.toggle)
 	HudController.buttons.cellar =
 		roundButton(column, 2, "cellar", "🧺", ClientState.t("ui.cellar"), "wheat", CellarPanel.toggle)
 	HudController.buttons.hora =
 		roundButton(column, 3, "hora", "💃", ClientState.t("ui.hora"), "plum", hora)
+	HudController.buttons.upgrades =
+		roundButton(column, 4, "yard", "🔨", ClientState.t("ui.upgrades"), "sky", UpgradePanel.toggle)
 end
 
 local function buildDefense(screen: ScreenGui)

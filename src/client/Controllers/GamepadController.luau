@@ -27,6 +27,7 @@ local BINDINGS: { Binding } = {
 	{ key = Enum.KeyCode.DPadLeft, hud = "shop", short = "←" },
 	{ key = Enum.KeyCode.DPadUp, hud = "cellar", short = "↑" },
 	{ key = Enum.KeyCode.DPadDown, hud = "hora", short = "↓" },
+	{ key = Enum.KeyCode.DPadRight, hud = "upgrades", short = "→" },
 }
 
 local active = false -- ultima intrare a fost de la gamepad

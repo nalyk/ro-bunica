@@ -162,6 +162,11 @@ local function giveStarter(owner: Owner)
 end
 
 -- Folosit de vreme: aplică o funcție pe fiecare plantă în creștere.
+-- Redesenează straturile (după o îmbunătățire care deblochează straturi)
+function GardenService.refreshBeds(owner: Owner)
+	renderBeds(owner)
+end
+
 function GardenService.forEachPlant(callback: (Owner, string, Growth.Plant) -> ())
 	for _, owner in PlotService.owners() do
 		if owner.kind == "Player" then

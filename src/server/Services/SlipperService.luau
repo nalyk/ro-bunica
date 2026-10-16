@@ -8,6 +8,7 @@ local Workspace = game:GetService("Workspace")
 local Shared = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
 local Net = require(Shared.Net)
 local Defense = require(Shared.Config.Defense)
+local Upgrades = require(Shared.Domain.Upgrades)
 local World = require(Shared.Config.World)
 local Slipper = require(Shared.Domain.Slipper)
 local AimAssist = require(Shared.Domain.AimAssist)
@@ -84,6 +85,11 @@ end
 
 local function maxAmmo(owner: Owner): number
 	return Defense.slipper.maxAmmo + (owner.profile.upgrades.ammo or 0)
+end
+
+-- Secunde între doi papuci (îmbunătățirea „regen”)
+local function regenSeconds(owner: Owner): number
+	return Upgrades.regenSeconds(owner.profile)
 end
 
 local function isFiniteVector(v: Vector3): boolean
@@ -307,7 +313,7 @@ function SlipperService.throwAs(actor: Actor, target: Vector3, kind: "Slipper" |
 			ammo = Slipper.newAmmo(maxAmmo(owner), now())
 			ammoByActor[actor] = ammo
 		end
-		if not Slipper.consume(ammo, now(), maxAmmo(owner), Defense.slipper.regenSeconds) then
+		if not Slipper.consume(ammo, now(), maxAmmo(owner), regenSeconds(owner)) then
 			return false
 		end
 		params = Defense.slipper
@@ -387,10 +393,11 @@ function SlipperService.start()
 		local owner = PlotService.getOwner(player)
 		local ammo = ammoByActor[actor]
 		if owner and ammo then
-			Slipper.updateAmmo(ammo, now(), maxAmmo(owner), Defense.slipper.regenSeconds)
+			Slipper.updateAmmo(ammo, now(), maxAmmo(owner), regenSeconds(owner))
 			state.ammo = ammo.ammo
 			state.ammoRegenStart = ammo.regenStart
 			state.maxAmmo = maxAmmo(owner)
+			state.ammoRegenSeconds = regenSeconds(owner)
 		end
 		state.nervi = nerviByActor[actor] or 0
 	end)

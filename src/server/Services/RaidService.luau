@@ -22,6 +22,7 @@ local DayNightService = require(script.Parent.DayNightService)
 local Messenger = require(script.Parent.Messenger)
 local Actors = require(script.Parent.Parent.Actors)
 local FamilyService = require(script.Parent.FamilyService)
+local Upgrades = require(Shared.Domain.Upgrades)
 
 type Owner = PlotService.Owner
 type Actor = Actors.Actor
@@ -31,7 +32,6 @@ type Carry = {
 	key: string,
 	uid: string,
 	model: Model,
-	walkSpeed: number,
 	jumpHeight: number,
 	lastPosition: Vector3,
 	lastTime: number,
@@ -49,6 +49,57 @@ local carriedUids: { [string]: boolean } = {}
 local stunnedUntil: { [Actor]: number } = {}
 local prompts: { [ProximityPrompt]: boolean } = {}
 local forcedIntruders: { [Actor]: Owner } = {} -- intruși și ziua (hoțul din tutorial)
+
+-- Modificatorii de viteză (creatura cărată, Grivei): viteza = baza × produsul lor. Baza se ia la primul
+-- modificator și se pune înapoi când nu mai rămâne niciunul, deci efectele nu se calcă pe picioare.
+type SpeedState = { base: number, mods: { [string]: number } }
+local speeds: { [Actor]: SpeedState } = {}
+
+local function humanoidFor(actor: Actor): Humanoid?
+	return Actors.humanoid(actor)
+end
+
+local function setSpeedModifier(actor: Actor, name: string, multiplier: number?)
+	local humanoid = humanoidFor(actor)
+	local state = speeds[actor]
+	if not humanoid then
+		speeds[actor] = nil
+		return
+	end
+	if multiplier == nil or multiplier == 1 then
+		if not state or state.mods[name] == nil then
+			return
+		end
+		state.mods[name] = nil
+	else
+		if not state then
+			state = { base = humanoid.WalkSpeed, mods = {} }
+			speeds[actor] = state
+		end
+		if state.mods[name] == multiplier then
+			return
+		end
+		state.mods[name] = multiplier
+	end
+	local current = state :: SpeedState
+	local speed = current.base
+	for _, m in current.mods do
+		speed *= m
+	end
+	humanoid.WalkSpeed = speed
+	if next(current.mods) == nil then
+		speeds[actor] = nil
+	end
+end
+
+-- Viteza maximă legitimă cu creatura în brațe (baza × încetinirea de cărat; Grivei doar scade viteza)
+local function legitCarrySpeed(actor: Actor, humanoid: Humanoid): number
+	local state = speeds[actor]
+	if not state then
+		return humanoid.WalkSpeed
+	end
+	return state.base * (state.mods.carry or 1)
+end
 
 export type HitSource = {
 	kind: string, -- "Slipper" | "RollingPin" | "BunicaSlipper" | "Rage"
@@ -138,7 +189,7 @@ end
 local function restoreHumanoid(actor: Actor, carry: Carry)
 	local humanoid = humanoidOf(actor)
 	if humanoid then
-		humanoid.WalkSpeed = carry.walkSpeed
+		setSpeedModifier(actor, "carry", nil)
 		humanoid.JumpHeight = carry.jumpHeight
 	end
 end
@@ -270,13 +321,12 @@ function RaidService.tryStart(actor: Actor, owner: Owner, key: string)
 		key = key,
 		uid = record.uid,
 		model = model,
-		walkSpeed = humanoid.WalkSpeed,
 		jumpHeight = humanoid.JumpHeight,
 		lastPosition = root.Position,
 		lastTime = os.clock(),
 	}
 	carriedUids[record.uid] = true
-	humanoid.WalkSpeed = humanoid.WalkSpeed * Raid.carrySpeedMultiplier(creature.rarity)
+	setSpeedModifier(actor, "carry", Raid.carrySpeedMultiplier(creature.rarity))
 	humanoid.JumpHeight = RaidConfig.jumpPowerWhileCarrying
 	if owner.player then
 		Net.get("Alarm"):FireClient(owner.player, owner.plot.index)
@@ -332,7 +382,7 @@ local function checkCarries()
 				carry.lastPosition,
 				position,
 				t - carry.lastTime,
-				humanoid.WalkSpeed,
+				legitCarrySpeed(actor, humanoid),
 				Defense.speedCheckTolerance
 			)
 			carry.lastPosition = position
@@ -385,8 +435,34 @@ function RaidService.onHit(victim: Actor, knockback: Vector3, stunSeconds: numbe
 	end
 end
 
+-- Grivei: hoții din ograda unui proprietar cu câine merg mai încet cât sunt acolo
+local function checkDogs()
+	local barking: { [Owner]: boolean } = {}
+	for _, actor in Actors.all() do
+		local root = rootOf(actor)
+		local plot = root and PlotService.plotAt(root.Position)
+		local owner = plot and plot.owner
+		local slow = 1
+		if owner and owner.actor ~= actor and RaidService.isIntruder(actor, owner) then
+			slow = Upgrades.dogSlow(owner.profile)
+			if slow < 1 then
+				barking[owner] = true
+			end
+		end
+		setSpeedModifier(actor, "dog", if slow < 1 then slow else nil)
+	end
+	-- Grivei latră (clientul îl animă) cât are hoți în ogradă
+	for _, owner in PlotService.owners() do
+		local dog = owner.plot.geometry.model:FindFirstChild("Grivei")
+		if dog then
+			dog:SetAttribute("Barking", barking[owner] == true)
+		end
+	end
+end
+
 -- Verificarea furturilor în curs (rulată pe Heartbeat; expusă pentru teste).
 RaidService.checkCarries = checkCarries
+RaidService.checkDogs = checkDogs
 
 function RaidService.start()
 	CreatureService.onModelCreated(addPrompt)
@@ -411,6 +487,7 @@ function RaidService.start()
 		RaidService.drop(actor)
 		stunnedUntil[actor] = nil
 		forcedIntruders[actor] = nil
+		speeds[actor] = nil
 	end)
 	local elapsed = 0
 	RunService.Heartbeat:Connect(function(dt)
@@ -418,6 +495,7 @@ function RaidService.start()
 		if elapsed >= CHECK_INTERVAL then
 			elapsed = 0
 			checkCarries()
+			checkDogs()
 		end
 	end)
 end

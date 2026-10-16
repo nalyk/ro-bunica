@@ -45,6 +45,7 @@ local function snapshot(player: Player): { [string]: any }?
 		bedCount = profile.bedCount,
 		pedestalCount = profile.pedestalCount,
 		cellarCapacity = profile.cellarCapacity,
+		upgrades = profile.upgrades,
 		shieldUntil = owner.shieldUntil,
 		incomePerSecond = Economy.totalIncome(profile.pedestals, 1),
 	}

@@ -82,6 +82,11 @@ Planul și cercetarea: `docs/PRESENTATION.md`. Pașii P1–P5:
 Permisiunea „assets” a fost adăugată pe 2026-10-16; încărcarea și `InsertService:LoadAsset` sunt verificate (detalii în PRESENTATION.md).
 Vocea Bunicii: `docs/VOICE.md` (Gemini TTS gratuit, 4 voci proiectate în `art/voice/voices.json`, replici în `art/voice/takes/`; buget maximum 2 $, o singură dată). Următorul pas: audiția vocilor B, C, D după resetarea cotei zilnice, apoi omul alege vocea.
 
+## Planul de terminare (`docs/PLAN_FINAL.md`)
+
+- [x] 1. Îmbunătățiri pe lei (2026-10-17): `Config/Upgrades` + `Domain/Upgrades` (testat), `UpgradeService`, panoul „Ograda” (buton în HUD, D-pad dreapta pe gamepad), 5 iconițe noi. Piedestale (până la 20), straturi (până la 10), beci (+10), papuci (3 → 5), reîncărcare mai rapidă, Grivei (încetinește hoții din ogradă; modificatori de viteză comuni în RaidService, deci nu se calcă cu încetinirea de cărat), Bunica mai ageră. Grivei e sculptat (concept „jucărie netedă” → TRELLIS, 19k), stă în fața prispei și sare când latră. Verificat: unit, e2e 29/29, playtest 26/26.
+- [ ] 2. Vânzări pe Robux. - [ ] 3. Măsurători. - [ ] 4. Revenire și social. - [ ] 5. Sunet și voce. - [ ] 6. Performanță și finisaj.
+
 ## Lansare publică (2026-10-16)
 
 - Jocul e public: https://www.roblox.com/games/5300295145 („Don't Steal from Bunica!”, gen Simulation / Incremental Simulator). Pagina: descriere EN și RO, iconița (Bunica cu papucul), două imagini (afiș + toate creaturile) pe prima pagină și pe pagina jocului, titlul și imaginile în română. Imaginile sunt compuse de `tools/store_art.py` din straturile ecranului de încărcare.

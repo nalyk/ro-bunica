@@ -265,6 +265,13 @@
     "file": "build/art/world.Gard.glb",
     "moderation": "Approved"
   },
+  "world.GardLow": {
+    "id": "121405013072093",
+    "type": "Model",
+    "sha": "815a09c16f10af82",
+    "file": "build/art/world.GardLow.glb",
+    "moderation": "Approved"
+  },
   "world.Nuc": {
     "id": "81696330778131",
     "type": "Model",
@@ -277,6 +284,13 @@
     "type": "Model",
     "sha": "bee1da66bca90e7b",
     "file": "build/art/world.Pedestal.glb",
+    "moderation": "Approved"
+  },
+  "world.PedestalLow": {
+    "id": "76355402229697",
+    "type": "Model",
+    "sha": "bb8d864dd3457d24",
+    "file": "build/art/world.PedestalLow.glb",
     "moderation": "Approved"
   },
   "world.Poarta": {

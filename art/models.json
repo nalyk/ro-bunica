@@ -119,5 +119,15 @@
   "remote": "bunica_20k.glb",
   "height": 6.2,
   "split": true
+ },
+ "world.GardLow": {
+  "remote": "world/low_Gard_3k.glb",
+  "height": 4,
+  "tris": 19000
+ },
+ "world.PedestalLow": {
+  "remote": "world/low_Pedestal_3k.glb",
+  "height": 0.9,
+  "tris": 19000
  }
 }

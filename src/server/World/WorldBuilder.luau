@@ -108,8 +108,9 @@ local function buildFence(model: Model, cf: CFrame)
 		{ Vector3.new(-(halfX + gateHalf) / 2, h / 2, -halfZ), Vector3.new(halfX - gateHalf, h, 1) },
 		{ Vector3.new((halfX + gateHalf) / 2, h / 2, -halfZ), Vector3.new(halfX - gateHalf, h, 1) },
 	}
+	local sculpted = ArtLibrary.has("world.GardLow")
 	for _, segment in segments do
-		part({
+		local fence = part({
 			Name = "Fence",
 			Size = segment[2],
 			CFrame = cf * CFrame.new(segment[1]),
@@ -117,6 +118,22 @@ local function buildFence(model: Model, cf: CFrame)
 			Material = Enum.Material.WoodPlanks,
 			Parent = model,
 		})
+		if sculpted then
+			-- gard de nuiele: segmente de 13 studs de-a lungul laturii, peste coliziunea invizibilă
+			local alongX = segment[2].X > segment[2].Z
+			local length = if alongX then segment[2].X else segment[2].Z
+			local count = math.max(1, math.ceil(length / 12.6))
+			for i = 1, count do
+				local t = (i - 0.5) / count - 0.5
+				local offset = if alongX then Vector3.new(t * length, 0, 0) else Vector3.new(0, 0, t * length)
+				local base = cf * CFrame.new(segment[1].X + offset.X, 0, segment[1].Z + offset.Z)
+				if not alongX then
+					base *= CFrame.Angles(0, math.pi / 2, 0)
+				end
+				placeArt("world.GardLow", base, model)
+			end
+			hide({ fence })
+		end
 	end
 	-- Stâlpii porții, vopsiți (cu poarta sculptată devin coliziuni invizibile)
 	local gate = placeArt("world.Poarta", cf * CFrame.new(0, 0, -halfZ), model)
@@ -246,6 +263,16 @@ local function buildPlot(index: number, parent: Instance): PlotGeometry
 		})
 		pedestal:SetAttribute("PedestalKey", tostring(i))
 		pedestals[tostring(i)] = pedestal
+		-- felia de buștean cu ștergar, cu fața la nivelul coliziunii (0,6): baza puțin sub pământ
+		if
+			placeArt(
+				"world.PedestalLow",
+				cf * CFrame.new(position + Vector3.new(0, -0.3, 0)) * CFrame.Angles(0, math.rad(i * 37), 0),
+				model
+			)
+		then
+			hide({ pedestal })
+		end
 	end
 
 	local showcase: { BasePart } = {}

@@ -157,4 +157,16 @@ return table.freeze({
 		size = Vector3.new(4.106, 2.0, 1.475),
 	},
 	["char.Bunica"] = { assetId = 100490284919264, palette = {}, ink = nil, size = Vector3.new(0, 6.2, 0) },
+	["world.GardLow"] = {
+		assetId = 121405013072093,
+		palette = {},
+		ink = nil,
+		size = Vector3.new(13.0, 4.0, 0.765),
+	},
+	["world.PedestalLow"] = {
+		assetId = 76355402229697,
+		palette = {},
+		ink = nil,
+		size = Vector3.new(4.188, 0.9, 4.349),
+	},
 } :: { [string]: Art })

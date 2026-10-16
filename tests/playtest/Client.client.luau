@@ -103,10 +103,46 @@ function ops.holdPrompt(name: string, ownerUserId: number?, near: Vector3): stri
 	-- poate sta mai aproape de creatura vecină și atunci apăsarea nu ajunge la țintă. Local, doar în test.
 	prompt.Exclusivity = Enum.ProximityPromptExclusivity.AlwaysShow
 	task.wait(0.1)
+	local triggered = false
+	local shown = false
+	local c1 = prompt.Triggered:Connect(function()
+		triggered = true
+	end)
+	local c2 = prompt.PromptShown:Connect(function()
+		shown = true
+	end)
 	prompt:InputHoldBegin()
-	task.wait(prompt.HoldDuration + 0.4)
+	-- Progresul de „ține apăsat” avansează pe cadre; Studio pe CPU (fără GPU) poate rula la câteva fps,
+	-- deci ținem apăsat până se declanșează efectiv (cu limită), nu un timp fix
+	local deadline = os.clock() + prompt.HoldDuration + 12
+	task.wait(prompt.HoldDuration)
+	while not triggered and os.clock() < deadline do
+		task.wait(0.1)
+	end
 	prompt:InputHoldEnd()
-	return "ok"
+	task.wait(0.2)
+	c1:Disconnect()
+	c2:Disconnect()
+	if triggered then
+		return "ok" -- după furt, serverul mută creatura (și prompt-ul dispare)
+	end
+	local parent = prompt.Parent :: BasePart?
+	local root = character():FindFirstChild("HumanoidRootPart") :: BasePart
+	if parent then
+		local distance = (parent.Position - root.Position).Magnitude
+		return string.format(
+			"nedeclanșat: distanță %.1f (max %.1f), activ %s, afișat %s, părinte %s la %.1f,%.1f,%.1f",
+			distance,
+			prompt.MaxActivationDistance,
+			tostring(prompt.Enabled),
+			tostring(shown),
+			parent.Name,
+			parent.Position.X,
+			parent.Position.Y,
+			parent.Position.Z
+		)
+	end
+	return "nedeclanșat (prompt fără părinte)"
 end
 
 function ops.fire(remote: string, ...: any): boolean

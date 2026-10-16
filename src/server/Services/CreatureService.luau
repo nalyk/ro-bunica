@@ -99,7 +99,20 @@ function CreatureService.render(owner: Owner)
 	renderShowcase(owner)
 	-- Piedestalele blocate se văd estompate
 	for key, pedestal in owner.plot.geometry.pedestals do
-		pedestal.Transparency = if (tonumber(key) or 0) <= owner.profile.pedestalCount then 0 else 0.7
+		local fade = if (tonumber(key) or 0) <= owner.profile.pedestalCount then 0 else 0.7
+		local link = pedestal:FindFirstChild("Art") :: ObjectValue?
+		local art = link and link.Value
+		if art then
+			-- piedestal sculptat: coliziunea rămâne invizibilă, se estompează modelul
+			pedestal.Transparency = 1
+			for _, d in art:GetDescendants() do
+				if d:IsA("BasePart") then
+					d.Transparency = fade
+				end
+			end
+		else
+			pedestal.Transparency = fade
+		end
 	end
 end
 

@@ -124,6 +124,10 @@ def main() -> int:
         return
     if command == "publish-live" and len(sys.argv) == 3:
         publish(env, sys.argv[2], "Published")
+        # serverele deja pornite rulează versiunea veche: le repornim (cheia are `universe:write`)
+        url = f"{API}/cloud/v2/universes/{env['ROBLOX_UNIVERSE_ID']}:restartServers"
+        request(env, "POST", url, b"{}", "application/json")
+        print("[cloud] serverele live au fost repornite pe versiunea nouă")
         print(f"[cloud] link: https://www.roblox.com/games/{env['ROBLOX_PLACE_ID']}")
         return 0
     if command == "run" and len(sys.argv) == 4:

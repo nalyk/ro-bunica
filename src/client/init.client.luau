@@ -8,6 +8,7 @@ local Controllers = script.Controllers
 local ORDER = {
 	"ClientState",
 	"Music",
+	"AmbienceController",
 	"NotifyController",
 	"ShopPanel",
 	"CellarPanel",

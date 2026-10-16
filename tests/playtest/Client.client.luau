@@ -479,6 +479,19 @@ function ops.daily(): boolean
 	return true
 end
 
+-- Volumele ambianței (actuale și țintă)
+function ops.ambience(): { [string]: number }
+	local Ambience = (require :: any)(controllers:WaitForChild("AmbienceController"))
+	local levels = Ambience.levels()
+	local out = {}
+	for name, level in levels do
+		out[name .. "Target"] = level
+		local sound = game:GetService("SoundService"):FindFirstChild("Ambience_" .. name) :: Sound?
+		out[name] = if sound then sound.Volume else -1
+	end
+	return out
+end
+
 local command = ReplicatedStorage:WaitForChild("PlaytestCmd") :: RemoteEvent
 local reply = ReplicatedStorage:WaitForChild("PlaytestReply") :: RemoteEvent
 command.OnClientEvent:Connect(function(id: number, op: string, args: { any })

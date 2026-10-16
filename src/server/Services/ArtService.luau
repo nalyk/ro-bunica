@@ -13,6 +13,14 @@ local ArtLibrary = require(Shared.Visual.ArtLibrary)
 local ArtService = {}
 
 local TIMEOUT = 25
+local SHADOWLESS: { [string]: boolean } = {
+	["world.GardLow"] = true,
+	["world.PedestalLow"] = true,
+	["world.RaftLow"] = true,
+	["world.Strat"] = true,
+	["world.Tabla"] = true,
+	["world.FloareaSoarelui"] = true,
+}
 
 local function prepare(key: string, art: ArtAssets.Art, loaded: Instance): Model
 	local model = Instance.new("Model")
@@ -31,7 +39,9 @@ local function prepare(key: string, art: ArtAssets.Art, loaded: Instance): Model
 			part.CanCollide = false
 			part.CanQuery = false
 			part.CanTouch = false
-			part.CastShadow = not isInk -- conturul învelește modelul: ar arunca umbră pe el
+			-- conturul învelește modelul (ar arunca umbră pe el); decorul mic și repetat de zeci de ori pe sat
+			-- (gard, piedestale, straturi, rafturi) nu aruncă umbre: umbrele lui nu se văd, dar costă pe telefon
+			part.CastShadow = not isInk and not SHADOWLESS[key]
 			part.Parent = model
 			local volume = part.Size.X * part.Size.Y * part.Size.Z
 			if

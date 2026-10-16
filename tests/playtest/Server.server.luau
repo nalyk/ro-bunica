@@ -534,6 +534,17 @@ step("7. Se lasă noaptea (HUD și lumină)", function()
 	check(containsText(seen.hud, "Night") or containsText(seen.hud, "Noapte"), "HUD-ul nu arată noaptea")
 	-- noaptea începe la amurg (18,8) și înaintează spre zori (vezi SkyCycle.hourFor)
 	check(seen.clock < 8.5 or seen.clock > 18.5, "lumina nu s-a schimbat (ClockTime " .. seen.clock .. ")")
+	-- ambianța: noaptea greierii cântă, vântul se potolește
+	local amb = call("ambience")
+	log(
+		string.format(
+			"ambianță noaptea: greieri %.2f (țintă %.2f), vânt %.2f",
+			amb.crickets or -1,
+			amb.cricketsTarget or -1,
+			amb.wind or -1
+		)
+	)
+	check((amb.cricketsTarget or 0) > 0 and (amb.crickets or 0) > 0.05, "noaptea nu se aud greierii")
 end)
 
 local npcPlots = nearestNpcPlots(me.plot)

@@ -112,7 +112,9 @@ def build_textured(filter_):
         glb, png = os.path.join(OUT, key + ".glb"), os.path.join(OUT, key + ".png")
         if spec.get("split"):  # personaj animat: tăiat în corp, cap, brațe (cu pivoturi)
             result = subprocess.run(["blender", "-b", "-P", os.path.join(ROOT, "tools", "split_character.py"), "--",
-                                     raw, glb, "--height", str(spec["height"]), "--preview", png],
+                                     raw, glb, "--height", str(spec["height"]), "--preview", png]
+                                    + (["--profile", spec["split"]] if isinstance(spec["split"], str) else [])
+                                    + (["--tris", str(spec["tris"])] if spec.get("tris") else []),
                                     capture_output=True, text=True, timeout=600)
             pieces = [l.split() for l in result.stdout.splitlines() if l.startswith("PIECE ")]
             line = (f"POST {{'tris': {sum(int(p[2]) for p in pieces)}, 'size': [0, {spec['height']}, 0]}}"

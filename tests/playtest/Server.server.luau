@@ -270,6 +270,43 @@ step("1b. Primul minut: hoțul vine, jucătorul îl nimerește cu papucul", func
 			tostring(thiefRoot.Position)
 		)
 	)
+	-- Hoțomanul sculptat fuge cu creatura: captură de aproape și verificare că rig-ul propriu chiar merge
+	local thiefModel = Actors.characterOf(TutorialService.thiefOf(me)) :: Model
+	local before = thiefRoot.Position
+	-- camera în fața lui, pe direcția de mers (spre drum), ușor din lateral, ca să se vadă și creatura cărată
+	call(
+		"lookAt",
+		thiefRoot.Position + Vector3.new(0, 2.5, 0),
+		(thiefRoot.CFrame * CFrame.new(5, 3.5, -13)).Position,
+		2
+	)
+	task.wait(1)
+	log("SNAP hotoman-fuge")
+	task.wait(0.4)
+	local moved = Vector3.new(thiefRoot.Position.X - before.X, 0, thiefRoot.Position.Z - before.Z).Magnitude
+	local box, size = thiefModel:GetBoundingBox()
+	local feet = box.Position.Y - size.Y / 2
+	-- solul de sub el (drumul nu e la nivelul ogrăzii): rază în jos, fără hoț și creatura lui
+	local params = RaycastParams.new()
+	params.FilterType = Enum.RaycastFilterType.Exclude
+	params.FilterDescendantsInstances = { thiefModel }
+	local hit = workspace:Raycast(thiefRoot.Position, Vector3.new(0, -20, 0), params)
+	local floor = if hit then hit.Position.Y else me.plot.geometry.cframe.Position.Y
+	log(
+		string.format(
+			"hoț: sculptat %s, a mers %.1f studs, tălpile la y %.2f, solul la y %.2f (%s)",
+			tostring(thiefModel:GetAttribute("Sculpted")),
+			moved,
+			feet,
+			floor,
+			if hit then hit.Instance:GetFullName() else "-"
+		)
+	)
+	check(moved > 2, string.format("hoțul nu merge (%.1f studs în 1,4 s)", moved))
+	check(
+		math.abs(feet - floor) < 0.5,
+		string.format("tălpile hoțului nu sunt pe sol (%.2f față de %.2f)", feet, floor)
+	)
 	check(call("throwAt", "Hoțomanul") == "ok", "clientul nu vede hoțul")
 	task.wait(0.25)
 	log("SNAP tutorial-lovitura")

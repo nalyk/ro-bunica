@@ -27,6 +27,9 @@ local function reduced(): boolean
 	return ok and value == true
 end
 
+-- Setarea „Reduced Motion” a jucătorului (alte controllere își micșorează mișcarea)
+Motion.reduced = reduced
+
 local function step(dt: number)
 	dt = math.min(dt, 1 / 20)
 	for key, s in springs do

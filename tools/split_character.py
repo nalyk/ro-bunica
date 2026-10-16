@@ -1,12 +1,17 @@
 """Taie un personaj TRELLIS (o singură plasă texturată, în A-pose) în piese animabile: corp, cap, brațe.
 
-  blender -b -P tools/split_character.py -- <intrare.glb> <ieșire.glb> --height 6.2 [--preview p.png]
+  blender -b -P tools/split_character.py -- <intrare.glb> <ieșire.glb> --height 6.2 [--profile bunica]
+      [--tris 22000] [--preview p.png]
 
 Liniile de tăiere sunt în unități normalizate (înălțimea = 1, z de la -0,5 la 0,5), măsurate pe randarea
 ortografică a modelului (vezi docs/ART_PIPELINE.md). Fiecare față merge în piesa în care îi cade centrul.
 Pivoturile (gât, umeri) sunt exportate ca markeri mici („Pivot_Neck”, „Pivot_LeftShoulder”,
 „Pivot_RightShoulder”); jocul le citește poziția, pune Motor6D-urile acolo și șterge markerii.
 Fața spre -Y (→ -Z în Roblox); stânga personajului = +x în Blender.
+
+Profiluri: „bunica” (cap, brațe; mâinile prin conectivitate, fusta rămâne la corp) și „hotoman” (plus picioare
+cu pivoturi la șolduri, pentru mers; mâinile sunt despărțite de corp, deci merg după poziție).
+`--tris`: decimare înainte de tăiere (din nivelul de 40k; nivelul de 20k al TRELLIS poate avea pete).
 """
 
 import math
@@ -20,6 +25,8 @@ argv = sys.argv[sys.argv.index("--") + 1 :]
 src, dst = argv[0], argv[1]
 height = float(argv[argv.index("--height") + 1]) if "--height" in argv else 6.2
 preview = argv[argv.index("--preview") + 1] if "--preview" in argv else None
+profile = argv[argv.index("--profile") + 1] if "--profile" in argv else "bunica"
+max_tris = int(argv[argv.index("--tris") + 1]) if "--tris" in argv else 0
 
 # Liniile Bunicii (bunica_v2): gâtul la 68,5 %, umerii la ~73 %, marginea bundiței coboară spre mâini
 NECK_Z = 0.185
@@ -96,6 +103,38 @@ def classify(bm):
     return label
 
 
+# Hoțomanul (hotoman_v2, nivelul de 40k): gâtul la 75,5 %, umerii la 71 %, brațele în A, picioarele sub vintre
+H_NECK_Z, H_HEAD_HALF_X = 0.255, 0.13
+H_SHOULDER, H_HIP = (0.11, 0.21), (0.055, -0.07)
+H_CROTCH_Z, H_HAND_LOW_Z, H_ARM_TOP_Z = -0.10, -0.19, 0.235
+
+
+def h_arm_boundary(z):
+    """|x| de la care începe brațul Hoțomanului: subsuoara în A, apoi lărgime fixă la mâini."""
+    if z >= 0.2:
+        return 0.095
+    if z <= 0.0:
+        return 0.15
+    return 0.135 - (z / 0.2) * (0.135 - 0.095)
+
+
+def classify_hotoman(bm):
+    label = {}
+    for f in bm.faces:
+        c = f.calc_center_median()
+        # capul, fără vârful sacului din spatele gâtului (sacul rămâne pe corp)
+        if c.z > H_NECK_Z and abs(c.x) < H_HEAD_HALF_X and not (c.z < 0.30 and c.y > 0.03):
+            piece = "Head"
+        elif H_HAND_LOW_Z < c.z < H_ARM_TOP_Z and abs(c.x) > h_arm_boundary(c.z):
+            piece = "LeftArm" if c.x > 0 else "RightArm"
+        elif c.z < H_CROTCH_Z:
+            piece = "LeftLeg" if c.x > 0 else "RightLeg"
+        else:
+            piece = "Body"
+        label[f.index] = piece
+    return label
+
+
 bpy.ops.wm.read_factory_settings(use_empty=True)
 bpy.ops.import_scene.gltf(filepath=src)
 obj = [o for o in bpy.context.scene.objects if o.type == "MESH"][0]
@@ -112,12 +151,31 @@ span = hi.z - lo.z
 for v in vs:
     v.co = (v.co - center) / span
 
+if max_tris:
+    tris = sum(len(p.vertices) - 2 for p in obj.data.polygons)
+    if tris > max_tris:
+        m = obj.modifiers.new("dec", "DECIMATE")
+        m.ratio = max_tris / tris
+        m.use_collapse_triangulate = True
+        bpy.ops.object.modifier_apply(modifier="dec")
+
 # tăiere pe fețe (separare după material „piesă”)
-pieces = ["Body", "Head", "LeftArm", "RightArm"]
+pieces = ["Body", "Head", "LeftArm", "RightArm"] + (["LeftLeg", "RightLeg"] if profile == "hotoman" else [])
+if profile == "hotoman":
+    # tăieturi drepte pe planele vintrelui și gâtului (altfel fețele mari, decimate, lasă margini zimțate,
+    # vizibile când piciorul sau capul se mișcă); bisecția interpolează și UV-urile
+    bm = bmesh.new()
+    bm.from_mesh(obj.data)
+    for z in (H_CROTCH_Z, H_NECK_Z):
+        geom = bm.verts[:] + bm.edges[:] + bm.faces[:]
+        bmesh.ops.bisect_plane(bm, geom=geom, plane_co=(0, 0, z), plane_no=(0, 0, 1))
+    bmesh.ops.triangulate(bm, faces=bm.faces[:])
+    bm.to_mesh(obj.data)
+    bm.free()
 bm = bmesh.new()
 bm.from_mesh(obj.data)
 bm.faces.ensure_lookup_table()
-LABEL = classify(bm)
+LABEL = classify_hotoman(bm) if profile == "hotoman" else classify(bm)
 bm.free()
 
 objects = {}
@@ -155,9 +213,16 @@ def marker(name, pos):
     return m
 
 
-marks = [marker("Pivot_Neck", (0, 0.0, NECK_Z)),
-         marker("Pivot_LeftShoulder", (SHOULDER[0], 0.0, SHOULDER[1])),
-         marker("Pivot_RightShoulder", (-SHOULDER[0], 0.0, SHOULDER[1]))]
+if profile == "hotoman":
+    marks = [marker("Pivot_Neck", (0, 0.0, H_NECK_Z)),
+             marker("Pivot_LeftShoulder", (H_SHOULDER[0], 0.0, H_SHOULDER[1])),
+             marker("Pivot_RightShoulder", (-H_SHOULDER[0], 0.0, H_SHOULDER[1])),
+             marker("Pivot_LeftHip", (H_HIP[0], 0.0, H_HIP[1])),
+             marker("Pivot_RightHip", (-H_HIP[0], 0.0, H_HIP[1]))]
+else:
+    marks = [marker("Pivot_Neck", (0, 0.0, NECK_Z)),
+             marker("Pivot_LeftShoulder", (SHOULDER[0], 0.0, SHOULDER[1])),
+             marker("Pivot_RightShoulder", (-SHOULDER[0], 0.0, SHOULDER[1]))]
 everything = list(objects.values()) + marks
 
 for name, o in objects.items():
@@ -171,7 +236,7 @@ bpy.ops.export_scene.gltf(filepath=dst, use_selection=True, export_format="GLB",
 
 if preview:
     colors = {"Body": (0.9, 0.9, 0.9, 1), "Head": (1, 0.4, 0.4, 1), "LeftArm": (0.4, 0.7, 1, 1),
-              "RightArm": (0.4, 1, 0.5, 1)}
+              "RightArm": (0.4, 1, 0.5, 1), "LeftLeg": (1, 0.8, 0.3, 1), "RightLeg": (0.8, 0.4, 1, 1)}
     for name, o in objects.items():
         mat = bpy.data.materials.new(name)
         mat.diffuse_color = colors[name]

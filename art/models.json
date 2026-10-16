@@ -135,5 +135,11 @@
   "remote": "world/low_Raft_3k.glb",
   "height": 2.0,
   "tris": 19000
+ },
+ "char.Hotoman": {
+  "remote": "hotoman_40k.glb",
+  "height": 6.4,
+  "split": "hotoman",
+  "tris": 22000
  }
 }

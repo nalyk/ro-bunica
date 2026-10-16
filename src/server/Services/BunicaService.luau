@@ -7,7 +7,6 @@ local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
 
 local Shared = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
-local ArtLibrary = require(Shared.Visual.ArtLibrary)
 local Net = require(Shared.Net)
 local Defense = require(Shared.Config.Defense)
 local RateLimiter = require(Shared.Domain.RateLimiter)
@@ -20,6 +19,7 @@ local BunicaLines = require(Shared.Config.BunicaLines)
 local LinePicker = require(Shared.Domain.LinePicker)
 local Actors = require(script.Parent.Parent.Actors)
 local Rig = require(script.Parent.Parent.Ai.Rig)
+local SculptedRig = require(script.Parent.Parent.Ai.SculptedRig)
 
 type Actor = Actors.Actor
 
@@ -106,73 +106,21 @@ local function finishRig(rig: Model, humanoid: Humanoid, root: BasePart, head: B
 	}
 end
 
--- Bunica sculptată (art/: concept Codex → TRELLIS.2 → tăiată în corp, cap, brațe): un rig propriu cu
--- motoarele numite ca la R15 (Root, Neck, LeftShoulder, RightShoulder), puse în pivoturile exportate din
--- Blender. Pozele procedurale din BunicaController merg la fel. Fața e pictată în textură (fără fața 2D).
+-- Bunica sculptată (art/: concept Codex → TRELLIS.2 → tăiată în corp, cap, brațe), pe rig-ul comun
+-- (Ai/SculptedRig). Fața e pictată în textură (fără fața 2D).
 local function buildSculpted(home: CFrame): (Model?, Humanoid?, BasePart?, BasePart?)
-	local template = ArtLibrary.get("char.Bunica")
-	if not template then
-		return nil
-	end
-	local rig = Instance.new("Model")
-	rig.Name = "Bunica"
-	rig:SetAttribute("Sculpted", true)
-	local root = Instance.new("Part")
-	root.Name = "HumanoidRootPart"
-	root.Size = Vector3.new(2, 2, 1)
-	root.Transparency = 1
-	root.CanCollide = false
-	root.CanQuery = false
-	root.Anchored = true
-	root.CFrame = home * CFrame.new(0, 2.5, 0)
-	root.Parent = rig
-	rig.PrimaryPart = root
 	-- `home` e orientat pentru rig-ul R15 vechi (rotit 180°); modelul sculptat privește spre -Z, deci îl
-	-- întoarcem ca să stea cu fața spre drum (verificat în galeria playtest-ului)
-	local base = home * CFrame.Angles(0, math.pi, 0)
-	local pieces: { [string]: BasePart } = {}
-	local pivots: { [string]: Vector3 } = {}
-	for _, child in template:GetChildren() do
-		if child:IsA("BasePart") then
-			local world = base * child.CFrame
-			if string.sub(child.Name, 1, 6) == "Pivot_" then
-				pivots[string.sub(child.Name, 7)] = world.Position
-			else
-				child.CFrame = world
-				child.Anchored = false
-				child.Massless = true
-				child.CanCollide = false
-				child.CanQuery = false
-				child.Parent = rig
-				pieces[child.Name] = child
-			end
-		end
-	end
-	template:Destroy()
-	local body, head = pieces.Body, pieces.Head
-	if not (body and head and pieces.LeftArm and pieces.RightArm) then
-		rig:Destroy()
+	-- întoarcem ca să stea cu fața spre drum (verificat în galeria playtest-ului). Rădăcina rămâne pe `home`.
+	local built = SculptedRig.build(
+		"char.Bunica",
+		"Bunica",
+		home * CFrame.Angles(0, math.pi, 0),
+		home * CFrame.new(0, 2.5, 0)
+	)
+	if not built then
 		return nil
 	end
-	local function motor(name: string, part0: BasePart, part1: BasePart, pivot: Vector3)
-		local at = CFrame.new(pivot) * base.Rotation
-		local m = Instance.new("Motor6D")
-		m.Name = name
-		m.Part0 = part0
-		m.Part1 = part1
-		m.C0 = part0.CFrame:ToObjectSpace(at)
-		m.C1 = part1.CFrame:ToObjectSpace(at)
-		m.Parent = part1
-	end
-	motor("Root", root, body, root.Position)
-	motor("Neck", body, head, pivots.Neck or head.Position)
-	motor("LeftShoulder", body, pieces.LeftArm, pivots.LeftShoulder or pieces.LeftArm.Position)
-	motor("RightShoulder", body, pieces.RightArm, pivots.RightShoulder or pieces.RightArm.Position)
-	local humanoid = Instance.new("Humanoid")
-	humanoid.RequiresNeck = false
-	humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
-	humanoid.Parent = rig
-	return rig, humanoid, root, head
+	return built.rig, built.humanoid, built.root, built.head
 end
 
 local function buildRig(home: CFrame): Bunica

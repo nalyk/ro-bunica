@@ -119,7 +119,7 @@ function TutorialService.run(owner: Owner, delaySeconds: number?)
 	local model = CreatureService.modelAt(owner, key) :: Model
 	local approach = model:GetPivot().Position + geometry.cframe.LookVector * 4
 
-	local thief = Actors.createBot(THIEF_NAME, CFrame.new(roadPoint))
+	local thief = Actors.createBot(THIEF_NAME, CFrame.new(roadPoint), "Hotoman")
 	session.thief = thief
 	thiefSessions[thief] = session
 	local humanoid = Actors.humanoid(thief) :: Humanoid
@@ -163,7 +163,7 @@ function TutorialService.run(owner: Owner, delaySeconds: number?)
 	CreatureService.setHidden(owner, key, true)
 	local clone =
 		CreatureBuilder.build({ id = record.id, size = record.size, mutation = record.mutation }, root.CFrame)
-	CreatureBuilder.attachAbove(clone, root, CARRY_HEIGHT)
+	CreatureBuilder.attachAbove(clone, root, Actors.carryHeight(thief, CARRY_HEIGHT))
 	session.clone = clone
 
 	RaidService.forceIntruder(thief, owner)

@@ -5,6 +5,7 @@ local ServerScriptService = game:GetService("ServerScriptService")
 
 local Shared = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
 local Inventory = require(Shared.Domain.Inventory)
+local ArtLibrary = require(Shared.Visual.ArtLibrary)
 
 return function(Spec: any, services: { [string]: any })
 	local describe, it, expect = Spec.describe, Spec.it, Spec.expect
@@ -38,6 +39,20 @@ return function(Spec: any, services: { [string]: any })
 			end, 40)).toBe(true)
 			local thief = TutorialService.thiefOf(ownerState)
 			local thiefRoot = Actors.root(thief) :: BasePart
+			-- Hoțomanul sculptat: rig propriu cu picioare, pe sol. Mersul nu se vede aici (sesiunile Luau din
+			-- Open Cloud nu rulează fizica; nici boții R15 nu se mișcă), îl verifică playtest-ul din Studio.
+			if ArtLibrary.has("char.Hotoman") then
+				local rig = Actors.characterOf(thief) :: Model
+				expect(rig:GetAttribute("Sculpted")).toBe(true)
+				expect(rig:GetAttribute("Walks")).toBe(true)
+				for _, piece in { "Body", "Head", "LeftArm", "RightArm", "LeftLeg", "RightLeg" } do
+					expect(rig:FindFirstChild(piece) ~= nil).toBe(true)
+				end
+				-- tălpile pe pământ: partea de jos a modelului la nivelul solului ogrăzii (±1 stud)
+				local box, size = rig:GetBoundingBox()
+				local ground = ownerState.plot.geometry.cframe.Position.Y
+				expect(math.abs(box.Position.Y - size.Y / 2 - ground) < 1).toBe(true)
+			end
 			-- Proprietarul stă la 18 studs și ochește la 10 studs pe lângă hoț
 			local character = Actors.characterOf(owner) :: Model
 			character:PivotTo(CFrame.new(thiefRoot.Position + Vector3.new(18, 0, 0)))

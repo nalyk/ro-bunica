@@ -13,6 +13,13 @@
     "file": "build/art/char.Bunica.glb",
     "moderation": "Approved"
   },
+  "char.Hotoman": {
+    "id": "87786986565213",
+    "type": "Model",
+    "sha": "d4d27ae13b740975",
+    "file": "build/art/char.Hotoman.glb",
+    "moderation": "Approved"
+  },
   "creature.ArdeiasIute": {
     "id": "91778905031014",
     "type": "Model",

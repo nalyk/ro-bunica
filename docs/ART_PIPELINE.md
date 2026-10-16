@@ -83,5 +83,11 @@ apoi imagine → 3D texturat.
   Piedestalul îl dă jocul.
 - **Satul:** `WorldBuilder.placeArt` pune modelele (doar vizuale) peste piesele vechi, care rămân coliziuni
   invizibile. Gardul, piedestalele și rafturile folosesc nivelul de ~3k (`low_*`), fără pierderi vizibile.
-- **De refăcut:** Brânzoi (concept v2 în coadă), Mărțișorel (textură pătată, seed 23 în coadă), straturile
-  (CuMesh pică, seed 31 în coadă), Hoțomanul (concept `art/concepts/characters/hotoman_v2.png`, în coadă).
+- **Hoțomanul:** concept `art/concepts/characters/hotoman_v2.png` (sacul pe spate, ca brațele să fie libere),
+  nivelul de 40k decimat la ~22k în `split_character.py --profile hotoman` (picioare separate, tăieturi
+  drepte pe planele vintrelui și gâtului prin `bisect_plane`). Rig-ul comun e `Server/Ai/SculptedRig`
+  (Root, Neck, umeri, șolduri, Humanoid cu HipHeight); `Actors.createBot(name, at, "Hotoman")`. Mersul e
+  procedural pe client (`StrideController`, atributul `Walks`); creatura cărată stă deasupra creștetului
+  (`CarryHeight`). Mersul se verifică în playtest (sesiunile Luau din Open Cloud nu rulează fizica).
+- **De refăcut:** Brânzoi (concept v2 în coadă), Mărțișorel (seed 23 gata, de verificat), straturile
+  (CuMesh pică, seed 31 în coadă).

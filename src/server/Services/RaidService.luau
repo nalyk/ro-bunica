@@ -262,7 +262,7 @@ function RaidService.tryStart(actor: Actor, owner: Owner, key: string)
 	if prompt then
 		prompt:Destroy()
 	end
-	CreatureBuilder.attachAbove(model, root, CARRY_HEIGHT)
+	CreatureBuilder.attachAbove(model, root, Actors.carryHeight(actor, CARRY_HEIGHT))
 
 	local creature = Creatures.byId[record.id]
 	carries[actor] = {

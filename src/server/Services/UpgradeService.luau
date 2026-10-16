@@ -11,6 +11,7 @@ local Upgrades = require(Shared.Domain.Upgrades)
 local Economy = require(Shared.Domain.Economy)
 local PlotService = require(script.Parent.PlotService)
 local StateService = require(script.Parent.StateService)
+local Analytics = require(script.Parent.Parent.Analytics)
 local EconomyService = require(script.Parent.EconomyService)
 local CreatureService = require(script.Parent.CreatureService)
 local GardenService = require(script.Parent.GardenService)
@@ -78,6 +79,8 @@ function UpgradeService.buy(owner: Owner, id: string): Upgrades.BuyResult
 		return result
 	end
 	EconomyService.addLei(owner, 0) -- clasamentul și starea, după scăderea prețului
+	Analytics.sink(owner.player, owner.profile, cost :: number, "Gameplay", "upgrade." .. id)
+	Analytics.step(owner.player, owner.profile, "FirstUpgrade")
 	if id == "pedestal" or id == "cellar" then
 		CreatureService.render(owner)
 	elseif id == "bed" then

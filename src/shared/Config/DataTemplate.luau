@@ -36,6 +36,7 @@ export type Profile = {
 	uidCounter: number,
 	passes: { [string]: boolean }, -- permisele Robux deja aplicate (efectele permanente, o singură dată)
 	receipts: { string }, -- PurchaseId-urile procesate (anti-dublare la ProcessReceipt)
+	funnel: { [string]: boolean }, -- pașii din funnel-ul primelor minute deja măsurați
 }
 
 local DataTemplate = {}
@@ -62,6 +63,7 @@ function DataTemplate.new(): Profile
 		uidCounter = 0,
 		passes = {},
 		receipts = {},
+		funnel = {},
 	}
 end
 

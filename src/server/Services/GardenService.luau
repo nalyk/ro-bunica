@@ -15,6 +15,7 @@ local Inventory = require(Shared.Domain.Inventory)
 local RateLimiter = require(Shared.Domain.RateLimiter)
 local PlotService = require(script.Parent.PlotService)
 local CreatureService = require(script.Parent.CreatureService)
+local Analytics = require(script.Parent.Parent.Analytics)
 local StateService = require(script.Parent.StateService)
 local WeatherService = require(script.Parent.WeatherService)
 local Messenger = require(script.Parent.Messenger)
@@ -84,6 +85,7 @@ local function hatch(owner: Owner, key: string): boolean
 	fullWarned[owner] = nil
 	profile.beds[key] = nil
 	profile.stats.hatched += 1
+	Analytics.step(owner.player, profile, "StarterHatched")
 	if where == "pedestal" and pedestalKey then
 		CreatureService.renderKey(owner, pedestalKey)
 		CreatureService.refreshShowcase(owner)
@@ -144,6 +146,7 @@ local function onPlant(player: Player, bedKey: unknown, seedId: unknown)
 		profile.seeds[seedId] = nil
 	end
 	profile.beds[bedKey] = Growth.newPlant(seedId, math.random)
+	Analytics.step(player, profile, "FirstPlanted")
 	updateBedVisual(owner, bedKey)
 	StateService.markDirty(player)
 end

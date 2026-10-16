@@ -13,6 +13,7 @@ local Creatures = require(Shared.Config.Creatures)
 local RateLimiter = require(Shared.Domain.RateLimiter)
 local PlotService = require(script.Parent.PlotService)
 local StateService = require(script.Parent.StateService)
+local Analytics = require(script.Parent.Parent.Analytics)
 local EconomyService = require(script.Parent.EconomyService)
 local Messenger = require(script.Parent.Messenger)
 
@@ -89,6 +90,8 @@ local function onBuy(player: Player, seedId: unknown)
 	end
 	owner.profile.seeds[seedId] = (owner.profile.seeds[seedId] or 0) + 1
 	EconomyService.addLei(owner, -(result :: number))
+	Analytics.sink(player, owner.profile, result :: number, "Shop", seedId)
+	Analytics.step(player, owner.profile, "FirstSeedBought")
 	StateService.markDirty(player)
 	sendStock(player)
 end

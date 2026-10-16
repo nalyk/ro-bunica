@@ -12,6 +12,7 @@ local Tutorial = require(Shared.Config.Tutorial)
 local CreatureBuilder = require(Shared.Visual.CreatureBuilder)
 local PlotService = require(script.Parent.PlotService)
 local CreatureService = require(script.Parent.CreatureService)
+local Analytics = require(script.Parent.Parent.Analytics)
 local RaidService = require(script.Parent.RaidService)
 local SlipperService = require(script.Parent.SlipperService)
 local BunicaService = require(script.Parent.BunicaService)
@@ -78,6 +79,7 @@ local function cleanup(session: Session, completed: boolean)
 	end
 	if completed then
 		owner.profile.tutorialThiefDone = true
+		Analytics.step(owner.player, owner.profile, "TutorialThief")
 		send(owner, "done", { session.hitBy == "player" })
 	end
 	sessions[owner] = nil

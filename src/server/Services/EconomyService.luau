@@ -12,6 +12,7 @@ local Raid = require(Shared.Domain.Raid)
 local RateLimiter = require(Shared.Domain.RateLimiter)
 local PlotService = require(script.Parent.PlotService)
 local CreatureService = require(script.Parent.CreatureService)
+local Analytics = require(script.Parent.Parent.Analytics)
 local StateService = require(script.Parent.StateService)
 local RaidService = require(script.Parent.RaidService)
 local Messenger = require(script.Parent.Messenger)
@@ -90,6 +91,7 @@ local function grantOffline(owner: Owner)
 		Economy.offlineEarnings(Economy.totalIncome(profile.pedestals, 1), os.time() - profile.lastSeen)
 	if earned > 0 then
 		EconomyService.addLei(owner, earned)
+		Analytics.source(owner.player, owner.profile, earned, "Offline")
 		Messenger.notify(owner.player, "notify.Offline", { Economy.formatShort(earned) })
 	end
 end
@@ -117,6 +119,7 @@ local function onSell(player: Player, uid: unknown)
 		CreatureService.refreshShowcase(owner)
 	end
 	EconomyService.addLei(owner, price)
+	Analytics.source(player, owner.profile, price, "Sell", record.id)
 	Messenger.notify(player, "notify.Sold", { Economy.formatShort(price) })
 end
 
@@ -153,6 +156,19 @@ local function onMoveToPedestal(player: Player, uid: unknown)
 	end
 end
 
+-- Venitul pe secundă se adună și se măsoară o dată pe minut (nu la fiecare tic)
+local pendingIncome: { [Player]: number } = {}
+local INCOME_FLUSH_SECONDS = 60
+
+local function flushIncome(player: Player)
+	local amount = pendingIncome[player]
+	local owner = PlotService.getOwner(player)
+	pendingIncome[player] = nil
+	if amount and owner then
+		Analytics.source(player, owner.profile, amount, "Income")
+	end
+end
+
 local function incomeTick(dt: number)
 	for _, owner in PlotService.owners() do
 		local player = owner.player
@@ -161,12 +177,21 @@ local function incomeTick(dt: number)
 			local income = Economy.totalIncome(owner.profile.pedestals, EconomyService.multiplier(player))
 			if income > 0 then
 				EconomyService.addLei(owner, income * dt)
+				pendingIncome[player] = (pendingIncome[player] or 0) + income * dt
 			end
 		end
 	end
 end
 
 function EconomyService.start()
+	task.spawn(function()
+		while true do
+			task.wait(INCOME_FLUSH_SECONDS)
+			for player in pendingIncome do
+				flushIncome(player)
+			end
+		end
+	end)
 	Net.get("Sell").OnServerEvent:Connect(onSell)
 	Net.get("MoveToCellar").OnServerEvent:Connect(onMoveToCellar)
 	Net.get("MoveToPedestal").OnServerEvent:Connect(onMoveToPedestal)
@@ -181,6 +206,7 @@ function EconomyService.start()
 	Players.PlayerRemoving:Connect(function(player)
 		friendCounts[player] = nil
 		leaderstatsLei[player] = nil
+		flushIncome(player)
 		leaderstatsDefends[player] = nil
 		boosts[player] = nil
 		actionLimiter:forget(player.UserId)
@@ -208,6 +234,7 @@ function EconomyService.start()
 			local reward = Raid.defenseReward(Economy.sellPrice(saved))
 			if reward > 0 then
 				EconomyService.addLei(throwerOwner, reward)
+				Analytics.source(thrower and thrower.player, throwerOwner.profile, reward, "DefenseReward")
 				Messenger.notify(
 					thrower and thrower.player,
 					"notify.DefenseReward",

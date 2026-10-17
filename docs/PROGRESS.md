@@ -135,6 +135,28 @@ Designul și motivele sunt în `docs/superpowers/specs/2026-10-17-retentie-desig
 - **Live:** versiunea 79 (commit 5c49ce7); CI verde.
 - **E2E independent de oră:** Runner-ul oprește programul evenimentului de sâmbătă (`LiveEventService.setScheduled(false)`). Între 16:00 și 17:00 UTC, ploaia de papuci dobora boții de test.
 
+## Interfața pe telefon (2026-10-17)
+
+Designul e în `docs/superpowers/specs/2026-10-17-mobil-hud-design.md`, pornit de la două capturi de pe telefonul omului.
+
+- [x] **Două așezări:** desktop și tactil, cu tactil = atingere fără mouse.
+  - Geometria tactilă e în `Domain/HudLayout`. E testată pe 6 ecrane (iPhone SE, iPhone 14, Android mic, îngust și lat, tabletă): nimic interactiv în zona joystick-ului (stânga 40%, 2/3 de jos) sau peste săritură, totul în ecran, fără suprapuneri, butoane de minimum 44 px și notificări destul de late.
+  - Săritura e citită la rulare din `TouchGui`; dacă lipsește, se folosește formula din TouchJump.
+- [x] **Pe telefon:**
+  - rândul de butoane sus-stânga: Semințe, Beci, Ograda, Caietul și „Mai mult” (Horă, Prieteni, Magazin);
+  - banii și ziua sus-dreapta, la scara 0,62;
+  - lângă săritură: Furia și Făcălețul rotunde, iar deasupra papucii și Nervii;
+  - semințele într-o bandă derulabilă jos;
+  - panourile la 94% × 90% din ecran;
+  - notificările cu text fix, rupt pe rânduri.
+- [x] **Pe desktop:**
+  - cutia de apărare se lărgește pentru 4–5 papuci (bug-ul „Papuci: 3/3” tăiat) și are eticheta „Nervii Bunicii”;
+  - coloana are „Prieteni” în loc de „Cheamă prieteni”;
+  - notificările lungi nu mai sunt tăiate.
+- [x] **Panoul „Prieteni”:** invitația, Familie sau Rivali și jucătorii de pe server cu „Schimb”. Înlocuiește butoanele plutitoare din versiunea 79, care se suprapuneau cu coloana.
+- [x] **Root:** `UI.screen()` e acum un Frame „Root”. În playtest, `Layout.setOverride` îl micșorează la mărimea unui telefon. Pasul 15l auditează dreptunghiurile reale pe trei telefoane și face capturi.
+- **Reparat în kit:** buza 3D a butoanelor acoperea textul când butonul avea ZIndex (`lip.ZIndex = 0`).
+
 ## Lansare publică (2026-10-16)
 
 - Jocul e public: https://www.roblox.com/games/5300295145 („Don't Steal from Bunica!”, gen Simulation / Incremental Simulator). Pagina: descriere EN și RO, iconița (Bunica cu papucul), două imagini (afiș + toate creaturile) pe prima pagină și pe pagina jocului, titlul și imaginile în română. Imaginile sunt compuse de `tools/store_art.py` din straturile ecranului de încărcare.

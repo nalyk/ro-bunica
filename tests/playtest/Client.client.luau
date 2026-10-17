@@ -245,6 +245,7 @@ function ops.openPanel(controller: string): { [string]: number }
 	task.wait(0.8)
 	local rows, previews = 0, 0
 	local gui = player.PlayerGui:FindFirstChild("BunicaUI")
+	gui = gui and gui:FindFirstChild("Root")
 	for _, panel in (gui and gui:GetChildren() or {}) :: { Instance } do
 		if panel.Name == "Panel" and (panel :: Frame).Visible then
 			local scroll = panel:FindFirstChildOfClass("ScrollingFrame")
@@ -272,6 +273,7 @@ function ops.notebook(tab: string): { [string]: any }
 	task.wait(0.5)
 	local rows = 0
 	local gui = player.PlayerGui:FindFirstChild("BunicaUI")
+	gui = gui and gui:FindFirstChild("Root")
 	for _, panel in (gui and gui:GetChildren() or {}) :: { Instance } do
 		if panel.Name == "Panel" and (panel :: Frame).Visible and panel:FindFirstChild("Tabs") then
 			local scroll = panel:FindFirstChildOfClass("ScrollingFrame")
@@ -315,15 +317,82 @@ function ops.prompts(ownerUserId: number, near: Vector3): { string }
 	return lines
 end
 
+-- Telefonul emulat: Root micșorat la mărimea ecranului (puncte GUI) și modul tactil; nil revine la normal.
+-- Întoarce auditul: butoanele vizibile ale HUD-ului, săritura, zona joystick-ului și dreptunghiurile tactile.
+function ops.phone(width: number?, height: number?): { [string]: any }
+	local Layout = (require :: any)(controllers:WaitForChild("Layout"))
+	local Hud = (require :: any)(controllers:WaitForChild("HudController"))
+	if width and height then
+		Layout.setOverride({ size = Vector2.new(width, height), touch = true })
+	else
+		Layout.setOverride(nil)
+	end
+	task.wait(0.6)
+	local size = Layout.size()
+	local small = {}
+	local root = player.PlayerGui:WaitForChild("BunicaUI"):WaitForChild("Root")
+	for _, descendant in root:GetDescendants() do
+		if
+			(descendant:IsA("TextLabel") or descendant:IsA("TextButton"))
+			and descendant.Text ~= ""
+			and descendant.Visible
+			and not descendant:FindFirstAncestor("Panel")
+			and descendant.AbsoluteSize.Y > 0
+		then
+			local visible = true
+			local parent = descendant.Parent
+			while parent and parent ~= root do
+				if parent:IsA("GuiObject") and not parent.Visible then
+					visible = false
+					break
+				end
+				parent = parent.Parent
+			end
+			-- textul scalat: TextBounds e înălțimea reală a literelor
+			if visible and descendant.TextBounds.Y > 0 and descendant.TextBounds.Y < 11 then
+				table.insert(
+					small,
+					string.format("%s (%.0f px)", descendant:GetFullName(), descendant.TextBounds.Y)
+				)
+			end
+		end
+	end
+	return { size = size, buttons = Hud.audit(), layout = Hud.layout, small = small }
+end
+
+function ops.phoneMenu(): boolean
+	local Hud = (require :: any)(controllers:WaitForChild("HudController"))
+	Hud.toggleMenu()
+	return true
+end
+
 -- Schimbul: ce vede jucătorul în fereastra de schimb
 function ops.trade(): { [string]: any }
 	local module = (require :: any)(controllers:WaitForChild("TradePanel"))
 	return module.debugState()
 end
 
+-- Închide panoul dacă e deschis (toggle() l-ar redeschide pe unul deja închis)
 function ops.closePanel(controller: string): boolean
 	local module = (require :: any)(controllers:WaitForChild(controller))
-	module.toggle()
+	local gui = player.PlayerGui:FindFirstChild("BunicaUI")
+	local root = gui and gui:FindFirstChild("Root")
+	local anyOpen = false
+	for _, child in (root and root:GetChildren() or {}) :: { Instance } do
+		if child.Name == "Panel" and (child :: Frame).Visible then
+			anyOpen = true
+		end
+	end
+	if anyOpen then
+		module.toggle()
+		-- dacă era deschis alt panou, toggle() l-a deschis pe acesta: le închidem pe toate
+		task.wait(0.1)
+		for _, child in (root and root:GetChildren() or {}) :: { Instance } do
+			if child.Name == "Panel" then
+				(child :: Frame).Visible = false
+			end
+		end
+	end
 	return true
 end
 
@@ -479,7 +548,7 @@ function ops.gamepad(stage: string): { [string]: any }
 	local Gamepad = (require :: any)(controllers:WaitForChild("GamepadController"))
 	local GuiService = game:GetService("GuiService")
 	local ContextActionService = game:GetService("ContextActionService")
-	local gui = player.PlayerGui:WaitForChild("BunicaUI")
+	local gui = player.PlayerGui:WaitForChild("BunicaUI"):WaitForChild("Root")
 	if stage == "on" then
 		Gamepad.setActive(true)
 		task.wait(0.3)

@@ -1197,6 +1197,82 @@ step("15k. Gospodăria nouă: renașterea din Caiet", function()
 	call("closePanel", "NotebookPanel")
 end)
 
+-- Telefoane emulate (puncte GUI, landscape, fără bara Roblox): Root micșorat, HUD-ul în modul tactil
+local PHONES = {
+	{ name = "iPhone-SE", w = 667, h = 339 },
+	{ name = "Android-mic", w = 740, h = 324 },
+	{ name = "Android-lat", w = 800, h = 354 },
+}
+
+local function overlaps(a: any, b: any): boolean
+	return a.x < b.x + b.w - 0.5 and b.x < a.x + a.w - 0.5 and a.y < b.y + b.h - 0.5 and b.y < a.y + a.h - 0.5
+end
+
+step(
+	"15l. Telefonul: nimic peste săritură sau joystick, totul în ecran, butoane de deget, text lizibil",
+	function()
+		DayNightService.forcePhase("Day")
+		call("walkTo", me.plot.geometry.spawnCFrame.Position)
+		local real = call("phone").size
+		log(string.format("ecranul real din Studio: %.0f×%.0f", real.X, real.Y))
+		for _, phone in PHONES do
+			if phone.w > real.X or phone.h > real.Y then
+				log("sar peste " .. phone.name .. ": nu încape în fereastra Studio")
+				continue
+			end
+			local report = call("phone", phone.w, phone.h)
+			local layout = report.layout
+			check(layout ~= nil, phone.name .. ": modul tactil nu s-a aplicat")
+			check(
+				#report.buttons >= 8,
+				phone.name .. ": prea puține butoane în audit (" .. #report.buttons .. ")"
+			)
+			for i, a in report.buttons do
+				local short = string.match(a.name, "[^.]+%.[^.]+$") or a.name
+				check(
+					a.x >= -0.5 and a.y >= -0.5 and a.x + a.w <= phone.w + 0.5 and a.y + a.h <= phone.h + 0.5,
+					phone.name .. ": în afara ecranului: " .. short
+				)
+				check(not overlaps(a, layout.jump), phone.name .. ": peste săritură: " .. short)
+				check(not overlaps(a, layout.thumb), phone.name .. ": în zona joystick-ului: " .. short)
+				check(
+					math.min(a.w, a.h) >= 44 or string.find(a.name, "SeedBar", 1, true) ~= nil,
+					string.format("%s: buton prea mic (%.0f×%.0f): %s", phone.name, a.w, a.h, short)
+				)
+				for j = i + 1, #report.buttons do
+					local b = report.buttons[j]
+					local nested = string.find(b.name, a.name, 1, true)
+						or string.find(a.name, b.name, 1, true)
+					check(
+						nested or not overlaps(a, b),
+						phone.name .. ": se suprapun " .. short .. " și " .. b.name
+					)
+				end
+			end
+			check(#report.small == 0, phone.name .. ": text prea mic: " .. table.concat(report.small, " | "))
+			log(string.format("%s: %d butoane verificate", phone.name, #report.buttons))
+			task.wait(0.4)
+			log("SNAP telefon-" .. phone.name)
+			call("phoneMenu")
+			task.wait(0.5)
+			log("SNAP telefon-meniu-" .. phone.name)
+			call("phoneMenu")
+		end
+		-- un panou pe telefon: aproape tot ecranul
+		call("phone", PHONES[1].w, PHONES[1].h)
+		local shop = call("openPanel", "ShopPanel")
+		check(shop.rows >= 1, "taraba nu listează nimic pe telefon")
+		task.wait(0.5)
+		log("SNAP telefon-taraba")
+		call("closePanel", "ShopPanel")
+		DayNightService.forcePhase("Night")
+		task.wait(1)
+		log("SNAP telefon-noapte")
+		DayNightService.forcePhase("Day")
+		call("phone")
+	end
+)
+
 step("16. Fără erori de script (server și client)", function()
 	local serverErrors = {}
 	for _, entry in LogService:GetLogHistory() do

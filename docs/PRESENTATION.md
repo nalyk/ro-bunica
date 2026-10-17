@@ -123,6 +123,9 @@ planșa de contact. **Blocat parțial** de permisiunea „assets” a cheii API 
 2. **Iconițe** generate ca SVG din cod, apoi PNG, apoi încărcate (fără text în imagini).
 3. **HUD minimal**: banii în stânga sus, cadranul zi/noapte și vremea sus la centru, 4 iconițe în
    stânga, butoanele contextuale lângă butonul de săritură.
+   *Făcut pe 2026-10-17 pentru telefon:* rândul de iconițe sus-stânga (cu „Mai mult”), banii și ziua sus-dreapta,
+   Furia și Făcălețul lângă săritură. Geometria testată e în `Domain/HudLayout`, iar specificația în
+   `docs/superpowers/specs/2026-10-17-mobil-hud-design.md`. Desktopul păstrează coloana și cutia de apărare.
 4. **Recompense vizibile**: monede care zboară spre contor, contorul se turtește și apoi crește,
    raritatea arătată prin culoare **și** formă, fereastră de recompensă cu raze.
 5. **Intrări**: `PreferredInput` schimbă glifele și aranjarea, navigarea cu gamepad e completă, iar

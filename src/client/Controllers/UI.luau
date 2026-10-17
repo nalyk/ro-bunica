@@ -1,8 +1,8 @@
 --!strict
 -- Mic kit de interfață în stilul „Satul brodat”: rame roșii cusute, colțuri rotunjite, text mare.
 
-local Players = game:GetService("Players")
-
+local Layout = require(script.Parent.Layout)
+local HudLayout = require(game:GetService("ReplicatedStorage"):WaitForChild("Shared").Domain.HudLayout)
 local Motion = require(script.Parent.Motion)
 local Music = require(script.Parent.Music)
 local Theme = require(script.Parent.Theme)
@@ -24,20 +24,9 @@ UI.colors = table.freeze({
 
 UI.font = Typography.display
 
-local screen: ScreenGui? = nil
-
-function UI.screen(): ScreenGui
-	if screen then
-		return screen
-	end
-	local gui = Instance.new("ScreenGui")
-	gui.Name = "BunicaUI"
-	gui.ResetOnSpawn = false
-	gui.IgnoreGuiInset = false
-	gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-	gui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
-	screen = gui
-	return gui
+-- Rădăcina interfeței (Layout.root): un Frame care umple ecranul; în teste poate avea mărimea unui telefon.
+function UI.screen(): Frame
+	return Layout.root()
 end
 
 local function decorate(frame: GuiObject, radius: number?)
@@ -268,6 +257,14 @@ function UI.panel(title: string, onClose: () -> ()): (Frame, ScrollingFrame, Tex
 	local constraint = Instance.new("UISizeConstraint")
 	constraint.MaxSize = Vector2.new(660, 540)
 	constraint.Parent = panel
+	-- pe telefon, panoul ia aproape tot ecranul (60% × 70% din 667×339 ar fi prea mic de citit)
+	Layout.onChanged(function()
+		local size = Layout.size()
+		local compact = Layout.isTouch() and HudLayout.compact(size.X, size.Y)
+		panel.Size = if compact then UDim2.fromScale(0.94, 0.9) else UDim2.fromScale(0.6, 0.7)
+		panel.Position = if compact then UDim2.fromScale(0.5, 0.53) else UDim2.fromScale(0.5, 0.52)
+		constraint.MaxSize = if compact then Vector2.new(math.huge, math.huge) else Vector2.new(660, 540)
+	end)
 	-- panglica de titlu, roșie, care iese puțin din panou
 	local ribbon = Instance.new("Frame")
 	ribbon.Name = "Ribbon"

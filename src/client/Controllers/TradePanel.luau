@@ -1,10 +1,9 @@
 --!strict
--- Schimburile: butonul „Schimb” (sus-stânga, cât mai e cineva pe server), lista jucătorilor, cererea primită
--- (Da / Nu) și fereastra de schimb. În fereastră alegi până la 4 creaturi din beci și, dacă vrei, lei;
+-- Schimburile: cererea (din panoul Prieteni, `TradePanel.request`), cererea primită (Da / Nu) și fereastra
+-- de schimb. În fereastră alegi până la 4 creaturi din beci și, dacă vrei, lei;
 -- vezi ce dă celălalt și valoarea ambelor oferte. „Accept” de ambele părți pornește numărătoarea de 3 s;
 -- orice schimbare de ofertă o oprește. Închiderea ferestrei anulează schimbul. Serverul decide totul.
 
-local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
 
 local Shared = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
@@ -19,10 +18,6 @@ local UI = require(script.Parent.UI)
 
 local TradePanel = {}
 
-local me = Players.LocalPlayer
-local openButton: TextButton
-local picker: Frame
-local pickerScroll: ScrollingFrame
 local window: Frame
 local mineList: ScrollingFrame
 local theirsList: ScrollingFrame
@@ -337,41 +332,7 @@ local function buildWindow()
 	end)
 end
 
-local function renderPicker()
-	UI.clear(pickerScroll)
-	local order = 0
-	for _, player in Players:GetPlayers() do
-		if player ~= me then
-			order += 1
-			local frame =
-				UI.frame({ Size = UDim2.new(1, -12, 0, 60), LayoutOrder = order, Parent = pickerScroll })
-			UI.capText(
-				UI.label({
-					Size = UDim2.new(0.55, -12, 1, 0),
-					Position = UDim2.fromOffset(12, 0),
-					Text = player.DisplayName,
-					TextXAlignment = Enum.TextXAlignment.Left,
-					Parent = frame,
-				}),
-				20
-			)
-			local userId = player.UserId
-			UI.button({
-				Size = UDim2.new(0.42, -8, 0, 46),
-				Position = UDim2.new(0.57, 0, 0, 7),
-				Text = ClientState.t("ui.tradeAsk"),
-				swatch = "sky",
-				icon = "trade",
-				Parent = frame,
-			}, function()
-				Net.get("Trade"):FireServer("request", userId)
-				UI.show(picker, false)
-			end)
-		end
-	end
-end
-
-local function buildRequest(screen: ScreenGui)
+local function buildRequest(screen: Frame)
 	requestBox = UI.frame({
 		Name = "TradeRequest",
 		AnchorPoint = Vector2.new(0.5, 0),
@@ -425,9 +386,9 @@ local function buildRequest(screen: ScreenGui)
 	end)
 end
 
-function TradePanel.openPicker()
-	renderPicker()
-	UI.show(picker, not picker.Visible)
+-- Cere schimb cu jucătorul dat (din panoul Prieteni)
+function TradePanel.request(userId: number)
+	Net.get("Trade"):FireServer("request", userId)
 end
 
 -- Pentru teste și gamepad: e deschisă fereastra de schimb?
@@ -453,33 +414,11 @@ function TradePanel.debugState(): { [string]: any }
 		mineRows = rows(mineList),
 		theirsRows = rows(theirsList),
 		status = statusLabel.Text,
-		openButton = openButton.Visible,
 	}
 end
 
 function TradePanel.start()
 	local screen = UI.screen()
-	openButton = UI.button({
-		Position = UDim2.fromOffset(14, 152),
-		Size = UDim2.fromOffset(132, 40),
-		Text = ClientState.t("ui.trade"),
-		swatch = "sky",
-		icon = "trade",
-		Visible = false,
-		Parent = screen,
-	}, TradePanel.openPicker)
-	local function refreshButton()
-		openButton.Visible = #Players:GetPlayers() > 1
-	end
-	Players.PlayerAdded:Connect(refreshButton)
-	Players.PlayerRemoving:Connect(function()
-		task.defer(refreshButton)
-	end)
-	refreshButton()
-
-	picker, pickerScroll = UI.panel(ClientState.t("ui.trade"), function()
-		UI.show(picker, false)
-	end)
 	buildWindow()
 	buildRequest(screen)
 
@@ -495,7 +434,6 @@ function TradePanel.start()
 			requestFrom = nil
 			if not trading then
 				trading = true
-				UI.show(picker, false)
 				UI.show(window, true)
 			end
 			renderWindow()

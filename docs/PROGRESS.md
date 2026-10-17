@@ -116,6 +116,23 @@ Designul și motivele sunt în `docs/superpowers/specs/2026-10-17-retentie-desig
   - `TradeService` lucrează pe proprietari de ogrăzi, deci și boții de test pot face schimburi;
   - pe client, `TradePanel` are butonul „Schimb”, lista de jucători, cererea Da/Nu și fereastra cu valorile.
 - **Iconițe noi:** `notebook` și `trade`. `tools/icons.py upload [nume]` urcă acum doar ce lipsește sau ce e cerut, pentru că decuparea nu e deterministă și altfel s-ar fi dublat asset-urile.
+- **Revizuirea independentă de cod** a găsit 3 probleme:
+  - un „Accept” repetat în numărătoare putea executa schimbul de două ori, adică leii se mutau de două ori. Acum: `done` și gărzi în `accept`;
+  - un motiv de eșec greșit, din cauza precedenței `if … else` cu virgula;
+  - recompensele colecției se puteau cultiva prin schimburi cu conturi noi. Acum creaturile primite la schimb nu intră în Caiet.
+- **Găsite în playtest și reparate:**
+  - hoțul vecin renunța după câteva replanificări; acum persistă până la termen, cu timpul de cărat calculat din distanță;
+  - creatura furată ajungea în beciul vecinului (piedestale pline), de unde nu se mai putea fura înapoi. Acum vecinul își face loc pe un piedestal;
+  - eticheta butoanelor cu ZIndex era acoperită de buza 3D (`UI.button`);
+  - cererea de schimb rămânea peste fereastra de schimb.
+- **Verificat:** 144 de teste unitare, e2e 40/40 și playtest 34/34. Pașii noi din playtest:
+  - Familie/Rivali;
+  - vecinul hoț doborât cu papucul;
+  - vecinul hoț care duce Epicul acasă, apoi furtul înapoi pe căile reale;
+  - Caietul cu răsplata unei treburi;
+  - schimbul real între jucător și un bot;
+  - renașterea.
+- **Live:** versiunea 79 (commit 5c49ce7); CI verde.
 - **E2E independent de oră:** Runner-ul oprește programul evenimentului de sâmbătă (`LiveEventService.setScheduled(false)`). Între 16:00 și 17:00 UTC, ploaia de papuci dobora boții de test.
 
 ## Lansare publică (2026-10-16)

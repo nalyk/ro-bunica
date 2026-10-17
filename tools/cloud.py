@@ -99,16 +99,42 @@ def build_test_place() -> str:
     return out
 
 
+E2E_SHARD = 4  # spec-uri pe sarcină: o sarcină Open Cloud are cel mult 5 minute
+E2E_PARALLEL = 4
+
+
+def e2e_specs() -> list:
+    folder = os.path.join(ROOT, "tests", "e2e")
+    names = [f[: -len(".luau")] for f in os.listdir(folder) if f.endswith(".spec.luau")]
+    return sorted(names)
+
+
 def e2e(env: dict) -> int:
+    from concurrent.futures import ThreadPoolExecutor
+
     version = publish(env, build_test_place())
-    task = run(env, version, "return require(game:GetService('ServerStorage').E2E.Runner)()")
-    if task.get("state") != "COMPLETE":
-        return 1
-    results = (task.get("output") or {}).get("results") or [{}]
-    summary = results[0] if results else {}
-    failed = int(summary.get("failed", 1))
-    print(f"[cloud] e2e: {summary.get('passed', 0)} trecute, {failed} picate")
-    for failure in summary.get("failures", []):
+    specs = e2e_specs()
+    shards = [specs[i : i + E2E_SHARD] for i in range(0, len(specs), E2E_SHARD)]
+
+    def one(shard: list) -> tuple:
+        names = ", ".join(json.dumps(name) for name in shard)
+        script = f"return require(game:GetService('ServerStorage').E2E.Runner)({{ {names} }})"
+        return shard, run(env, version, script)
+
+    passed, failed, failures = 0, 0, []
+    with ThreadPoolExecutor(max_workers=E2E_PARALLEL) as pool:
+        for shard, task in pool.map(one, shards):
+            if task.get("state") != "COMPLETE":
+                failed += 1
+                failures.append(f"lotul {shard}: {task.get('state')} {json.dumps(task.get('error'), ensure_ascii=False)}")
+                continue
+            results = (task.get("output") or {}).get("results") or [{}]
+            summary = results[0] if results else {}
+            passed += int(summary.get("passed", 0))
+            failed += int(summary.get("failed", 1))
+            failures += summary.get("failures", [])
+    print(f"[cloud] e2e: {passed} trecute, {failed} picate ({len(shards)} loturi)")
+    for failure in failures:
         print(f"  ✗ {failure}")
     return 0 if failed == 0 else 1
 

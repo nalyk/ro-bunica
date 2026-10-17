@@ -7,6 +7,8 @@ local Lighting = game:GetService("Lighting")
 
 local Shared = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
 local World = require(Shared.Config.World)
+local VillageLayout = require(Shared.Domain.VillageLayout)
+local VillageBuilder = require(script.Parent.VillageBuilder)
 local Hora = require(Shared.Config.Hora)
 local ArtLibrary = require(Shared.Visual.ArtLibrary)
 local ArtFade = require(script.Parent.ArtFade)
@@ -28,6 +30,9 @@ export type PlotGeometry = {
 }
 
 local WorldBuilder = {}
+
+-- Așezarea satului construit (după build); serviciile o citesc pentru locuri și drumuri.
+WorldBuilder.layout = nil :: VillageLayout.Layout?
 
 local PALETTE = {
 	grass = Color3.fromRGB(110, 170, 70),
@@ -84,16 +89,6 @@ local function part(props: { [string]: any }): Part
 		(p :: any)[key] = value
 	end
 	return p
-end
-
-local function plotCFrame(index: number): CFrame
-	local perSide = math.ceil(World.plotCount / 2)
-	local side = if index <= perSide then 1 else -1
-	local slot = if side == 1 then index else index - perSide
-	local x = (slot - (perSide + 1) / 2) * (World.plotSize.X + World.plotGap)
-	local z = side * (World.roadWidth / 2 + World.plotSize.Z / 2)
-	local center = Vector3.new(x, 0, z)
-	return CFrame.lookAt(center, Vector3.new(x, 0, 0))
 end
 
 local function buildFence(model: Model, cf: CFrame)
@@ -218,8 +213,7 @@ local function gridPositions(columns: number, rows: number, spacing: number, ori
 	return list
 end
 
-local function buildPlot(index: number, parent: Instance): PlotGeometry
-	local cf = plotCFrame(index)
+local function buildPlot(index: number, cf: CFrame, parent: Instance): PlotGeometry
 	local model = Instance.new("Model")
 	model.Name = "Plot" .. index
 	model:SetAttribute("PlotIndex", index)
@@ -454,23 +448,10 @@ function WorldBuilder.build(): { PlotGeometry }
 	local village = Instance.new("Folder")
 	village.Name = "Village"
 
-	local length = (World.plotSize.X + World.plotGap) * math.ceil(World.plotCount / 2) + 200
-	part({
-		Name = "Grass",
-		Size = Vector3.new(length, 2, World.plotSize.Z * 2 + World.roadWidth + 200),
-		CFrame = CFrame.new(0, -2, 0),
-		Color = PALETTE.grass,
-		Material = Enum.Material.Grass,
-		Parent = village,
-	})
-	part({
-		Name = "Road",
-		Size = Vector3.new(length, 0.2, World.roadWidth),
-		CFrame = CFrame.new(0, -0.9, 0),
-		Color = PALETTE.road,
-		Material = Enum.Material.Sand,
-		Parent = village,
-	})
+	-- satul de vale: terenul, pârâul, drumurile (Domain/VillageLayout, World/VillageBuilder)
+	local layout = VillageLayout.build()
+	WorldBuilder.layout = layout
+	VillageBuilder.build(layout, village)
 	buildHearth(village)
 
 	-- Spawn-ul neutru (înainte de încărcarea profilului), pe drum, departe de fântână
@@ -485,8 +466,8 @@ function WorldBuilder.build(): { PlotGeometry }
 	spawn.Parent = village
 
 	local plots = {}
-	for index = 1, World.plotCount do
-		table.insert(plots, buildPlot(index, village))
+	for index, spot in layout.plots do
+		table.insert(plots, buildPlot(index, spot.cframe, village))
 	end
 	village.Parent = Workspace
 

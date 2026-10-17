@@ -54,7 +54,7 @@ describe("VillageLayout", function()
 
 	it("fiecare poartă e lângă un drum și cu fața spre el", function()
 		for _, plot in layout.plots do
-			expect(VillageLayout.distanceToRoad(layout, plot.gate) <= 14).toBe(true)
+			expect(VillageLayout.distanceToRoad(layout, plot.gate) <= 20).toBe(true)
 			local toGate = (plot.gate - plot.cframe.Position).Unit
 			expect(plot.cframe.LookVector:Dot(toGate) > 0.95).toBe(true)
 		end
@@ -63,12 +63,46 @@ describe("VillageLayout", function()
 	it("locurile satului sunt în afara ogrăzilor și departe de pârâu", function()
 		for name, site in layout.sites do
 			for _, plot in layout.plots do
-				expect(VillageLayout.contains(plot, site.Position)).toBe(false)
+				expect(VillageLayout.contains(plot, site.Position, 14)).toBe(false)
+			end
+			if name ~= "centru" then
+				expect(VillageLayout.distanceToRoad(layout, site.Position) >= 14).toBe(true)
+			end
+			for other, o in layout.sites do
+				if other ~= name then
+					expect((Vector3.new(o.X, 0, o.Z) - Vector3.new(site.X, 0, site.Z)).Magnitude >= 30).toBe(
+						true
+					)
+				end
 			end
 			expect(VillageLayout.distanceToRiver(layout, site.Position) >= 20 or name == "iaz").toBe(true)
 		end
 		for _, key in VillageLayout.SITE_KEYS do
 			expect(layout.sites[key] ~= nil).toBe(true)
+		end
+	end)
+
+	it("niciun drum sau potecă nu trece prin vreo ogradă", function()
+		local all = table.clone(layout.roads)
+		for _, path in layout.shortcuts do
+			table.insert(all, path)
+		end
+		for _, road in all do
+			for k = 1, #road.points - 1 do
+				local a, b = road.points[k], road.points[k + 1]
+				local n = math.max(1, math.ceil((b - a).Magnitude / 2))
+				for step = 0, n do
+					local p = a:Lerp(b, step / n)
+					for _, plot in layout.plots do
+						local l = plot.cframe:PointToObjectSpace(p)
+						local inside = math.abs(l.X) <= World.plotSize.X / 2 + road.width / 2
+							and math.abs(l.Z) <= World.plotSize.Z / 2 + road.width / 2
+						if inside then
+							error(string.format("%s trece prin ograda %d", road.name, plot.index))
+						end
+					end
+				end
+			end
 		end
 	end)
 

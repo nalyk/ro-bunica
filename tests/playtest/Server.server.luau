@@ -1344,6 +1344,21 @@ step("15n. Inima din beci: o creatură de suflet nu poate fi furată", function(
 	call("fire", "SetSoul", record.uid, false)
 end)
 
+step("15o. Satul de vale: de sus, pe uliță, în centru", function()
+	DayNightService.forcePhase("Day")
+	local roads = workspace:FindFirstChild("Village") and workspace.Village:FindFirstChild("Roads")
+	check(roads and #roads:GetChildren() > 50, "drumurile satului lipsesc")
+	local Village = require(Shared.Config.Village)
+	local VillageLayout = require(Shared.Domain.VillageLayout)
+	local hub = Village.hub
+	photograph("sat-de-sus", hub + Vector3.new(0, 0, 40), hub + Vector3.new(-60, 230, -330))
+	local lane = VillageLayout.upper(-60)
+	photograph("sat-ulita", VillageLayout.upper(60) + Vector3.new(0, 4, 0), lane + Vector3.new(0, 7, -4))
+	photograph("sat-centru", hub + Vector3.new(0, 3, 0), hub + Vector3.new(28, 14, -34))
+	local river = VillageLayout.lower(120) - Vector3.new(0, 0, Village.riverOffset)
+	photograph("sat-parau", river, river + Vector3.new(-30, 16, 40))
+end)
+
 step("16. Fără erori de script (server și client)", function()
 	local serverErrors = {}
 	for _, entry in LogService:GetLogHistory() do

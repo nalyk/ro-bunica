@@ -72,7 +72,7 @@ local function spot(f: (number) -> Vector3, x: number): (Vector3, Vector3)
 	local normal = Vector3.new(-t.Z, 0, t.X) -- spre +Z (nord) pentru drumuri de la vest la est
 	local p = f(x)
 	local gate = p + normal * Village.gateOffset
-	local jitter = math.rad(7 * math.sin(x * 0.37))
+	local jitter = math.rad(5 * math.sin(x * 0.37))
 	local toRoad = -normal
 	local dir = Vector3.new(
 		toRoad.X * math.cos(jitter) - toRoad.Z * math.sin(jitter),
@@ -158,9 +158,11 @@ function VillageLayout.build(): Layout
 	}
 end
 
-function VillageLayout.contains(plot: PlotSpot, position: Vector3): boolean
+-- Punctul e în ogradă (sau la mai puțin de `margin` de gardul ei)?
+function VillageLayout.contains(plot: PlotSpot, position: Vector3, margin: number?): boolean
 	local p = plot.cframe:PointToObjectSpace(position)
-	return math.abs(p.X) <= World.plotSize.X / 2 and math.abs(p.Z) <= World.plotSize.Z / 2
+	local m = margin or 0
+	return math.abs(p.X) <= World.plotSize.X / 2 + m and math.abs(p.Z) <= World.plotSize.Z / 2 + m
 end
 
 local function segmentDistance(p: Vector3, a: Vector3, b: Vector3): number

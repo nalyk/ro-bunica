@@ -1,12 +1,13 @@
 --!strict
 -- Rulează toate testele e2e: pornește serverul (Boot), apoi fiecare *.spec din acest folder.
--- Folosit ca script de sarcină Open Cloud: `return require(game.ServerStorage.E2E.Runner)()`.
+-- Folosit ca script de sarcină Open Cloud: `return require(game.ServerStorage.E2E.Runner)(only)`, unde `only` e
+-- lista de spec-uri din lot (tools/cloud.py împarte suita: o sarcină Open Cloud are cel mult 5 minute).
 
 local ServerScriptService = game:GetService("ServerScriptService")
 
 local Spec = require(script.Parent.Spec)
 
-return function(): Spec.Results
+return function(only: { string }?): Spec.Results
 	local bootModule: any = ServerScriptService:WaitForChild("Server"):WaitForChild("Boot")
 	local Boot = (require :: any)(bootModule)
 	local services = Boot.start()
@@ -15,7 +16,11 @@ return function(): Spec.Results
 	services.LiveEventService.setScheduled(false)
 	local specs = {}
 	for _, child in script.Parent:GetChildren() do
-		if child:IsA("ModuleScript") and string.match(child.Name, "%.spec$") then
+		if
+			child:IsA("ModuleScript")
+			and string.match(child.Name, "%.spec$")
+			and (only == nil or table.find(only, child.Name) ~= nil)
+		then
 			table.insert(specs, child)
 		end
 	end

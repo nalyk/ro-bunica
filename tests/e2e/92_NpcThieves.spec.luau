@@ -79,14 +79,20 @@ return function(Spec: any, services: { [string]: any })
 		return nil
 	end
 
+	-- cel mai apropiat vecin NPC liber (ca NpcThiefService: în satul de vale distanțele diferă mult)
 	local function neighbourExcept(index: number): any
+		local origin = PlotService.plots[index].geometry.cframe.Position
+		local best, bestDistance = nil, math.huge
 		for _, plot in PlotService.plots do
 			local owner = plot.owner
 			if plot.index ~= index and owner and owner.kind == "Npc" and owner.actor == nil then
-				return owner
+				local distance = (plot.geometry.cframe.Position - origin).Magnitude
+				if distance < bestDistance then
+					best, bestDistance = owner, distance
+				end
 			end
 		end
-		return nil
+		return best
 	end
 
 	describe("Vecinii hoți", function()
@@ -150,10 +156,16 @@ return function(Spec: any, services: { [string]: any })
 			end)
 			expect(Spec.waitFor(function()
 				return npc.actor ~= nil and RaidService.isCarrying(npc.actor)
-			end, 20)).toBe(true)
+			end, 60)).toBe(true) -- satul de vale: vecinul vine pe drum de la 150–200 studs
 			local thiefRoot = Actors.root(npc.actor) :: BasePart
 			local character = Actors.characterOf(owner) :: Model
-			character:PivotTo(CFrame.new(thiefRoot.Position + Vector3.new(15, 0, 0)))
+			-- apărătorul stă în curte, între hoț și casă (linie liberă, indiferent de cum e orientată ograda)
+			local center = victim.plot.geometry.cframe.Position
+			local inward = Vector3.new(center.X - thiefRoot.Position.X, 0, center.Z - thiefRoot.Position.Z)
+			local offset = if inward.Magnitude > 1
+				then inward.Unit * math.min(12, inward.Magnitude)
+				else Vector3.zero
+			character:PivotTo(CFrame.new(thiefRoot.Position + offset))
 			expect(SlipperService.throwAs(owner, thiefRoot.Position, "Slipper")).toBe(true)
 			expect(Spec.waitFor(function()
 				return outcome ~= nil

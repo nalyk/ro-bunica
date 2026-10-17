@@ -1258,6 +1258,36 @@ step(
 			log("SNAP telefon-meniu-" .. phone.name)
 			call("phoneMenu")
 		end
+		-- rafala de mesaje pe telefon: un singur mesaj odată, urgentul primul și unit (×3), confirmările ascunse,
+		-- totul în capsulă (sus, deasupra zonei joystick-ului)
+		call("phone", PHONES[1].w, PHONES[1].h)
+		local burst = call("noticeBurst", 0.3)
+		local capsule = burst.capsule
+		check(capsule.visible and #capsule.showing == 1, "capsula arată " .. #capsule.showing .. " mesaje")
+		check(
+			string.find(capsule.showing[1], "×3", 1, true) ~= nil,
+			"alarma nu e prima sau nu e unită: " .. capsule.showing[1]
+		)
+		local layout = call("phone", PHONES[1].w, PHONES[1].h).layout
+		local rect = capsule.rects[1]
+		check(
+			rect.y >= layout.notice.y - 1 and rect.y + rect.h <= layout.thumb.y + 1,
+			string.format("capsula iese din locul ei (y %.0f, h %.0f)", rect.y, rect.h)
+		)
+		local burst2 = call("noticeBurst", 0.3)
+		check(#burst2.capsule.showing == 1, "a doua rafală: mai multe mesaje pe ecran")
+		check(burst2.capsule.waiting <= 6, "coada a crescut fără limită: " .. burst2.capsule.waiting)
+		log("SNAP telefon-mesaje")
+		-- coada se golește singură: mesajele se scurtează când așteaptă multe, iar indiciile și ambientul expiră
+		local started = os.clock()
+		check(
+			waitFor(function()
+				local state = call("notices").capsule
+				return #state.showing == 0 and state.waiting == 0
+			end, 40),
+			"capsula nu s-a golit"
+		)
+		log(string.format("două rafale golite în %.0f s", os.clock() - started))
 		-- un panou pe telefon: aproape tot ecranul
 		call("phone", PHONES[1].w, PHONES[1].h)
 		local shop = call("openPanel", "ShopPanel")

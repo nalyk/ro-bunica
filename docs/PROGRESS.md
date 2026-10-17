@@ -156,6 +156,19 @@ Designul e în `docs/superpowers/specs/2026-10-17-mobil-hud-design.md`, pornit d
 - [x] **Panoul „Prieteni”:** invitația, Familie sau Rivali și jucătorii de pe server cu „Schimb”. Înlocuiește butoanele plutitoare din versiunea 79, care se suprapuneau cu coloana.
 - [x] **Root:** `UI.screen()` e acum un Frame „Root”. În playtest, `Layout.setOverride` îl micșorează la mărimea unui telefon. Pasul 15l auditează dreptunghiurile reale pe trei telefoane și face capturi.
 - **Reparat în kit:** buza 3D a butoanelor acoperea textul când butonul avea ZIndex (`lip.ZIndex = 0`).
+- [x] **Mesajele pe telefon (după feedback-ul omului: „acoperă ecranul”):**
+  - Coada cu priorități e în `Domain/NoticeQueue`, iar importanța fiecărei chei în `Config/Notices`. Prioritățile:
+    - urgent: hoțul, furtul, noaptea;
+    - reward: reușitele tale;
+    - hint: de ce n-a mers o acțiune; doar cel mai nou rămâne, expiră în 4 s;
+    - ambient: ce fac alții; apare doar cu coada goală, expiră în 8 s;
+    - quiet: confirmările din panouri.
+  - Pe telefon e o singură capsulă sus, peste cer (`HudLayout.notice`), care nu primește atingeri.
+    - Se vede un mesaj odată; urgentul îl întrerupe pe celălalt.
+    - Mesajele identice se unesc („×3”), iar durata urmează timpul de citire și scade când așteaptă multe.
+    - Confirmările din panouri nu apar, pentru că le arată deja monedele care zboară.
+  - Pe desktop rămân două coloane, sus (cel mult 2) și jos (cel mult 3), cu aceeași coadă.
+  - Verificat: 8 teste Lune, iar în playtest două rafale de 12 mesaje pe iPhone SE dau un singur mesaj pe ecran, alarma prima („×3”) și coada goală în 9 s.
 
 ## Lansare publică (2026-10-16)
 

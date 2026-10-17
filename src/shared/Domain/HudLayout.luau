@@ -18,8 +18,7 @@ export type TouchLayout = {
 	pin: Rect,
 	ammo: Rect, -- papucii și nervii, deasupra săriturii
 	seeds: Rect, -- bara de semințe, banda liberă de jos
-	toasts: Rect, -- notificările personale, deasupra benzii de semințe
-	banners: Rect, -- anunțurile pentru tot serverul, sus la centru
+	notice: Rect, -- capsula mesajelor: un singur mesaj odată, sus la centru, peste cer (nu primește atingeri)
 	menu: Rect, -- meniul „Mai mult”, sub butonul lui
 }
 
@@ -105,14 +104,10 @@ function HudLayout.touch(
 	if seeds.w < 120 then
 		seeds = { x = MARGIN, y = 6 + button + gap, w = status.x - gap - MARGIN, h = seedH }
 	end
-	-- notificările nu primesc atingeri: pot sta și peste zona joystick-ului, dar nu peste apărare
-	local toastLeft = math.min(w * 0.22, bandLeft)
-	local toasts = { x = toastLeft, y = h / 3, w = pin.x - clusterGap - toastLeft, h = 0 }
-	toasts.h = math.min(seeds.y, ammo.y + ammo.h) - 8 - toasts.y
-
-	local bannerTop = math.max(actions[1].y + button, info.y + info.h) + gap
-	local banners =
-		{ x = MARGIN, y = bannerTop, w = w - 2 * MARGIN, h = math.min(120, ammo.y - gap - bannerTop) }
+	-- capsula: sub rândul de sus și sub vreme, cât încap două rânduri de text
+	local noticeTop = math.max(actions[1].y + button, info.y + info.h) + gap
+	local noticeW = math.min(w - 2 * MARGIN, if compact then 440 else 560)
+	local notice = { x = (w - noticeW) / 2, y = noticeTop, w = noticeW, h = if compact then 52 else 64 }
 
 	local more = actions[#actions]
 	local menu = { x = more.x, y = more.y + more.h + gap, w = 210, h = menuItems * (button + gap) + gap }
@@ -129,8 +124,7 @@ function HudLayout.touch(
 		pin = pin,
 		ammo = ammo,
 		seeds = seeds,
-		toasts = toasts,
-		banners = banners,
+		notice = notice,
 		menu = menu,
 	}
 end

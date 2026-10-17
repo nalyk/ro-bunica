@@ -366,6 +366,35 @@ function ops.phoneMenu(): boolean
 	return true
 end
 
+-- Rafală de mesaje amestecate (cum vin într-o noapte aglomerată); întoarce ce e pe ecran după `after` secunde
+function ops.noticeBurst(after: number): { [string]: any }
+	local Notify = (require :: any)(controllers:WaitForChild("NotifyController"))
+	local burst: { { any } } = {
+		{ "announce.Hatch", { "Ana", "@creature.CeapaTurbo" } },
+		{ "notify.Sold", { "120" } },
+		{ "notify.Hatched", { "@creature.CartofelAgent" } },
+		{ "announce.Steal", { "Ion", "@creature.PepeneBoxer", "Maria" } },
+		{ "notify.NotNight", nil },
+		{ "notify.NotNight", nil },
+		{ "notify.Shielded", nil },
+		{ "notify.Discovered", { "@creature.Mamaligator", "60" } },
+		{ "announce.Mutation", { "Ion", "@mutation.Golden", "@creature.CeapaTurbo" } },
+	}
+	for _, entry in burst do
+		Notify.notice(entry[1], ClientState.t(entry[1], entry[2]))
+	end
+	for _ = 1, 3 do
+		Notify.notice("notify.Alarm", ClientState.t("notify.Alarm"), "urgent")
+	end
+	task.wait(after)
+	return Notify.debugState()
+end
+
+function ops.notices(): { [string]: any }
+	local Notify = (require :: any)(controllers:WaitForChild("NotifyController"))
+	return Notify.debugState()
+end
+
 -- Schimbul: ce vede jucătorul în fereastra de schimb
 function ops.trade(): { [string]: any }
 	local module = (require :: any)(controllers:WaitForChild("TradePanel"))

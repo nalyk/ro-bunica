@@ -89,3 +89,13 @@ Modul se recalculează la schimbarea mărimii ecranului (rotire) și la o supras
 5. Notificările.
 6. Playtest: suprascrierea, auditul și capturile.
 7. Documentația (PRESENTATION, PROGRESS); verificarea completă; livrarea.
+
+## Adăugat: mesajele (după primul test pe telefon al omului)
+
+Notificările stăteau în două coloane, cel mult 4 + 4, de 3–5 s fiecare, toate egale ca importanță, și acopereau jocul.
+
+**Soluția:**
+- o coadă cu priorități (`Domain/NoticeQueue`, `Config/Notices`);
+- pe telefon, o singură capsulă sus, peste cer, care nu primește atingeri;
+- urgentul are prioritate, mesajele identice se unesc, iar durata e cea de citire, scurtată când se adună mesaje;
+- indiciile și ambientul expiră, iar confirmările din panouri nu se mai afișează pe telefon.

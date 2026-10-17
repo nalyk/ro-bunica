@@ -30,11 +30,24 @@ describe("HudLayout.touch", function()
 				expect(HudLayout.overlaps(rect, layout.thumb)).toBe(false)
 			end
 			expect(HudLayout.overlaps(layout.ammo, layout.jump)).toBe(false)
-			-- notificările: destul de late ca să se citească, fără să acopere apărarea sau semințele
-			expect(layout.toasts.w >= 240).toBe(true)
-			expect(layout.toasts.h >= 60).toBe(true)
-			for _, rect in { layout.rage, layout.pin, layout.ammo, layout.seeds, layout.jump } do
-				expect(HudLayout.overlaps(layout.toasts, rect)).toBe(false)
+			-- capsula mesajelor: lată cât să se citească, sus, fără să acopere nimic din HUD
+			expect(layout.notice.w >= 300).toBe(true)
+			expect(HudLayout.inside(layout.notice, screen.w, screen.h)).toBe(true)
+			expect(layout.notice.y + layout.notice.h <= screen.h * 0.42).toBe(true)
+			local hud = {
+				layout.rage,
+				layout.pin,
+				layout.ammo,
+				layout.seeds,
+				layout.jump,
+				layout.status,
+				layout.info,
+			}
+			for _, rect in layout.actions do
+				table.insert(hud, rect)
+			end
+			for _, rect in hud do
+				expect(HudLayout.overlaps(layout.notice, rect)).toBe(false)
 			end
 		end)
 		it(screen.name .. ": totul în ecran, fără suprapuneri, butoane de minimum 44 px", function()

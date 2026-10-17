@@ -149,7 +149,7 @@ local function renderWindow()
 				elseif #next < TradeConfig.maxCreatures then
 					table.insert(next, record.uid)
 				else
-					NotifyController.toast(ClientState.t("notify.TradeTooMany"))
+					NotifyController.toast(ClientState.t("notify.TradeTooMany"), "hint")
 					return
 				end
 				sendOffer(next)

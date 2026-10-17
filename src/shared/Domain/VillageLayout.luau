@@ -144,7 +144,7 @@ function VillageLayout.build(): Layout
 		table.insert(bridges, CFrame.new(p))
 	end
 	local sites: { [string]: CFrame } = {}
-	for name, position in Village.sites do
+	for name, position in Village.sites :: { [string]: Vector3 } do
 		sites[name] = CFrame.lookAt(position, Vector3.new(hub.X, position.Y, hub.Z))
 	end
 	return {
@@ -289,7 +289,8 @@ local function dijkstra(g: Graph, source: number): { [number]: number }
 			break
 		end
 		done[u] = true
-		for _, edge in g.edges[u] or {} do
+		local out: { { number } } = g.edges[u] or {}
+		for _, edge in out do
 			local v, w = edge[1], edge[2]
 			local nd = best + w
 			if nd < (dist[v] or math.huge) then

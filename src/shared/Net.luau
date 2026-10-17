@@ -17,6 +17,7 @@ local NAMES = {
 	"Hora", -- () jucătorul dansează hora (în vatra satului)
 	"BuyUpgrade", -- (upgradeId: string) îmbunătățire a ogrăzii, pe lei
 	"ClientReady", -- () clientul și-a conectat ascultătorii; serverul retrimite starea
+	"Greeted", -- () ecranul de încărcare s-a închis: Bunica îl întâmpină (o dată pe sesiune)
 	-- S→C
 	"State", -- (snapshot: PlayerState) starea completă a jucătorului
 	"Notify", -- (key: string, args: {any}?) mesaj personal

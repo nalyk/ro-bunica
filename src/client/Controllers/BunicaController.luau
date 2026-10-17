@@ -3,6 +3,7 @@
 -- și bula de dialog. Pozele se aplică local pe C0 (modificările de pe client nu se replică), deci nu costă rețea.
 
 local Debris = game:GetService("Debris")
+local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
@@ -13,6 +14,8 @@ local BunicaLines = require(Shared.Config.BunicaLines)
 local Sounds = require(Shared.Config.Sounds)
 local ClientState = require(script.Parent.ClientState)
 local Sfx = require(script.Parent.Sfx)
+local Music = require(script.Parent.Music)
+local Net = require(Shared.Net)
 local Joints = require(script.Parent.Joints)
 
 local BunicaController = {}
@@ -288,6 +291,11 @@ local function showBubble(model: Model, key: string)
 		sound.Parent = head
 		sound:Play()
 		Debris:AddItem(sound, voice.seconds + 1)
+		-- muzica se dă la o parte cât vorbește o Bunica din apropiere
+		local camera = Workspace.CurrentCamera
+		if camera and (camera.CFrame.Position - head.Position).Magnitude < 80 then
+			Music.duck(voice.seconds + 0.3)
+		end
 	elseif string.find(key, "bunica.hit", 1, true) then
 		Sfx.play(Sounds.bunicaGiggle, head.Position, 0.8)
 	end
@@ -359,7 +367,19 @@ local function currentMood(model: Model): string
 	return if type(state) == "string" then state else "Sleeping"
 end
 
+-- Bunica îl întâmpină pe jucător după ce se închide ecranul de încărcare (ReplicatedFirst/LoadingScreen)
+local function greetAfterLoading()
+	local playerGui = Players.LocalPlayer:WaitForChild("PlayerGui")
+	playerGui:WaitForChild("BunicaLoading", 3) -- ecranul poate apărea puțin după pornirea controllerelor
+	local deadline = os.clock() + 60
+	while playerGui:FindFirstChild("BunicaLoading") and os.clock() < deadline do
+		task.wait(0.25)
+	end
+	Net.get("Greeted"):FireServer()
+end
+
 function BunicaController.start()
+	task.spawn(greetAfterLoading)
 	local village = Workspace:WaitForChild("Village")
 	for _, descendant in village:GetDescendants() do
 		if descendant:IsA("Model") and descendant.Name == "Bunica" then

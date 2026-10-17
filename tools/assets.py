@@ -7,6 +7,12 @@
 `assets.lock.json` (comis) leagă fiecare cheie de asset-ul încărcat și de hash-ul fișierului:
 același fișier nu se reîncarcă (audio și imaginile nu se pot actualiza, fiecare încărcare e un asset nou,
 iar audio are o limită lunară). Creatorul vine din ROBLOX_CREATOR_USER_ID (implicit: nalyque).
+
+Audio încărcat aici e privat: jocul live nu-l poate reda („Failed to load sound: User is not authorized to access
+Asset”) până nu primește permisiunea Use. În Studio se aude oricum, deci playtestul nu prinde lipsa ei. Pentru
+fiecare audio nou: Creator Dashboard → asset → Permissions → Experiences → Add experiences → 1855994157 → Done
+(cheia API nu are scope-ul asset-permissions:write). Verificare: POST
+apis.roblox.com/asset-permissions-api/v1/assets/check-permissions (subject Universe 1855994157, action Use).
 """
 
 import hashlib

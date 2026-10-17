@@ -445,11 +445,18 @@ function BunicaService.start()
 			say(bunica, "Miss")
 		end
 	end)
-	PlotService.onOwnerAdded(function(owner)
-		local bunica = bunicas[owner.plot.index]
-		if bunica and owner.kind == "Player" then
-			task.delay(3, say, bunica, "Welcome", true)
+	-- Bun venit abia după ecranul de încărcare (care ține cel puțin 6 s): mai devreme, replica s-ar pierde sub el
+	local greeted: { [Player]: boolean } = {}
+	Net.get("Greeted").OnServerEvent:Connect(function(player)
+		local owner = PlotService.getOwner(player)
+		local bunica = owner and bunicas[owner.plot.index]
+		if bunica and not greeted[player] then
+			greeted[player] = true
+			task.delay(1, say, bunica, "Welcome", true)
 		end
+	end)
+	Players.PlayerRemoving:Connect(function(player)
+		greeted[player] = nil
 	end)
 	DayNightService.onPhaseChanged(function(phase)
 		for _, plot in PlotService.plots do

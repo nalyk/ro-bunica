@@ -80,6 +80,17 @@ Cote gratuite pe zi: TTS 10 cereri; evaluatorul are 20 de cereri pe model, iar `
 „Na-ți-o bună!” a ieșit stâlcit în ambele variante („Noapte bună”, „Na! Lecție bună!”), așa că replica a devenit
 „Las' că-ți arăt eu!” (la fel ca textul englez, „Oh, you'll get it now!”).
 
+## Permisiunea jocului pentru audio (lecția din 2026-10-17)
+
+Vocile au mers în Studio, dar în jocul live nu s-a auzit nimic. În raportul de erori (Monitoring → Error report)
+era „Failed to load sound: User is not authorized to access Asset”, de la versiunea 63. Audio încărcat prin Open
+Cloud e privat, iar jocul trebuie să primească permisiunea Use pentru fiecare fișier. Studio o dă singur doar când
+publici din el, iar noi publicăm prin Open Cloud. Pașii sunt în antetul `tools/assets.py`. Toate cele 20 de replici RO
+au acum `HasPermission` (verificat cu `check-permissions`). Tot atunci: bun venitul pornește abia după ecranul de
+încărcare (remote-ul `Greeted`), iar muzica coboară cât vorbește o Bunica aflată la mai puțin de 80 de studs de cameră.
+Verificat prin înregistrarea sunetului din Studio (PulseAudio, `parec --monitor-stream`) și corelație cu clipurile:
+bun venitul se aude la 7,6 s după ecranul de încărcare, cu corelația 0,95.
+
 ## Pașii următori
 
 1. EN, ES și PT cu aceeași voce, câte o limbă pe zi (cota zilnică), în `art/voice/<limbă>/` și

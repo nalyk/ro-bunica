@@ -8,6 +8,7 @@ export type CreatureRecord = {
 	id: string,
 	size: string,
 	mutation: string?,
+	soul: boolean?, -- creatură de suflet (Domain/Soul): nu se fură, nu se schimbă
 }
 
 export type PlantRecord = {

@@ -1326,6 +1326,24 @@ step("15m. Casa: acoperișul de jos, sub streașină, din colț și de sus", fun
 	check(table.concat(parts, ",") == "body,roof,trim", "piesele casei: " .. table.concat(parts, ","))
 end)
 
+step("15n. Inima din beci: o creatură de suflet nu poate fi furată", function()
+	local record = me.profile.pedestals[firstPedestal(me) :: string] or me.profile.cellar[1]
+	check(record, "nicio creatură pentru inimă")
+	call("fire", "SetSoul", record.uid, true)
+	check(
+		waitFor(function()
+			return record.soul == true
+		end, 3),
+		"inima nu s-a pus"
+	)
+	local cellar = call("openPanel", "CellarPanel")
+	check(cellar.rows >= 1, "beciul e gol")
+	task.wait(0.5)
+	log("SNAP beci-suflet")
+	call("closePanel", "CellarPanel")
+	call("fire", "SetSoul", record.uid, false)
+end)
+
 step("16. Fără erori de script (server și client)", function()
 	local serverErrors = {}
 	for _, entry in LogService:GetLogHistory() do

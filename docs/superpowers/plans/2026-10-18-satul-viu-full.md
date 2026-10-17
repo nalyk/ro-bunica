@@ -61,7 +61,7 @@
 
 ## M1. Furtul fără lacrimi
 
-### Sarcina 1: Creaturile de suflet (F1)
+### Task 1: Creaturile de suflet (F1)
 
 **Fișiere:**
 - Creare: `src/shared/Domain/Soul.luau`, `tests/Soul.spec.luau`, `src/server/Services/SoulService.luau`
@@ -88,7 +88,7 @@
 - [ ] Playtest: inima din beci; captură.
 - [ ] Commit.
 
-### Sarcina 2: Răzbunarea (F2)
+### Task 2: Răzbunarea (F2)
 
 **Fișiere:**
 - Creare: `src/shared/Domain/Revenge.luau`, `tests/Revenge.spec.luau`, `src/server/Services/RevengeService.luau`, `src/client/Controllers/RevengeController.luau`
@@ -111,7 +111,7 @@
 - [ ] e2e: botul A fură de la B, B fură înapoi și primește bonusul.
 - [ ] Commit.
 
-### Sarcina 3: Avertizare la schimburi dezechilibrate
+### Task 3: Avertizare la schimburi dezechilibrate
 
 **Fișiere:** `Domain/Trade.luau`, `tests/Trade.spec.luau`, `TradePanel.luau`, stringuri.
 
@@ -126,7 +126,7 @@
 
 ## M2. Satul de vale
 
-### Sarcina 4: `Domain/VillageLayout` (geometria satului, pură)
+### Task 4: `Domain/VillageLayout` (geometria satului, pură)
 
 **Fișiere:** creare `src/shared/Config/Village.luau`, `src/shared/Domain/VillageLayout.luau`, `tests/VillageLayout.spec.luau`.
 
@@ -162,7 +162,7 @@
 - [ ] Implementează. Pozițiile se ajustează din config până trec testele de echitate.
 - [ ] Commit.
 
-### Sarcina 5: Terenul, drumurile, pârâul (VillageBuilder)
+### Task 5: Terenul, drumurile, pârâul (VillageBuilder)
 
 **Fișiere:**
 - Creare: `src/server/World/VillageBuilder.luau`
@@ -182,7 +182,7 @@
   - capturi: valea de sus, ulița, centrul.
 - [ ] Commit.
 
-### Sarcina 6: Case variate, aceeași valoare
+### Task 6: Case variate, aceeași valoare
 
 **Fișiere:** `WorldBuilder.luau` (`buildPlot` primește `variant` și `mirrored`), `Config/Village.luau` (`variants`: culorile porții și ale tâmplăriei, oglindirea, poziția copacilor), `tests/VillageLayout.spec.luau`.
 
@@ -194,7 +194,7 @@
 - [ ] Captură cu 8 ogrăzi diferite.
 - [ ] Commit.
 
-### Sarcina 7: Centrul și reperele
+### Task 7: Centrul și reperele
 
 **Fișiere:** creare `src/server/World/SiteBuilder.luau`; modificare `VillageBuilder.luau`.
 
@@ -225,7 +225,7 @@ Pentru fiecare: modelul sculptat dacă `ArtLibrary.has`, altfel forma procedural
 - [ ] Playtest: o captură pe loc.
 - [ ] Commit.
 
-### Sarcina 8: Decorul procedural (Poisson) și viața ambientală
+### Task 8: Decorul procedural (Poisson) și viața ambientală
 
 **Fișiere:**
 - Creare: `src/shared/Domain/Scatter.luau`, `tests/Scatter.spec.luau`, `src/client/Controllers/AmbientLifeController.luau`, `src/shared/Config/Ambient.luau`
@@ -244,7 +244,7 @@ Pentru fiecare: modelul sculptat dacă `ArtLibrary.has`, altfel forma procedural
 - [ ] Captură.
 - [ ] Commit.
 
-### Sarcina 9: Rutiera
+### Task 9: Rutiera
 
 **Fișiere:** creare `src/server/Services/RutieraService.luau`, `src/client/Controllers/RutieraController.luau`, `Config/Rutiera.luau`.
 
@@ -261,7 +261,7 @@ Pentru fiecare: modelul sculptat dacă `ArtLibrary.has`, altfel forma procedural
 - [ ] Playtest: jucătorul urcă și coboară la centru.
 - [ ] Commit.
 
-### Sarcina 10: Performanța
+### Task 10: Performanța
 
 **Fișiere:**
 - Modificare: `default.project.json` (Workspace: `StreamingEnabled=true`, `ModelStreamingMode`, `StreamingTargetRadius=1024`), `WorldBuilder`/`VillageBuilder` (ogrăzile `ModelStreamingMode=Atomic`; reperele `LevelOfDetail=SLIM` și `Persistent`), `ArtService` (`RenderFidelity=Automatic`, `CollisionFidelity=Box`)
@@ -281,7 +281,7 @@ Pentru fiecare: modelul sculptat dacă `ArtLibrary.has`, altfel forma procedural
 
 ## M3. Ceasul satului și întâmplările
 
-### Sarcina 11: Ceasul satului (cadrul)
+### Task 11: Ceasul satului (cadrul)
 
 **Fișiere:**
 - Creare: `src/shared/Config/Happenings.luau`, `src/shared/Domain/VillageClock.luau`, `tests/VillageClock.spec.luau`, `src/server/Services/VillageClockService.luau`, `src/server/Happenings/` (un modul pentru fiecare întâmplare), `src/client/Controllers/HappeningController.luau`
@@ -303,7 +303,7 @@ Pentru fiecare: modelul sculptat dacă `ArtLibrary.has`, altfel forma procedural
 - [ ] Implementează. Maximum o întâmplare activă odată.
 - [ ] Commit.
 
-### Sarcina 12: Gâștele au scăpate și Ploaia de cireșe
+### Task 12: Gâștele au scăpate și Ploaia de cireșe
 
 **Fișiere:** `Happenings/Gaste.luau`, `Happenings/Cirese.luau`, `Config/Happenings.luau`, clientul pentru efecte.
 
@@ -324,7 +324,7 @@ Pentru fiecare: modelul sculptat dacă `ArtLibrary.has`, altfel forma procedural
 - [ ] Playtest: captură.
 - [ ] Commit.
 
-### Sarcina 13: Rutiera aduce un negustor și Trece o nuntă
+### Task 13: Rutiera aduce un negustor și Trece o nuntă
 
 **Fișiere:** `Happenings/Negustor.luau`, `Happenings/Nunta.luau`.
 
@@ -344,7 +344,7 @@ Pentru fiecare: modelul sculptat dacă `ArtLibrary.has`, altfel forma procedural
 - [ ] Playtest.
 - [ ] Commit.
 
-### Sarcina 14: Ceața (noaptea)
+### Task 14: Ceața (noaptea)
 
 **Fișiere:** `Happenings/Ceata.luau`, `LightingDirector.luau` (densitatea ceții pe client).
 
@@ -354,7 +354,7 @@ Pentru fiecare: modelul sculptat dacă `ArtLibrary.has`, altfel forma procedural
 - [ ] e2e: `setSight` se aplică și revine.
 - [ ] Commit.
 
-### Sarcina 15: Lupii la stână (co-op contra serverului)
+### Task 15: Lupii la stână (co-op contra serverului)
 
 **Fișiere:**
 - Creare: `Happenings/Lupi.luau`, `src/server/Ai/WolfAi.luau`
@@ -373,7 +373,7 @@ Pentru fiecare: modelul sculptat dacă `ArtLibrary.has`, altfel forma procedural
 - [ ] Playtest.
 - [ ] Commit.
 
-### Sarcina 16: Muma Pădurii și Trenul de la Ungheni
+### Task 16: Muma Pădurii și Trenul de la Ungheni
 
 **Fișiere:** `Happenings/MumaPadurii.luau`, `Happenings/Tren.luau`.
 
@@ -399,7 +399,7 @@ Pentru fiecare: modelul sculptat dacă `ArtLibrary.has`, altfel forma procedural
 
 ## M4. Mini-jocurile
 
-### Sarcina 17: Cadrul pentru mini-jocuri
+### Task 17: Cadrul pentru mini-jocuri
 
 **Fișiere:**
 - Creare: `src/shared/Domain/Minigame.luau`, `tests/Minigame.spec.luau`, `src/shared/Config/Minigames.luau`, `src/server/Services/MinigameService.luau`, `src/server/Minigames/` (câte un modul pentru fiecare joc), `src/client/Controllers/MinigameController.luau`, `src/client/Minigames/` (partea de client a fiecărui joc)
@@ -427,7 +427,7 @@ Pentru fiecare: modelul sculptat dacă `ArtLibrary.has`, altfel forma procedural
   - finalul e curat: zero obiecte rămase, recompense o singură dată.
 - [ ] Commit.
 
-### Sarcina 18: Prinde cocoșul, Șotronul, Ciocnitul ouălor
+### Task 18: Prinde cocoșul, Șotronul, Ciocnitul ouălor
 
 **Fișiere:** `Minigames/Cocos.luau`, `Minigames/Sotron.luau`, `Minigames/Oua.luau` și partea lor de client, cu Domain pentru reguli: `Domain/EggDuel.luau` + test.
 
@@ -455,7 +455,7 @@ Pentru fiecare: modelul sculptat dacă `ArtLibrary.has`, altfel forma procedural
 - [ ] Playtest: captură pentru fiecare.
 - [ ] Commit.
 
-### Sarcina 19: Oina cu papuci
+### Task 19: Oina cu papuci
 
 **Fișiere:** `Minigames/Oina.luau`, client, `Domain/Oina.luau` + test.
 
@@ -478,7 +478,7 @@ Pentru fiecare: modelul sculptat dacă `ArtLibrary.has`, altfel forma procedural
 - [ ] Playtest cu captură.
 - [ ] Commit.
 
-### Sarcina 20: De-a v-ați ascunselea în porumb și Păcală se ascunde
+### Task 20: De-a v-ați ascunselea în porumb și Păcală se ascunde
 
 **Fișiere:** `Minigames/Ascunselea.luau`, `Minigames/Pacala.luau`, clienții lor, `Domain/PropHunt.luau` + test.
 
@@ -500,7 +500,7 @@ Pentru fiecare: modelul sculptat dacă `ArtLibrary.has`, altfel forma procedural
 - [ ] Playtest.
 - [ ] Commit.
 
-### Sarcina 21: Cursa cu roaba și Obby-ul morii
+### Task 21: Cursa cu roaba și Obby-ul morii
 
 **Fișiere:** `Minigames/Roaba.luau`, `Minigames/Moara.luau`, clienți.
 
@@ -521,7 +521,7 @@ Pentru fiecare: modelul sculptat dacă `ArtLibrary.has`, altfel forma procedural
 - [ ] Playtest.
 - [ ] Commit.
 
-### Sarcina 22: Zdrobitul strugurilor, Hora-ritm, Discoteca
+### Task 22: Zdrobitul strugurilor, Hora-ritm, Discoteca
 
 **Fișiere:** `Minigames/Struguri.luau`, `Minigames/Discoteca.luau`, `HoraService.luau` (modul ritm), clienți, `Domain/Rhythm.luau` + test.
 
@@ -547,7 +547,7 @@ Pentru fiecare: modelul sculptat dacă `ArtLibrary.has`, altfel forma procedural
 - [ ] Playtest.
 - [ ] Commit.
 
-### Sarcina 23: Plăcintăria nebună și Țară, țară, vrem ostași
+### Task 23: Plăcintăria nebună și Țară, țară, vrem ostași
 
 **Fișiere:** `Minigames/Placinte.luau`, `Minigames/Ostasi.luau`, clienți, `Domain/Recipe.luau` + test.
 
@@ -568,7 +568,7 @@ Pentru fiecare: modelul sculptat dacă `ArtLibrary.has`, altfel forma procedural
 - [ ] Playtest.
 - [ ] Commit.
 
-### Sarcina 24: Pescuitul la iaz (activitate permanentă)
+### Task 24: Pescuitul la iaz (activitate permanentă)
 
 **Fișiere:**
 - Creare: `src/shared/Config/Fish.luau`, `src/shared/Domain/Fishing.luau`, `tests/Fishing.spec.luau`, `src/server/Services/FishingService.luau`, `src/client/Controllers/FishingController.luau`
@@ -596,7 +596,7 @@ Pentru fiecare: modelul sculptat dacă `ArtLibrary.has`, altfel forma procedural
 
 ## M5. Drumurile paralele spre statut
 
-### Sarcina 25: Decorul ogrăzii pe lei
+### Task 25: Decorul ogrăzii pe lei
 
 **Fișiere:**
 - Creare: `src/shared/Config/Decor.luau`, `src/shared/Domain/Decor.luau`, `tests/Decor.spec.luau`, `src/server/Services/DecorService.luau`, `src/client/Controllers/DecorPanel.luau`, `src/client/Controllers/DecorPlacer.luau`
@@ -618,7 +618,7 @@ Pentru fiecare: modelul sculptat dacă `ArtLibrary.has`, altfel forma procedural
 - [ ] Playtest: panoul pe telefon trece auditul.
 - [ ] Commit.
 
-### Sarcina 26: Garderoba Bunicii și titlurile
+### Task 26: Garderoba Bunicii și titlurile
 
 **Fișiere:** `Config/Outfits.luau` (6 ținute pe lei: de sărbătoare, de iarnă, de discotecă, de pescar, de grădinar, de hram), `Domain/Titles.luau` + test, `TitleService.luau`, deasupra numelui (`BillboardGui`), `BunicaController` (ținuta pe rig).
 
@@ -634,7 +634,7 @@ Pentru fiecare: modelul sculptat dacă `ArtLibrary.has`, altfel forma procedural
 - [ ] Playtest.
 - [ ] Commit.
 
-### Sarcina 27: Îngrijirea creaturilor
+### Task 27: Îngrijirea creaturilor
 
 **Fișiere:** `Domain/Care.luau` + test, `CareService.luau`, `WorldController` (mângâiere = ProximityPrompt pe creatura proprie, zâmbet sau inimioare), `DataTemplate` (`happiness` pe CreatureRecord).
 
@@ -651,7 +651,7 @@ Pentru fiecare: modelul sculptat dacă `ArtLibrary.has`, altfel forma procedural
 - [ ] e2e.
 - [ ] Commit.
 
-### Sarcina 28: Hibrizii
+### Task 28: Hibrizii
 
 **Fișiere:** `Domain/Hybrid.luau` + test, `GardenService` (la eclozare, șansa de hibrid când două straturi alăturate cresc creaturi de rarități ≥ Rar), `Config/HybridNames.luau` (silabe pentru fiecare creatură), `CreatureBuilder` (hibridul = corpul A + accesoriile lui B, colorat), `DataTemplate` (`hybridOf: {string}?`).
 
@@ -667,7 +667,7 @@ Pentru fiecare: modelul sculptat dacă `ArtLibrary.has`, altfel forma procedural
 - [ ] Captură.
 - [ ] Commit.
 
-### Sarcina 29: Caietul cu siluete și clasamentele de mini-jocuri
+### Task 29: Caietul cu siluete și clasamentele de mini-jocuri
 
 **Fișiere:** `NotebookPanel.luau` (creaturile nedescoperite cu siluetă și „?”; fila „Recorduri”: mini-jocurile, cu topul pe server și recordul personal), `MinigameService` (recordurile în profil), `DataTemplate` (`records`).
 
@@ -680,7 +680,7 @@ Pentru fiecare: modelul sculptat dacă `ArtLibrary.has`, altfel forma procedural
 
 ## M6. Social fără chat, bazarul, codurile
 
-### Sarcina 30: Roata de mesaje rapide
+### Task 30: Roata de mesaje rapide
 
 **Fișiere:** `Config/QuickChat.luau` (12 mesaje și emote: „Hai la horă!”, „Ajutor!”, „Fugi!”, „Bravo!”, „Hoț la mine!”, „Schimbăm?”, „Hai la pescuit”, „Mulțumesc”, „Ha-ha”, „Vin acum”, „Ne vedem mâine”, „Bunica te vede!”), `QuickChatService.luau` (bula deasupra capului, rate limit), `QuickChatWheel.luau` (client; butonul prin `HudLayout`).
 
@@ -689,7 +689,7 @@ Pentru fiecare: modelul sculptat dacă `ArtLibrary.has`, altfel forma procedural
 - [ ] Playtest: auditul de telefon.
 - [ ] Commit.
 
-### Sarcina 31: Bazarul de duminică
+### Task 31: Bazarul de duminică
 
 **Fișiere:** `Domain/Market.luau` + test, `MarketService.luau`, `MarketPanel.luau`, `SiteBuilder` (8 tarabe).
 
@@ -708,7 +708,7 @@ Pentru fiecare: modelul sculptat dacă `ArtLibrary.has`, altfel forma procedural
 - [ ] Playtest.
 - [ ] Commit.
 
-### Sarcina 32: Codurile și alarma în lanț
+### Task 32: Codurile și alarma în lanț
 
 **Fișiere:**
 - `Config/Codes.luau` (coduri cu dată de expirare și recompensă), `CodeService.luau` (o singură folosire pe profil), o căsuță în panoul magazinului (tanti de la magazin);
@@ -723,7 +723,7 @@ Pentru fiecare: modelul sculptat dacă `ArtLibrary.has`, altfel forma procedural
 
 ## M7. Sezoanele
 
-### Sarcina 33: Calendarul sezonier
+### Task 33: Calendarul sezonier
 
 **Fișiere:** `Config/Seasons.luau`, `Domain/Seasons.luau` + test, `SeasonService.luau`, conținutul pe sezoane:
 
@@ -752,7 +752,7 @@ Măștile de Malanca sunt o deghizare: Bunica NPC nu te recunoaște 30 s.
 
 ## M8. Limbile
 
-### Sarcina 34: RU, ES și PT scrise de mână
+### Task 34: RU, ES și PT scrise de mână
 
 **Fișiere:** `src/shared/Strings/ru.luau`, `es.luau`, `pt.luau`, `Strings/init.luau` (limbile), `tests/Strings.spec.luau` (fiecare cheie din `en` există în fiecare limbă).
 
@@ -766,7 +766,7 @@ Măștile de Malanca sunt o deghizare: Bunica NPC nu te recunoaște 30 s.
 
 ## M9. Modelele
 
-### Sarcina 35: Conceptele și modelele locurilor noi
+### Task 35: Conceptele și modelele locurilor noi
 
 **Fișiere:** `art/concepts/world/*.png`, `art/concepts/characters/*.png`, `art/models.json`, `Config/ArtAssets.luau`, iar pentru obiectele simple, scripturi Blender în `tools/`.
 
@@ -789,14 +789,14 @@ Măștile de Malanca sunt o deghizare: Bunica NPC nu te recunoaște 30 s.
 
 ## M10. Platforma și verificarea finală
 
-### Sarcina 36: Chestionarul de maturitate și Experience Events
+### Task 36: Chestionarul de maturitate și Experience Events
 
 **Pași:**
 - [ ] Chestionarul de maturitate completat în Creator Dashboard, cu răspunsuri corecte (violență comică ușoară: Mild).
 - [ ] Experience Events pentru update-ul de sâmbătă și pentru sezoane.
 - [ ] Pașii care țin de om (ID, 2FA, Roblox Plus) sunt documentați în PROGRESS.
 
-### Sarcina 37: Integrare, echilibru, documentație
+### Task 37: Integrare, echilibru, documentație
 
 **Pași:**
 - [ ] Playtest-ul complet extins: fiecare loc, întâmplare și mini-joc, auditul de telefon, bugetul.

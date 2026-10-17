@@ -7,15 +7,10 @@ local Notebook = require(Config.Notebook)
 local EconomyConfig = require(Config.Economy)
 local Economy = require(script.Parent.Economy)
 
-type CreatureRecord = { uid: string, id: string, size: string, mutation: string? }
-type Profile = {
-	lei: number,
-	rebirths: number,
-	seeds: { [string]: number },
-	beds: { [string]: any },
-	pedestals: { [string]: CreatureRecord },
-	cellar: { CreatureRecord },
-}
+local DataTemplate = require(Config.DataTemplate)
+
+type CreatureRecord = DataTemplate.CreatureRecord
+type Profile = DataTemplate.Profile
 
 local Rebirth = {}
 

@@ -138,6 +138,7 @@ function CreatureBuilder.build(record: Record, pivot: CFrame): Model
 	model:SetAttribute("CreatureId", record.id)
 	model:SetAttribute("Size", record.size)
 	model:SetAttribute("Mutation", record.mutation or "")
+	model:SetAttribute("Soul", (record :: any).soul == true)
 	if record.uid then
 		model:SetAttribute("Uid", record.uid)
 	end

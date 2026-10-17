@@ -7,7 +7,7 @@ local Creatures = require(Config.Creatures)
 local Rarities = require(Config.Rarities)
 local Economy = require(script.Parent.Economy)
 
-type CreatureRecord = { uid: string, id: string, size: string, mutation: string? }
+type CreatureRecord = { uid: string, id: string, size: string, mutation: string?, soul: boolean? }
 
 local NpcThieves = {}
 
@@ -39,7 +39,12 @@ function NpcThieves.pickTarget(
 	for key, record in pedestals do
 		local creature = Creatures.byId[record.id]
 		local rarity = creature and Rarities.byId[creature.rarity]
-		if rarity and rarity.order <= NpcThievesConfig.maxRarityOrder and not isCarried(record.uid) then
+		if
+			rarity
+			and rarity.order <= NpcThievesConfig.maxRarityOrder
+			and not record.soul
+			and not isCarried(record.uid)
+		then
 			local value = Economy.incomePerSecond(record)
 			-- la egalitate, cheia mai mică: alegerea e deterministă
 			if value > bestValue or (value == bestValue and best ~= nil and key < best) then

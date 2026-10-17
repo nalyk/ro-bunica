@@ -302,6 +302,7 @@ function RaidService.tryStart(actor: Actor, owner: Owner, key: string)
 		now = now(),
 		distance = (root.Position - model:GetPivot().Position).Magnitude,
 		creatureOnPedestal = not carriedUids[record.uid],
+		creatureIsSoul = record.soul == true,
 	})
 	if not ok then
 		debugLog("furt refuzat " .. actor.name .. ": " .. tostring(reason))
@@ -311,6 +312,7 @@ function RaidService.tryStart(actor: Actor, owner: Owner, key: string)
 			or reason == "NewPlayer"
 			or reason == "Family"
 			or reason == "NightLimit"
+			or reason == "Soul"
 		then
 			Messenger.notify(actor.player, "notify." .. reason)
 		end

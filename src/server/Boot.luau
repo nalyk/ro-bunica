@@ -26,6 +26,7 @@ local ORDER = {
 	"TutorialService",
 	"NpcThiefService",
 	"NotebookService",
+	"SoulService",
 	"TradeService",
 	"HoraService",
 	"LiveEventService",

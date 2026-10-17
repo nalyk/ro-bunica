@@ -7,7 +7,7 @@ local TradeConfig = require(Config.Trade)
 local Creatures = require(Config.Creatures)
 local Economy = require(script.Parent.Economy)
 
-type CreatureRecord = { uid: string, id: string, size: string, mutation: string? }
+type CreatureRecord = { uid: string, id: string, size: string, mutation: string?, soul: boolean? }
 type Profile = { lei: number, cellar: { CreatureRecord }, cellarCapacity: number }
 
 export type Offer = { uids: { string }, lei: number }
@@ -65,6 +65,9 @@ function Trade.checkOffer(profile: Profile, uids: { string }, lei: number): (boo
 		local creature = Creatures.byId[record.id]
 		if not creature or TradeConfig.excludedRarities[creature.rarity] then
 			return false, "NotTradable"
+		end
+		if record.soul then
+			return false, "Soul"
 		end
 	end
 	return true, nil

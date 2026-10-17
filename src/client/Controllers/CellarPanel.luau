@@ -63,6 +63,20 @@ local function row(record: any, order: number, displayed: boolean, pedestalKey: 
 		}),
 		17
 	)
+	-- inima: creatură de suflet (nu se fură, nu se schimbă); cel mult 3
+	local heart = UI.button({
+		Name = "SoulToggle",
+		AnchorPoint = Vector2.new(1, 1),
+		Position = UDim2.fromOffset(ROW_HEIGHT + 4, ROW_HEIGHT - 2),
+		Size = UDim2.fromOffset(44, 44),
+		Text = "♥",
+		swatch = if record.soul then "ie" else "stone",
+		Parent = frame,
+	}, function()
+		Net.get("SetSoul"):FireServer(record.uid, not record.soul)
+	end)
+	local heartCorner = heart:FindFirstChildOfClass("UICorner") :: UICorner
+	heartCorner.CornerRadius = UDim.new(0.5, 0)
 	UI.button({
 		Size = UDim2.new(0.25, -6, 0, ROW_HEIGHT - 26),
 		Position = UDim2.new(0.47, 0, 0, 10),
@@ -116,7 +130,8 @@ local function signature(list: { { record: any, displayed: boolean, key: string?
 		table.insert(
 			parts,
 			string.format(
-				"%s:%s:%s:%s:%s",
+				"%s:%s:%s:%s:%s:%s",
+				tostring(r.soul),
 				tostring(r.uid),
 				r.id,
 				r.size,

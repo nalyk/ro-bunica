@@ -19,6 +19,7 @@ local NAMES = {
 	"ClientReady", -- () clientul și-a conectat ascultătorii; serverul retrimite starea
 	"Trade", -- (action: "request" | "respond" | "offer" | "accept" | "cancel", a, b) schimburile
 	"Notebook", -- (action: "claimQuest" | "claimBonus" | "rebirth", arg: number?) Caietul Bunicii
+	"SetSoul", -- (uid: string, on: boolean) creatură de suflet (nu se fură, nu se schimbă)
 	"FamilyMode", -- (mode: "Family" | "Rival") alegerea față de prietenii de pe server
 	"Greeted", -- () ecranul de încărcare s-a închis: Bunica îl întâmpină (o dată pe sesiune)
 	-- S→C

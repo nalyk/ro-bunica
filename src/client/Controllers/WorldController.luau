@@ -62,7 +62,7 @@ local function labelCreature(model: Model)
 			and Mutations.byId[mutation]
 		then Mutations.byId[mutation].color
 		else Color3.new(1, 1, 1)
-	name.Text = nameText
+	name.Text = if model:GetAttribute("Soul") == true then "♥ " .. nameText else nameText
 	name.Parent = billboard
 	local info = name:Clone()
 	info.Position = UDim2.fromScale(0, 0.5)

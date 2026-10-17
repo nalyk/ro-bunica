@@ -11,9 +11,11 @@ Badges.IDS = {
 	steal = 3574816874267202, -- Sneaky Neighbour
 	defend = 789090629982362, -- PLEOSC!
 	legend = 2444435420055300, -- Legend of the Village
-	hora = 0, -- Hora Dancer (de creat)
-	million = 0, -- First Million (de creat)
+	hora = 1792304837647861, -- Hora Dancer
+	million = 1193355682846806, -- First Million
 }
+
+local MILLION = 1_000_000
 
 local LEGENDARY_OR_BETTER = { Legendary = true, Mythic = true, Secret = true }
 
@@ -47,6 +49,13 @@ end
 function Badges.forRarity(player: Player?, rarity: string)
 	if LEGENDARY_OR_BETTER[rarity] then
 		Badges.award(player, "legend")
+	end
+end
+
+-- Insigna First Million, când leii strânși ajung la un milion
+function Badges.forLei(player: Player?, lei: number)
+	if lei >= MILLION then
+		Badges.award(player, "million")
 	end
 end
 

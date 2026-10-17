@@ -13,6 +13,7 @@ local RateLimiter = require(Shared.Domain.RateLimiter)
 local PlotService = require(script.Parent.PlotService)
 local CreatureService = require(script.Parent.CreatureService)
 local Analytics = require(script.Parent.Parent.Analytics)
+local Badges = require(script.Parent.Parent.Badges)
 local StateService = require(script.Parent.StateService)
 local RaidService = require(script.Parent.RaidService)
 local Messenger = require(script.Parent.Messenger)
@@ -64,6 +65,7 @@ function EconomyService.addLei(owner: Owner, amount: number)
 			stat.Value = math.floor(math.min(owner.profile.lei, 2 ^ 53))
 		end
 		StateService.markDirty(player)
+		Badges.forLei(player, owner.profile.lei)
 	end
 end
 

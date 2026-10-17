@@ -14,6 +14,7 @@ local RateLimiter = require(Shared.Domain.RateLimiter)
 local WeatherService = require(script.Parent.WeatherService)
 local Messenger = require(script.Parent.Messenger)
 local Actors = require(script.Parent.Parent.Actors)
+local Badges = require(script.Parent.Parent.Badges)
 
 type Actor = Actors.Actor
 
@@ -86,6 +87,11 @@ local function tick()
 	readyAt = t + Hora.cooldownSeconds
 	GameState.set("HoraReadyAt", readyAt)
 	Messenger.announce("announce.Hora", { tostring(#ids), Messenger.key("weather." .. eventId) })
+	for actor in dancingUntil do
+		if table.find(ids, actor.id) then
+			Badges.award(actor.player, "hora")
+		end
+	end
 end
 
 function HoraService.start()

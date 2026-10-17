@@ -209,9 +209,20 @@ function ops.bunicaVisuals(plotIndex: number): { [string]: any }
 	local plot = Workspace:WaitForChild("Village"):FindFirstChild("Plot" .. plotIndex)
 	local rig = plot and plot:FindFirstChild("Bunica")
 	local head = rig and rig:FindFirstChild("Head")
+	-- vocea înregistrată: sunetul lipit de cap și dacă s-a încărcat (asset aprobat, redabil)
+	local voice = head and head:FindFirstChild("BunicaVoice") :: Sound?
+	if voice and not voice.IsLoaded then
+		local deadline = os.clock() + 5
+		while not voice.IsLoaded and os.clock() < deadline do
+			task.wait(0.1)
+		end
+	end
 	return {
 		face = head ~= nil and head:FindFirstChild("BunicaFace") ~= nil,
 		bubble = head ~= nil and head:FindFirstChild("BunicaBubble") ~= nil,
+		voice = if voice then voice.SoundId else nil,
+		voiceLoaded = voice ~= nil and voice.IsLoaded,
+		voiceLength = if voice then voice.TimeLength else 0,
 	}
 end
 

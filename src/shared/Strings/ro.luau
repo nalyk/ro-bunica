@@ -89,7 +89,7 @@ return {
 	["bunica.spot.2"] = "Ia uite-l pe ăsta...",
 	["bunica.spot.3"] = "Văd eu tot, să știi!",
 	["bunica.wake.1"] = "Hoțule!",
-	["bunica.wake.2"] = "Na-ți-o bună!",
+	["bunica.wake.2"] = "Las' că-ți arăt eu!",
 	["bunica.wake.3"] = "Stai, că vin!",
 	["bunica.signature"] = "Fugi, că vine Bunica!",
 	["bunica.hit.1"] = "Na-ți papucul!",

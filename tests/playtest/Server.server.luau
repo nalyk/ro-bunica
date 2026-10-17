@@ -679,6 +679,9 @@ step("10. Botul fură de la jucător și e lovit de papucul jucătorului", funct
 		type(line) == "string" and string.find(line, "bunica.hit", 1, true) ~= nil,
 		"replica nu e de lovitură"
 	)
+	log(`vocea: {visuals.voice} încărcată={visuals.voiceLoaded} durata={visuals.voiceLength}`)
+	check(visuals.voice ~= nil, "Bunica nu are vocea înregistrată la lovitură")
+	check(visuals.voiceLoaded and visuals.voiceLength > 0.5, "vocea Bunicii nu s-a încărcat")
 end)
 
 step("11. Botul reușește un furt; jucătorul e anunțat și primește scut", function()

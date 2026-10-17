@@ -27,4 +27,15 @@ describe("LinePicker", function()
 			end
 		end
 	end)
+	it("fiecare replică are voce în limba de rezervă, cu id și durată", function()
+		local voices = BunicaLines.voice[BunicaLines.voiceFallback]
+		for _, lines in BunicaLines.events do
+			for _, key in lines do
+				local voice = voices[key]
+				expect(voice ~= nil).toBe(true)
+				expect(string.match(voice.id, "^rbxassetid://%d+$") ~= nil).toBe(true)
+				expect(voice.seconds > 0.5 and voice.seconds < 8).toBe(true)
+			end
+		end
+	end)
 end)

@@ -42,6 +42,7 @@ type Bunica = {
 	lastHitAt: { [Actor]: number },
 	lastLine: string?,
 	lastLineAt: number,
+	lastLineGap: number, -- cât trebuie să treacă după replica de acum (vocea lungă nu e întreruptă)
 	signatureSaid: boolean, -- replica semnătură, o dată pe noapte
 }
 
@@ -103,6 +104,7 @@ local function finishRig(rig: Model, humanoid: Humanoid, root: BasePart, head: B
 		lastHitAt = {},
 		lastLine = nil,
 		lastLineAt = -math.huge,
+		lastLineGap = BunicaLines.minGapSeconds,
 		signatureSaid = false,
 	}
 end
@@ -164,10 +166,10 @@ local function buildRig(home: CFrame): Bunica
 	return finishRig(rig, humanoid, root, head, home)
 end
 
--- Bunica spune o replică: clientul afișează bula (și vocea, când există) la schimbarea lui LineSeq.
+-- Bunica spune o replică: clientul afișează bula și redă vocea la schimbarea lui LineSeq.
 local function say(bunica: Bunica, event: string, force: boolean?)
 	local t = os.clock()
-	if not force and t - bunica.lastLineAt < BunicaLines.minGapSeconds then
+	if not force and t - bunica.lastLineAt < bunica.lastLineGap then
 		return
 	end
 	local lines = BunicaLines.events[event]
@@ -177,6 +179,8 @@ local function say(bunica: Bunica, event: string, force: boolean?)
 	end
 	bunica.lastLine = line
 	bunica.lastLineAt = t
+	local voice = BunicaLines.voice[BunicaLines.voiceFallback][line]
+	bunica.lastLineGap = math.max(BunicaLines.minGapSeconds, if voice then voice.seconds + 0.4 else 0)
 	bunica.rig:SetAttribute("Line", line)
 	bunica.rig:SetAttribute("LineSeq", ((bunica.rig:GetAttribute("LineSeq") :: number?) or 0) + 1)
 end

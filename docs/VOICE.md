@@ -55,12 +55,33 @@ Mostrele și replicile sunt în `art/voice/takes/*.ogg`.
 - Evaluarea automată (`tools/voice/judge.py`, Gemini ascultă clipul și dă note în JSON) e utilă pentru
   transcriere și pentru a detecta indicații citite cu voce tare, dar decizia finală o ia urechea omului.
 
+## Replicile RO (gata, 2026-10-17)
+
+Vocea B, aleasă de om. Cele 20 de replici din `BunicaLines` sunt în `art/voice/ro/` (OGG mono 48 kHz, -14 LUFS),
+încărcate prin `tools/assets.py` (`voice_ro_*` în `assets.lock.json`) și legate în `BunicaLines.voice.ro`.
+Semnătura „Fugi, că vine Bunica!” e înregistrarea pe care omul a ascultat-o și a aprobat-o (`L_B_fugi`).
+
+Fluxul (`tools/voice/batch.py`, `tools/voice/check.py`):
+
+1. `batch.py quota` verifică cota TTS printr-un apel REST (costă o cerere).
+2. `batch.py gen GRUP TAKE`: o cerere pentru un grup de 4–8 replici cu aceeași emoție (`style`), cu timeout dur.
+3. `batch.py align GRUP TAKE`: taie la toate pauzele de peste 0,15 s, transcrie bucățile cu Gemini și le grupează
+   în replici prin programare dinamică după asemănarea textului. Tăierea doar după „cele mai lungi n-1 pauze”
+   greșește, pentru că Bunica face pauze și în interiorul replicilor („Văd eu… tot, să știi!”). Tăietura cade
+   la 60 ms după sfârșitul vorbirii, altfel se pierd începuturile moi („St-” din „Stai”, „A-” din „Acum”).
+4. `check.py`: transcriere fără text sugerat și „-i” final lung. Cu textul așteptat în prompt, evaluatorul e prea
+   îngăduitor (a aprobat un „Fugi” cu „i” lung).
+5. Loudnorm într-o singură trecere ratează ținta pe clipuri scurte (-12,5…-19,4 LUFS); câștig exact măsurat cu
+   `ebur128`, repetat de 3 ori, plus `alimiter`, le aduce pe toate la -14 ±0,3.
+
+Cote gratuite pe zi: TTS 10 cereri; evaluatorul are 20 de cereri pe model, iar `check.py` trece singur la
+`gemini-3.7-flash`, `3.6-flash`, `3.5-flash` când se termină una. Pe 2026-10-17 s-au folosit 10 cereri TTS.
+
+„Na-ți-o bună!” a ieșit stâlcit în ambele variante („Noapte bună”, „Na! Lecție bună!”), așa că replica a devenit
+„Las' că-ți arăt eu!” (la fel ca textul englez, „Oh, you'll get it now!”).
+
 ## Pașii următori
 
-1. Când se resetează cota: audiția vocilor B, C și D cu aceleași 4 replici, grupate în 1–2 cereri.
-   Omul alege vocea.
-2. Cele ~50 de replici RO (`src/shared/Config/BunicaLines.luau`), grupate câte 5–8 pe cerere, 3 variante
-   fiecare. Selecția: Gemini ca evaluator (transcriere, „-i” final), apoi urechea omului.
-3. Post-procesare: tăiere pe pauze, `loudnorm` la -14 LUFS, OGG mono 48 kHz, încărcare prin Open Cloud
-   (permisiunea „assets” e activă) și id-urile în config.
-4. EN, ES și PT cu aceeași voce proiectată, în zilele următoare (cota zilnică).
+1. EN, ES și PT cu aceeași voce, câte o limbă pe zi (cota zilnică), în `art/voice/<limbă>/` și
+   `BunicaLines.voice.<limbă>`. Până atunci, jucătorii din alte limbi aud vocea în română, cu bula tradusă.
+2. Mai multe replici pe evenimente noi (horă, furt reușit, mutații), când apar.

@@ -73,7 +73,8 @@ local function refreshVisuals()
 	local selected = GuiService.SelectedObject
 	if active and panel and not (selected and selected:IsDescendantOf(panel)) then
 		GuiService.SelectedObject = firstButton(panel)
-	elseif not panel and selected and selected:IsDescendantOf(UI.screen()) then
+	elseif (not active or not panel) and selected and selected:IsDescendantOf(UI.screen()) then
+		-- fără gamepad (mouse, atingere) nu rămâne nimic selectat, nici cât panoul încă se închide animat
 		GuiService.SelectedObject = nil
 	end
 end

@@ -2,6 +2,7 @@
 -- Bunica pe client: fața desenată (ochelari rotunzi, sprâncene, gură), animații procedurale pe articulații
 -- și bula de dialog. Pozele se aplică local pe C0 (modificările de pe client nu se replică), deci nu costă rețea.
 
+local Debris = game:GetService("Debris")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
@@ -269,17 +270,30 @@ local function showBubble(model: Model, key: string)
 	scale.Scale = 0.3
 	scale.Parent = bubble
 	TweenService:Create(scale, TweenInfo.new(0.2, Enum.EasingStyle.Back), { Scale = 1 }):Play()
-	task.delay(BunicaLines.bubbleSeconds, function()
-		billboard:Destroy()
-	end)
-
-	-- Vocea înregistrată, dacă există; altfel un sunet scurt de caracter
-	local voice = BunicaLines.voice[key]
+	-- Vocea înregistrată (în limba jucătorului sau în română), lipită de cap ca să meargă cu Bunica;
+	-- replica de dinainte se oprește. Fără înregistrare: un sunet scurt de caracter.
+	local voices = BunicaLines.voice[ClientState.language()] or BunicaLines.voice[BunicaLines.voiceFallback]
+	local voice = voices[key] or BunicaLines.voice[BunicaLines.voiceFallback][key]
+	local previous = head:FindFirstChild("BunicaVoice")
+	if previous then
+		previous:Destroy()
+	end
 	if voice then
-		Sfx.play(voice, head.Position, 1)
+		local sound = Instance.new("Sound")
+		sound.Name = "BunicaVoice"
+		sound.SoundId = voice.id
+		sound.Volume = BunicaLines.voiceVolume
+		sound.RollOffMinDistance = 12
+		sound.RollOffMaxDistance = 160
+		sound.Parent = head
+		sound:Play()
+		Debris:AddItem(sound, voice.seconds + 1)
 	elseif string.find(key, "bunica.hit", 1, true) then
 		Sfx.play(Sounds.bunicaGiggle, head.Position, 0.8)
 	end
+	task.delay(math.max(BunicaLines.bubbleSeconds, if voice then voice.seconds + 0.4 else 0), function()
+		billboard:Destroy()
+	end)
 end
 
 -- Ciclul de viață --------------------------------------------------------------------

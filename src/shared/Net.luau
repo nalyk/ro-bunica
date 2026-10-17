@@ -34,6 +34,7 @@ local NAMES = {
 	"Tutorial", -- (stage: string, data: {any}?) pașii din primul minut
 	"Replay", -- (best: BestThrow) lovitura nopții, reluată la răsărit
 	"TradeUpdate", -- (kind: "request" | "state" | "closed", data) cereri și fereastra de schimb
+	"Revenge", -- ({ thief: number, name: string, uid: string }?) hoțul de urmărit până în zori (nil = gata)
 	"Daily", -- (claim: {day, lei, seed?}, serverTime) recompensa zilnică
 }
 

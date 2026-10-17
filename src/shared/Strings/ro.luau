@@ -186,6 +186,8 @@ return {
 	["notify.Soul"] = "Asta e o creatură de suflet: nu se fură!",
 	["notify.SoulMax"] = "Poți avea cel mult {1} creaturi de suflet",
 	["notify.TradeSoul"] = "Creaturile de suflet nu se schimbă",
+	["notify.RevengeStart"] = "{1} ți-a furat o creatură! Fură-o înapoi până în zori și primești bonus!",
+	["notify.RevengeDone"] = "Răzbunare! Ți-ai luat înapoi {1} și +{2} lei",
 	["notify.Family"] = "Nu furi de la familie!",
 	["notify.NightLimit"] = "Ograda asta a fost jefuită destul în noaptea asta!",
 	["notify.DefenseReward"] = "Ai salvat creatura! +{1} lei",

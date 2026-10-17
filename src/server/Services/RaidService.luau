@@ -112,6 +112,12 @@ export type HitSource = {
 	saved: { id: string, size: string, mutation: string? }?, -- creatura scăpată de hoț (completat de onHit)
 }
 local hitCallbacks: { (Actor, HitSource) -> () } = {}
+local stealCallbacks: { (Owner, Owner, any) -> () } = {}
+
+-- Apelat după fiecare furt reușit: (hoțul, victima, creatura furată).
+function RaidService.onSteal(callback: (Owner, Owner, any) -> ())
+	table.insert(stealCallbacks, callback)
+end
 
 -- Diagnostic doar în Studio (playtest), ca să vedem de ce un furt e refuzat
 local function debugLog(message: string)
@@ -263,6 +269,9 @@ local function complete(actor: Actor, thief: Owner)
 	end
 	StateService.markDirty(actor.player)
 	StateService.markDirty(owner.player)
+	for _, callback in stealCallbacks do
+		task.spawn(callback, thief, owner, record)
+	end
 end
 
 -- Încearcă să înceapă un furt. Apelat de prompt (jucători) sau direct (boți, teste).

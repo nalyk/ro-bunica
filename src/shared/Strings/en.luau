@@ -177,6 +177,8 @@ return {
 	["notify.Soul"] = "That's a soul creature: it can't be stolen!",
 	["notify.SoulMax"] = "You can have at most {1} soul creatures",
 	["notify.TradeSoul"] = "Soul creatures can't be traded",
+	["notify.RevengeStart"] = "{1} stole your creature! Steal it back before dawn for a bonus!",
+	["notify.RevengeDone"] = "Revenge! You got {1} back and +{2} lei",
 	["notify.Family"] = "You don't steal from family!",
 	["notify.NightLimit"] = "This yard has been robbed enough tonight!",
 	["notify.DefenseReward"] = "You saved the creature! +{1} lei",

@@ -15,6 +15,8 @@ local byKey: { [string]: Priority } = {
 	["notify.Stolen"] = "urgent",
 	["notify.NpcThiefComing"] = "urgent",
 	["notify.StealBack"] = "urgent",
+	["notify.RevengeStart"] = "urgent",
+	["notify.RevengeDone"] = "reward",
 	["announce.Night"] = "urgent",
 	-- indicii (după o acțiune care n-a mers)
 	["notify.NotNight"] = "hint",

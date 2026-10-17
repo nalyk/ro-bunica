@@ -11,6 +11,7 @@ local Net = require(Shared.Net)
 local Creatures = require(Shared.Config.Creatures)
 local TradeConfig = require(Shared.Config.Trade)
 local Economy = require(Shared.Domain.Economy)
+local Trade = require(Shared.Domain.Trade)
 local ClientState = require(script.Parent.ClientState)
 local NotifyController = require(script.Parent.NotifyController)
 local Theme = require(script.Parent.Theme)
@@ -181,6 +182,13 @@ local function renderWindow()
 		)
 	end
 	theirsValue.Text = ClientState.t("ui.tradeValue", { Economy.formatShort(theirs.value or 0) })
+	-- avertizare anti-păcăleală: dai mult mai mult decât primești
+	local warn = Trade.lopsided(mine.value or 0, theirs.value or 0)
+		and (mine.value or 0) > (theirs.value or 0)
+	mineValue.Text = if warn
+		then ClientState.t("ui.tradeLopsided", { Economy.formatShort(mine.value or 0) })
+		else mineValue.Text
+	mineValue.TextColor3 = if warn then Theme.swatches.ie.dark else Theme.inkSoft
 	mineList.CanvasPosition, theirsList.CanvasPosition = minePosition, theirsPosition
 	-- butonul și starea
 	if mine.accepted then

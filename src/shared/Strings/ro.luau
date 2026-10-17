@@ -188,6 +188,7 @@ return {
 	["notify.TradeSoul"] = "Creaturile de suflet nu se schimbă",
 	["notify.RevengeStart"] = "{1} ți-a furat o creatură! Fură-o înapoi până în zori și primești bonus!",
 	["notify.RevengeDone"] = "Răzbunare! Ți-ai luat înapoi {1} și +{2} lei",
+	["ui.tradeLopsided"] = "Atenție! Dai {1} lei pentru mult mai puțin",
 	["notify.Family"] = "Nu furi de la familie!",
 	["notify.NightLimit"] = "Ograda asta a fost jefuită destul în noaptea asta!",
 	["notify.DefenseReward"] = "Ai salvat creatura! +{1} lei",

@@ -68,4 +68,11 @@ describe("Trade", function()
 		table.remove(q[1].cellar, 1) -- vândută după ofertă
 		expect(select(2, Trade.validate(t, q))).toBe("NotInCellar")
 	end)
+	it("avertizează când o parte dă de cel puțin 3 ori mai mult (și diferența contează)", function()
+		expect(Trade.lopsided(3000, 1000)).toBe(true)
+		expect(Trade.lopsided(1000, 3000)).toBe(true)
+		expect(Trade.lopsided(2900, 1000)).toBe(false)
+		expect(Trade.lopsided(300, 0)).toBe(false) -- diferența sub 500 lei nu contează
+		expect(Trade.lopsided(600, 0)).toBe(true)
+	end)
 end)

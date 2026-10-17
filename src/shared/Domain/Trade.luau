@@ -110,6 +110,12 @@ function Trade.value(profile: Profile, offer: Offer): number
 	return total
 end
 
+-- Schimb foarte dezechilibrat? (o parte dă de cel puțin 3 ori mai mult, iar diferența e de cel puțin 500 lei)
+function Trade.lopsided(a: number, b: number): boolean
+	local high, low = math.max(a, b), math.min(a, b)
+	return high - low >= 500 and high >= 3 * low
+end
+
 -- Totul încă se poate face? (ambele oferte valide și loc în beci de ambele părți după schimb)
 function Trade.validate(session: Session, profiles: { [number]: Profile }): (boolean, string?)
 	for _, who in { session.a, session.b } do

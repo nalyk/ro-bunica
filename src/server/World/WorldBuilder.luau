@@ -91,7 +91,7 @@ local function part(props: { [string]: any }): Part
 	return p
 end
 
-local function buildFence(model: Model, cf: CFrame)
+local function buildFence(model: Model, cf: CFrame, look: VillageLayout.Variant)
 	local halfX, halfZ = World.plotSize.X / 2, World.plotSize.Z / 2
 	local h = World.fenceHeight
 	local gateHalf = World.gateWidth / 2
@@ -138,11 +138,173 @@ local function buildFence(model: Model, cf: CFrame)
 			Name = "GatePost",
 			Size = Vector3.new(1.5, h + 3, 1.5),
 			CFrame = cf * CFrame.new(sideX, (h + 3) / 2, -halfZ),
-			Color = PALETTE.gate,
+			Color = look.gateColor,
 			Parent = model,
 		})
 		if gate then
 			hide({ post })
+		end
+	end
+	-- vopseaua porții: textura are vopseaua transparentă (art.py, „paint”), deci se vede culoarea piesei
+	if gate then
+		for _, mesh in gate:GetDescendants() do
+			if mesh:IsA("MeshPart") then
+				mesh.Color = look.gateColor
+			end
+		end
+	end
+end
+
+-- Decorul ogrăzii (doar vizual, fără coliziuni): patru seturi, oglindite stânga-dreapta pe jumătate din ogrăzi.
+-- Straturile sunt la x ∈ [−34, −6], z ∈ [−18, −10]; piedestalele la x ∈ [4, 32], z ∈ [−21, 1]; decorul stă în spate
+-- (z ≥ 2) sau pe fâșia din stânga, în fața straturilor.
+local function decor(props: { [string]: any }): Part
+	props.CanCollide = false
+	props.CanQuery = false
+	props.CanTouch = false
+	return part(props)
+end
+
+local function buildPergola(model: Model, cf: CFrame, look: VillageLayout.Variant, side: number)
+	-- bolta de viță pe latura din stânga, în spate (lângă casă): stâlpi, șipci, frunze
+	for _, z in { 2, 10, 18, 26 } do
+		for _, x in { -37.5, -32.5 } do
+			decor({
+				Name = "Bolta",
+				Size = Vector3.new(0.5, 7, 0.5),
+				CFrame = cf * CFrame.new(x * side, 3.5, z),
+				Color = look.trimColor,
+				Material = Enum.Material.Wood,
+				Parent = model,
+			})
+		end
+	end
+	decor({
+		Name = "BoltaSus",
+		Size = Vector3.new(6, 0.4, 26),
+		CFrame = cf * CFrame.new(-35 * side, 7.1, 14),
+		Color = PALETTE.fence,
+		Material = Enum.Material.WoodPlanks,
+		Transparency = 0.35,
+		Parent = model,
+	})
+	for i = 0, 6 do
+		local leaf = decor({
+			Name = "Vita",
+			Shape = Enum.PartType.Ball,
+			Size = Vector3.new(4.4, 2.2, 4.4),
+			CFrame = cf * CFrame.new((-35 + math.sin(i * 1.7) * 1.2) * side, 7.6, 2 + i * 4),
+			Color = Color3.fromRGB(70 + i % 3 * 8, 128, 52),
+			Material = Enum.Material.Grass,
+			Parent = model,
+		})
+		leaf.Shape = Enum.PartType.Ball
+		if i % 2 == 0 then
+			decor({
+				Name = "Strugure",
+				Size = Vector3.new(0.8, 1.4, 0.8),
+				CFrame = cf * CFrame.new((-34 + math.cos(i) * 1.5) * side, 6.1, 3 + i * 4),
+				Color = Color3.fromRGB(88, 40, 96),
+				Material = Enum.Material.SmoothPlastic,
+				Parent = model,
+			})
+		end
+	end
+end
+
+local function buildHives(model: Model, cf: CFrame, look: VillageLayout.Variant, side: number)
+	-- stupii, vopsiți, în colțul din spate dreapta
+	for i, z in { 6, 12, 18 } do
+		decor({
+			Name = "Stup",
+			Size = Vector3.new(2.6, 2.4, 2.6),
+			CFrame = cf * CFrame.new(34 * side, 1.6, z),
+			Color = if i == 2 then look.trimColor else look.gateColor,
+			Material = Enum.Material.WoodPlanks,
+			Parent = model,
+		})
+		decor({
+			Name = "StupCapac",
+			Size = Vector3.new(3.0, 0.4, 3.0),
+			CFrame = cf * CFrame.new(34 * side, 3.0, z),
+			Color = PALETTE.roof,
+			Parent = model,
+		})
+		decor({
+			Name = "StupPicior",
+			Size = Vector3.new(2.2, 0.4, 2.2),
+			CFrame = cf * CFrame.new(34 * side, 0.2, z),
+			Color = PALETTE.fence,
+			Parent = model,
+		})
+	end
+end
+
+local function buildWoodpile(model: Model, cf: CFrame, side: number)
+	-- stiva de lemne lângă gardul din spate și căpița de fân
+	for row = 0, 2 do
+		for i = 0, 6 - row do
+			local log = decor({
+				Name = "Lemn",
+				Size = Vector3.new(4, 1, 1),
+				CFrame = cf
+					* CFrame.new((-26 + i * 1.05 + row * 0.5) * side, 0.5 + row * 0.95, 32)
+					* CFrame.Angles(0, math.pi / 2, 0),
+				Color = Color3.fromRGB(150 - row * 10, 104, 66),
+				Material = Enum.Material.Wood,
+				Parent = model,
+			})
+			log.Shape = Enum.PartType.Cylinder
+		end
+	end
+	local hay = decor({
+		Name = "Capita",
+		Size = Vector3.new(7, 7, 7),
+		CFrame = cf * CFrame.new(33 * side, 2.6, 26),
+		Color = Color3.fromRGB(214, 180, 96),
+		Material = Enum.Material.Grass,
+		Parent = model,
+	})
+	hay.Shape = Enum.PartType.Ball
+	decor({
+		Name = "CapitaPar",
+		Size = Vector3.new(0.4, 9, 0.4),
+		CFrame = cf * CFrame.new(33 * side, 4.5, 26),
+		Color = PALETTE.fence,
+		Parent = model,
+	})
+end
+
+local function buildDecor(model: Model, cf: CFrame, index: number, look: VillageLayout.Variant)
+	local side = if look.mirrored then -1 else 1 -- oglindirea: decorul trece pe cealaltă latură
+	local function at(x: number, z: number, turn: number): CFrame
+		return cf * CFrame.new(x * side, 0, z) * CFrame.Angles(0, math.rad(turn), 0)
+	end
+	local set = look.treeSet
+	if set == 1 then
+		placeArt("world.Nuc", at(-30, 24, index * 47), model)
+		placeArt("world.Nuc", at(31, 27, index * 83), model)
+		placeArt("world.Visin", at(-33, 10, index * 61), model)
+		placeArt("world.Visin", at(35, 9, index * 29), model)
+		for k, zz in { -22, -9, 4 } do
+			placeArt("world.FloareaSoarelui", at(-36.5, zz, k * 70), model)
+		end
+	elseif set == 2 then
+		buildPergola(model, cf, look, side)
+		placeArt("world.Nuc", at(31, 27, index * 83), model)
+		placeArt("world.Visin", at(34, 8, index * 29), model)
+	elseif set == 3 then
+		buildHives(model, cf, look, side)
+		placeArt("world.Visin", at(-33, 22, index * 61), model)
+		placeArt("world.Visin", at(-31, 8, index * 37), model)
+		for k, zz in { -22, -15, -8 } do
+			placeArt("world.FloareaSoarelui", at(36.5, zz, k * 70), model)
+		end
+	else
+		buildWoodpile(model, cf, side)
+		placeArt("world.Nuc", at(-31, 20, index * 47), model)
+		for k, zz in { -22, -9, 4 } do
+			placeArt("world.FloareaSoarelui", at(-36.5, zz, k * 70), model)
 		end
 	end
 end
@@ -213,7 +375,12 @@ local function gridPositions(columns: number, rows: number, spacing: number, ori
 	return list
 end
 
-local function buildPlot(index: number, cf: CFrame, parent: Instance): PlotGeometry
+local function buildPlot(
+	index: number,
+	cf: CFrame,
+	look: VillageLayout.Variant,
+	parent: Instance
+): PlotGeometry
 	local model = Instance.new("Model")
 	model.Name = "Plot" .. index
 	model:SetAttribute("PlotIndex", index)
@@ -226,7 +393,7 @@ local function buildPlot(index: number, cf: CFrame, parent: Instance): PlotGeome
 		Material = Enum.Material.Grass,
 		Parent = model,
 	})
-	buildFence(model, cf)
+	buildFence(model, cf, look)
 	buildHouse(model, cf)
 
 	local beds: { [string]: BasePart } = {}
@@ -305,18 +472,7 @@ local function buildPlot(index: number, cf: CFrame, parent: Instance): PlotGeome
 	if placeArt("world.Beci", cf * CFrame.new(22, 0, World.plotSize.Z / 2 - 17), model) then
 		hide({ deposit })
 	end
-	-- decor: nuci în colțurile din spate, floarea-soarelui lângă gardul din stânga
-	placeArt("world.Nuc", cf * CFrame.new(-30, 0, 24) * CFrame.Angles(0, math.rad(index * 47), 0), model)
-	placeArt("world.Nuc", cf * CFrame.new(31, 0, 27) * CFrame.Angles(0, math.rad(index * 83), 0), model)
-	placeArt("world.Visin", cf * CFrame.new(-33, 0, 10) * CFrame.Angles(0, math.rad(index * 61), 0), model)
-	placeArt("world.Visin", cf * CFrame.new(35, 0, 9) * CFrame.Angles(0, math.rad(index * 29), 0), model)
-	for k, zz in { -22, -9, 4 } do
-		placeArt(
-			"world.FloareaSoarelui",
-			cf * CFrame.new(-36.5, 0, zz) * CFrame.Angles(0, math.rad(k * 70), 0),
-			model
-		)
-	end
+	buildDecor(model, cf, index, look)
 
 	-- Tăblița cu numele proprietarului, deasupra porții (deasupra acoperișului porții sculptate)
 	local signPart = part({
@@ -467,7 +623,7 @@ function WorldBuilder.build(): { PlotGeometry }
 
 	local plots = {}
 	for index, spot in layout.plots do
-		table.insert(plots, buildPlot(index, spot.cframe, village))
+		table.insert(plots, buildPlot(index, spot.cframe, spot.look, village))
 	end
 	village.Parent = Workspace
 

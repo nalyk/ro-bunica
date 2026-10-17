@@ -41,6 +41,21 @@ return table.freeze({
 		codru = Vector3.new(-330, 10, 290),
 		gara = Vector3.new(0, 0, -235),
 	}),
+	-- aspectul ogrăzilor: aceeași valoare de joc, alt chip (porțile vopsite ca în satele Moldovei)
+	gateColors = table.freeze({
+		Color3.fromRGB(52, 98, 178), -- albastru
+		Color3.fromRGB(46, 128, 92), -- verde
+		Color3.fromRGB(112, 74, 46), -- maro, lemn vopsit
+		Color3.fromRGB(46, 140, 150), -- turcoaz
+	}),
+	trimColors = table.freeze({
+		Color3.fromRGB(70, 110, 190),
+		Color3.fromRGB(240, 236, 220),
+		Color3.fromRGB(96, 150, 96),
+		Color3.fromRGB(150, 98, 60),
+	}),
+	treeSets = 4, -- seturi de decor: nuci și vișini, bolta de vie, stupii, lemnele și căpița
+	variantSeed = 7,
 	bridges = table.freeze({ -120, 140 }), -- podurile peste pârâu (parametrul x pe drumul mare)
 	railwayZ = -235, -- linia ferată, de la vest la est
 	-- înălțimea terenului: valea plană între sud și nord, dealuri în afara ei

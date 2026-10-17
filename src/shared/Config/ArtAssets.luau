@@ -115,7 +115,7 @@ return table.freeze({
 		size = Vector3.new(18.96, 13.0, 18.829),
 	},
 	["world.Poarta"] = {
-		assetId = 113958077903414,
+		assetId = 137781647362057,
 		palette = {},
 		ink = nil,
 		size = Vector3.new(14.527, 8.0, 3.429),

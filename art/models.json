@@ -80,7 +80,14 @@
  },
  "world.Poarta": {
   "remote": "world/Poarta_20k.glb",
-  "height": 8
+  "height": 8,
+  "paint": {
+   "hue": [
+    185,
+    250
+   ],
+   "minSat": 0.28
+  }
  },
  "world.Fantana": {
   "remote": "world/Fantana_20k.glb",

@@ -12,8 +12,7 @@ export type PlotSpot = {
 	cframe: CFrame,
 	gate: Vector3,
 	lane: string, -- "low" | "up"
-	variant: number,
-	mirrored: boolean,
+	look: Variant,
 }
 export type Layout = {
 	roads: { Road },
@@ -82,6 +81,22 @@ local function spot(f: (number) -> Vector3, x: number): (Vector3, Vector3)
 	return gate, dir
 end
 
+export type Variant = { gateColor: Color3, trimColor: Color3, mirrored: boolean, treeSet: number }
+
+-- Aspectul unei ogrăzi (doar vizual: piedestalele, straturile și coliziunile rămân la fel).
+-- Combinațiile sunt o permutare deterministă, ca vecinii să nu semene.
+function VillageLayout.variantFor(index: number, seed: number): Variant
+	local colors = #Village.gateColors
+	local k = (index - 1 + seed) % (colors * 2)
+	local gate = (index - 1 + seed) % colors + 1
+	return {
+		gateColor = Village.gateColors[gate],
+		trimColor = Village.trimColors[(gate + index) % #Village.trimColors + 1],
+		mirrored = k >= colors,
+		treeSet = (index * 3 + seed) % Village.treeSets + 1,
+	}
+end
+
 function VillageLayout.build(): Layout
 	local extent = Village.extent
 	local lowRoad = sample(VillageLayout.lower, -extent, extent, 58)
@@ -124,8 +139,7 @@ function VillageLayout.build(): Layout
 			cframe = CFrame.lookAt(center, center + dir),
 			gate = gate,
 			lane = lane,
-			variant = (index - 1) % 4 + 1,
-			mirrored = index % 2 == 0,
+			look = VillageLayout.variantFor(index, Village.variantSeed),
 		})
 	end
 	for _, x in Village.plotsLow do

@@ -115,3 +115,30 @@ describe("VillageLayout", function()
 		end
 	end)
 end)
+
+describe("VillageLayout.variantFor", function()
+	it("e determinist și dă 8 ogrăzi cu aspect diferit (poarta, decorul)", function()
+		local seen = {}
+		for index = 1, 8 do
+			local a = VillageLayout.variantFor(index, 7)
+			local b = VillageLayout.variantFor(index, 7)
+			expect(a.gateColor == b.gateColor and a.treeSet == b.treeSet and a.mirrored == b.mirrored).toBe(
+				true
+			)
+			local key = string.format("%s|%d|%s", tostring(a.gateColor), a.treeSet, tostring(a.mirrored))
+			expect(seen[key]).toBeNil()
+			seen[key] = true
+		end
+	end)
+	it("vecinii de pe același drum nu au aceeași poartă", function()
+		local layout = VillageLayout.build()
+		for i = 1, 7 do
+			local p, q = layout.plots[i], layout.plots[i + 1]
+			if p.lane == q.lane then
+				expect(
+					VillageLayout.variantFor(i, 7).gateColor ~= VillageLayout.variantFor(i + 1, 7).gateColor
+				).toBe(true)
+			end
+		end
+	end)
+end)

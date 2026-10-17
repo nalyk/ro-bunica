@@ -588,9 +588,9 @@
     "moderation": "Approved"
   },
   "world.Casa": {
-    "id": "126439630205540",
+    "id": "105745303908079",
     "type": "Model",
-    "sha": "9df29750e6d2f547",
+    "sha": "3da4dcec17b53a18",
     "file": "build/art/world.Casa.glb",
     "moderation": "Approved"
   },

@@ -170,6 +170,16 @@ Designul e în `docs/superpowers/specs/2026-10-17-mobil-hud-design.md`, pornit d
   - Pe desktop rămân două coloane, sus (cel mult 2) și jos (cel mult 3), cu aceeași coadă.
   - Verificat: 8 teste Lune, iar în playtest două rafale de 12 mesaje pe iPhone SE dau un singur mesaj pe ecran, alarma prima („×3”) și coada goală în 9 s.
 
+## Acoperișul casei (2026-10-18)
+
+- **Problema** (raportată de om: acoperișurile „oribile” de jos, cu găuri la îmbinări): acoperișul TRELLIS era o coajă subțire, fără partea de jos. În Roblox, cu fețe pe o singură parte, se vedea cerul prin el; marginea era zdrențuită (13.707 margini deschise în model), iar între țiglă, grinzi și ziduri rămâneau goluri.
+- **Reparația:** `tools/house_roof.py`, legat în `tools/art.py` prin `"roof": true`, taie acoperișul și hornul vechi și construiește acoperișul în patru ape din concept:
+  - olane cu relief real, cu treaptă la fiecare rând, și coame din țiglă peste muchii și peste coamă;
+  - un strat închis sub țigle, ca prin fante să se vadă umbră, nu cer;
+  - scândura de streașină și tavanul de scânduri dedesubt (capetele grinzilor vechi ies prin el);
+  - hornul alb cu căciulă de țiglă.
+- **Rezultat:** 3 MeshPart-uri (body 9.401, roof 8.504, trim 138 triunghiuri), asset 80628472824283. Verificat cu randări cu backface culling și cu capturi din joc (pasul 15m: sub streașină, din colț, de sus; casa are piesele body, roof și trim). Playtest 36/36.
+
 ## Lansare publică (2026-10-16)
 
 - Jocul e public: https://www.roblox.com/games/5300295145 („Don't Steal from Bunica!”, gen Simulation / Incremental Simulator). Pagina: descriere EN și RO, iconița (Bunica cu papucul), două imagini (afiș + toate creaturile) pe prima pagină și pe pagina jocului, titlul și imaginile în română. Imaginile sunt compuse de `tools/store_art.py` din straturile ecranului de încărcare.

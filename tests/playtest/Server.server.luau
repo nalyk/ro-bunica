@@ -1303,6 +1303,29 @@ step(
 	end
 )
 
+step("15m. Casa: acoperișul de jos, sub streașină, din colț și de sus", function()
+	DayNightService.forcePhase("Day")
+	local cf = me.plot.geometry.cframe
+	local house = cf * CFrame.new(0, 0, World.plotSize.Z / 2 - 9)
+	photograph(
+		"casa-streasina",
+		(house * CFrame.new(0, 8, -6)).Position,
+		(house * CFrame.new(4, 2.6, -12)).Position
+	)
+	photograph("casa-colt", (house * CFrame.new(0, 8, 0)).Position, (house * CFrame.new(14, 3, -14)).Position)
+	photograph("casa-sus", (house * CFrame.new(0, 9, 0)).Position, (house * CFrame.new(10, 22, -16)).Position)
+	local art = me.plot.geometry.model:FindFirstChild("world.Casa")
+	check(art ~= nil, "casa sculptată nu e în ogradă")
+	local parts = {}
+	for _, child in (art :: Instance):GetChildren() do
+		if child:IsA("MeshPart") then
+			table.insert(parts, child.Name)
+		end
+	end
+	table.sort(parts)
+	check(table.concat(parts, ",") == "body,roof,trim", "piesele casei: " .. table.concat(parts, ","))
+end)
+
 step("16. Fără erori de script (server și client)", function()
 	local serverErrors = {}
 	for _, entry in LogService:GetLogHistory() do

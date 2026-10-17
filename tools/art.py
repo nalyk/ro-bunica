@@ -104,7 +104,8 @@ def build_textured(filter_):
                 continue
         digest = hashlib.sha256(open(raw, "rb").read() + json.dumps(spec, sort_keys=True).encode()
                                 + open(os.path.join(ROOT, "tools", "post3d.py"), "rb").read()
-                                + open(os.path.join(ROOT, "tools", "split_character.py"), "rb").read()).hexdigest()[:16]
+                                + open(os.path.join(ROOT, "tools", "split_character.py"), "rb").read()
+                                + open(os.path.join(ROOT, "tools", "house_roof.py"), "rb").read()).hexdigest()[:16]
         stamp = os.path.join(OUT, key + ".stamp")
         if os.path.exists(stamp) and open(stamp).read() == digest:
             print(f"[art] {key:34} neschimbat")
@@ -128,6 +129,22 @@ def build_textured(filter_):
                                        if spec.get("colorGain") else []), capture_output=True, text=True,
                                     timeout=600)
             line = next((l for l in result.stdout.splitlines() if l.startswith("POST ")), None)
+            if line and spec.get("roof"):
+                # acoperișul TRELLIS (coajă subțire, cu goluri) e înlocuit cu unul construit (tools/house_roof.py)
+                rebuilt = glb + ".roof.glb"
+                roof = subprocess.run(["blender", "-b", "-P", os.path.join(ROOT, "tools", "house_roof.py"), "--",
+                                       glb, rebuilt], capture_output=True, text=True, timeout=600)
+                done = next((l for l in roof.stdout.splitlines() if l.startswith("ROOF_OK ")), None)
+                if not done:
+                    line = None
+                    result = roof
+                else:
+                    os.replace(rebuilt, glb)
+                    print(f"[art] {key:34} acoperiș refăcut: {done[8:]}")
+                    parts = eval(done[8:])
+                    post = eval(line[5:])
+                    post["tris"] = sum(parts.values())
+                    line = "POST " + repr(post)
         if not line:
             ok = False
             print(f"[art] {key:34} EROARE\n" + "\n".join((result.stdout + result.stderr).splitlines()[-10:]))

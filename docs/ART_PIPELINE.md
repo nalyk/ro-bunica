@@ -78,6 +78,14 @@ apoi imagine → 3D texturat.
   păstrate, fără re-coacere): rezultatul e curat. În `art/models.json`: `"remote": "…_40k.glb"`.
 - **Găuri adânci în concept:** TRELLIS modelează găurile brânzei ca cavități reale, care ies negre chiar
   și la 40k. Se repară din concept (Brânzoi v2: pori mici, puțin adânci), nu din semințe.
+- **Acoperișuri (și orice suprafață subțire):** TRELLIS face acoperișul o coajă de țiglă fără grosime. În Roblox
+  fețele se văd dintr-o singură parte, deci de jos se vedea cerul prin el, iar marginea era zdrențuită, cu goluri
+  la îmbinări. Pentru casă, acoperișul e tăiat și refăcut de `tools/house_roof.py`:
+  - olane cu relief, coame din țiglă peste muchii și un strat închis sub țigle;
+  - scândura de streașină și tavanul de scânduri, care închid volumul;
+  - hornul refăcut.
+  În `art/models.json` e cheia `"roof": true`. Rezultatul are 3 MeshPart-uri: `body`, `roof` și `trim`.
+  Verificarea se face cu randări cu backface culling, din unghiuri joase.
 - **Socluri din concept:** `"trimBase": true` → `post3d.py --trim-base` taie soclul (cel mai înalt plan
   orizontal mare din sfertul de jos; plasele au pereți dubli, deci și fundul soclului are fețe în sus).
   Piedestalul îl dă jocul.

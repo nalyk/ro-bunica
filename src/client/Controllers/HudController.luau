@@ -784,6 +784,10 @@ local function applyLayout()
 			h = layout.info.h + 6,
 		})
 		storePlus.Visible = false -- prea mic pentru deget la scara stării; magazinul e în meniul „Mai mult”
+		-- micșorată, cifra venitului ar ieși sub 11 px: pe ecran tactil îi dăm mai mult loc în pastilă
+		leiLabel.Size = UDim2.new(1, -72, 0.56, 0)
+		incomeLabel.Position = UDim2.new(0, 64, 0.54, 0)
+		incomeLabel.Size = UDim2.new(1, -80, 0.42, 0)
 		column.Visible = false
 		touchRow.Visible = true
 		for index, id in TOUCH_ACTIONS do
@@ -818,6 +822,9 @@ local function applyLayout()
 		livePill.Position = UDim2.new(0.5, 0, 0, 144)
 		livePill.Size = UDim2.fromOffset(320, 34)
 		storePlus.Visible = true
+		leiLabel.Size = UDim2.new(1, -72, 0.64, 0)
+		incomeLabel.Position = UDim2.new(0, 64, 0.62, 0)
+		incomeLabel.Size = UDim2.new(1, -80, 0.32, 0)
 		column.Visible = true
 		touchRow.Visible = false
 		for order, id in DESKTOP_ACTIONS do

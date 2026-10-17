@@ -75,7 +75,8 @@
  },
  "world.Casa": {
   "remote": "world/Casa_20k.glb",
-  "height": 13
+  "height": 13,
+  "roof": true
  },
  "world.Poarta": {
   "remote": "world/Poarta_20k.glb",

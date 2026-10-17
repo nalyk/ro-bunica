@@ -170,6 +170,23 @@ Designul e în `docs/superpowers/specs/2026-10-17-mobil-hud-design.md`, pornit d
   - Pe desktop rămân două coloane, sus (cel mult 2) și jos (cel mult 3), cu aceeași coadă.
   - Verificat: 8 teste Lune, iar în playtest două rafale de 12 mesaje pe iPhone SE dau un singur mesaj pe ecran, alarma prima („×3”) și coada goală în 9 s.
 
+## Cercetarea „Satul viu” (2026-10-18)
+
+- Cercetarea e în `docs/RESEARCH_SAT_VIU.md`: opțiuni, nu plan aprobat. Surse:
+  - 4 fluxuri pe web (satul moldovenesc, piața Roblox 2025–2026, copiii și jocul, așezări organice);
+  - 3 sate reale măsurate în OpenStreetMap (`tools/research/osm_villages.py`);
+  - 5 așezări modelate cu echitatea calculată pe graful drumurilor (`tools/research/layouts.py`);
+  - 6 copii-tip simulați.
+- **Recomandarea:** pachetul B (satul-jucărie) cu tradiția ca aromă:
+  - valea cu două ulițe legate (expunerea la raid are CV 0,11, față de 0,17 acum);
+  - 17 locuri-jucărie, din care 6 în B;
+  - ceasul satului (o întâmplare la 6–8 minute);
+  - 4 mini-jocuri;
+  - creaturi de suflet și răzbunare (furtul fără lacrimi);
+  - drumurile paralele spre statut.
+- **Blocant de platformă:** publicul copiilor cere ID verificat, 2FA și Roblox Plus (de confirmat). Ține de om.
+- **Următorul pas:** omul alege pachetul și ordinea (§8).
+
 ## Acoperișul casei (2026-10-18)
 
 - **Problema** (raportată de om: acoperișurile „oribile” de jos, cu găuri la îmbinări): acoperișul TRELLIS era o coajă subțire, fără partea de jos. În Roblox, cu fețe pe o singură parte, se vedea cerul prin el; marginea era zdrențuită (13.707 margini deschise în model), iar între țiglă, grinzi și ziduri rămâneau goluri.

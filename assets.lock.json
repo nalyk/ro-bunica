@@ -223,6 +223,13 @@
     "file": "build/icons/night.png",
     "moderation": "Approved"
   },
+  "icon.notebook": {
+    "id": "80617018549219",
+    "type": "Image",
+    "sha": "b0fca41e5e1c4156",
+    "file": "build/icons/notebook.png",
+    "moderation": "Approved"
+  },
   "icon.pedestal": {
     "id": "75681438564911",
     "type": "Image",
@@ -271,6 +278,13 @@
     "sha": "13151880c16230d5",
     "file": "build/icons/slipper.png",
     "moderation": "Approved"
+  },
+  "icon.trade": {
+    "id": "108942679085434",
+    "type": "Image",
+    "sha": "b339005235ef19c3",
+    "file": "build/icons/trade.png",
+    "moderation": "Reviewing"
   },
   "icon.yard": {
     "id": "84616441587298",

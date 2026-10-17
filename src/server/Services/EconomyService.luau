@@ -9,10 +9,13 @@ local EconomyConfig = require(Shared.Config.Economy)
 local Economy = require(Shared.Domain.Economy)
 local Inventory = require(Shared.Domain.Inventory)
 local Raid = require(Shared.Domain.Raid)
+local Rebirth = require(Shared.Domain.Rebirth)
+local Collection = require(Shared.Domain.Collection)
 local RateLimiter = require(Shared.Domain.RateLimiter)
 local PlotService = require(script.Parent.PlotService)
 local CreatureService = require(script.Parent.CreatureService)
 local Analytics = require(script.Parent.Parent.Analytics)
+local Progress = require(script.Parent.Parent.Progress)
 local Badges = require(script.Parent.Parent.Badges)
 local StateService = require(script.Parent.StateService)
 local RaidService = require(script.Parent.RaidService)
@@ -52,8 +55,13 @@ function EconomyService.setBoost(player: Player, factor: number?)
 	StateService.markDirty(player)
 end
 
+-- Toți multiplicatorii de venit: prieteni, permisul 2× lei, renașterile și pragurile colecției.
 function EconomyService.multiplier(player: Player): number
-	return Economy.friendMultiplier(friendCounts[player] or 0) * (boosts[player] or 1)
+	local owner = PlotService.getOwner(player)
+	local progress = if owner
+		then Rebirth.multiplier(owner.profile.rebirths) * Collection.multiplier(owner.profile)
+		else 1
+	return Economy.friendMultiplier(friendCounts[player] or 0) * (boosts[player] or 1) * progress
 end
 
 function EconomyService.addLei(owner: Owner, amount: number)
@@ -123,6 +131,7 @@ local function onSell(player: Player, uid: unknown)
 	EconomyService.addLei(owner, price)
 	Analytics.source(player, owner.profile, price, "Sell", record.id)
 	Messenger.notify(player, "notify.Sold", { Economy.formatShort(price) })
+	Progress.emit(owner, "sell")
 end
 
 local function onMoveToCellar(player: Player, key: unknown)

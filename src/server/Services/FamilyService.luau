@@ -1,15 +1,25 @@
 --!strict
 -- Familiile: prietenii Roblox de pe server (maximum 4). Membrii nu-și fură între ei,
 -- își apără ogrăzile reciproc cu papucul, iar Bunica îi consideră „ai casei”.
+-- Familia e o alegere: doi prieteni sunt familie doar dacă amândoi au modul „Family”; unul pe „Rival”
+-- îi face rivali (se pot fura, ca străinii). Modul se schimbă doar ziua.
 
 local Players = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
 
 local Shared = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
 local Families = require(Shared.Config.Families)
 local Family = require(Shared.Domain.Family)
+local RateLimiter = require(Shared.Domain.RateLimiter)
 local PlotService = require(script.Parent.PlotService)
 local Actors = require(script.Parent.Parent.Actors)
 local Friends = require(script.Parent.Parent.Social.Friends)
+local DayNightService = require(script.Parent.DayNightService)
+local Messenger = require(script.Parent.Messenger)
+local Net = require(Shared.Net)
+
+local SWITCH_COOLDOWN = 10
+local switchLimiter = RateLimiter.new(3, 0.2)
 
 type Owner = PlotService.Owner
 type Actor = Actors.Actor
@@ -19,6 +29,13 @@ local FamilyService = {}
 local familyOf: { [Actor]: number } = {}
 local overrides: { [Actor]: number } = {} -- boți din teste
 local joinOrder: { Player } = {}
+local lastSwitch: { [Player]: number } = {}
+local greetedPairs: { [string]: boolean } = {} -- prietenii anunțați deja unul despre altul (o dată pe sesiune)
+
+local function modeOf(player: Player): string?
+	local owner = PlotService.getOwner(player)
+	return if owner then owner.profile.familyMode else nil
+end
 
 local function applyAttributes()
 	for _, plot in PlotService.plots do
@@ -31,6 +48,31 @@ local function applyAttributes()
 	end
 	for _, player in Players:GetPlayers() do
 		player:SetAttribute("FamilyId", familyOf[Actors.forPlayer(player)])
+		player:SetAttribute("FamilyMode", modeOf(player) or "Family")
+	end
+end
+
+-- Prietenii de pe server află că pot alege: familie sau rivali (o dată pe pereche și sesiune)
+local function greetFriends(present: { number }, byId: { [number]: Player })
+	local hasFriend: { [Player]: boolean } = {}
+	for i, a in present do
+		for j = i + 1, #present do
+			local b = present[j]
+			local playerA, playerB = byId[a], byId[b]
+			if Friends.areFriends(playerA, playerB) then
+				hasFriend[playerA] = true
+				hasFriend[playerB] = true
+				local key = math.min(a, b) .. ":" .. math.max(a, b)
+				if not greetedPairs[key] then
+					greetedPairs[key] = true
+					Messenger.notify(playerA, "notify.FriendHere", { playerB.DisplayName })
+					Messenger.notify(playerB, "notify.FriendHere", { playerA.DisplayName })
+				end
+			end
+		end
+	end
+	for _, player in Players:GetPlayers() do
+		player:SetAttribute("HasFriendHere", hasFriend[player] == true)
 	end
 end
 
@@ -44,7 +86,7 @@ function FamilyService.recompute()
 		end
 	end
 	local groups = Family.group(present, function(a, b)
-		return Friends.areFriends(byId[a], byId[b])
+		return Friends.areFriends(byId[a], byId[b]) and Family.bonded(modeOf(byId[a]), modeOf(byId[b]))
 	end, Families.maxSize)
 	table.clear(familyOf)
 	for userId, familyId in groups do
@@ -56,6 +98,28 @@ function FamilyService.recompute()
 		end
 	end
 	applyAttributes()
+	greetFriends(present, byId)
+end
+
+-- Schimbă modul jucătorului („Family” sau „Rival”); doar ziua. Întoarce dacă s-a schimbat.
+function FamilyService.setMode(player: Player, mode: unknown): boolean
+	local owner = PlotService.getOwner(player)
+	if not owner or (mode ~= "Family" and mode ~= "Rival") then
+		return false
+	end
+	local now = Workspace:GetServerTimeNow()
+	if not Family.canSwitch(DayNightService.phase(), lastSwitch[player], now, SWITCH_COOLDOWN) then
+		Messenger.notify(player, "notify.FamilyModeDayOnly")
+		return false
+	end
+	if owner.profile.familyMode == mode then
+		return false
+	end
+	lastSwitch[player] = now
+	owner.profile.familyMode = mode :: string
+	FamilyService.recompute()
+	Messenger.notify(player, if mode == "Rival" then "notify.NowRival" else "notify.NowFamily")
+	return true
 end
 
 function FamilyService.familyId(actor: Actor): number?
@@ -105,6 +169,12 @@ function FamilyService.start()
 		local index = table.find(joinOrder, player)
 		if index then
 			table.remove(joinOrder, index)
+		end
+		lastSwitch[player] = nil
+	end)
+	Net.get("FamilyMode").OnServerEvent:Connect(function(player, mode)
+		if switchLimiter:allow(player.UserId, os.clock()) then
+			FamilyService.setMode(player, mode)
 		end
 	end)
 	PlotService.onOwnerAdded(function()

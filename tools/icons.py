@@ -2,7 +2,10 @@
 """Setul de iconițe UI, generat cu Codex `image_gen`: o iconiță master fixează stilul, restul o primesc ca referință.
 
   icons.py            → art/ui/icons/<nume>.png (fond verde #00FF00, de decupat) ; existente nu se refac
+  icons.py upload [nume…] → decupează și urcă doar iconițele numite (sau cele care lipsesc din UiIcons.luau);
+                            celelalte își păstrează id-ul (decuparea nu e deterministă: re-urcarea ar dubla asset-urile)
 """
+import re
 import glob
 import os
 import subprocess
@@ -32,6 +35,8 @@ ICONS = {
     "sharp": "a pair of round wire grandma glasses with a sparkle on one lens",
     "fastslipper": "a red felt slipper with a white pompom flying fast to the right, three white speed lines behind it",
     "yard": "a small wooden toolbox with a hammer and a saw sticking out, a red ribbon bow on the handle",
+    "notebook": "grandma's old cloth-bound recipe notebook, cover with a red-and-black embroidered folk pattern band, a red ribbon bookmark hanging out, slightly worn corners",
+    "trade": "two curved arrows forming a circle (one red, one sky-blue; absolutely no green anywhere) around a small woven wicker basket, a swap symbol",
 }
 STYLE = ("Game UI icon for a cozy cartoon village game (Moldovan theme), premium mobile-game quality: chunky rounded "
          "shapes, thick dark-brown (#3A2218) outline of constant weight, soft 3D shading with light from top-left, "
@@ -58,8 +63,8 @@ def gen(name, desc, ref=None):
     return f"{round(time.time() - t)} s"
 
 
-def upload():
-    """Decupează verdele, aduce la 256×256 și urcă fiecare iconiță ca imagine; scrie Config/UiIcons.luau."""
+def upload(only):
+    """Decupează verdele, aduce la 256×256 și urcă iconițele noi sau numite; scrie Config/UiIcons.luau."""
     sys.path.insert(0, os.path.join(ROOT, "tools"))
     import assets
     import cloud
@@ -67,10 +72,15 @@ def upload():
     env = cloud.load_env()
     keyed_dir = os.path.join(ROOT, "build", "icons")
     os.makedirs(keyed_dir, exist_ok=True)
+    path = os.path.join(ROOT, "src", "shared", "Config", "UiIcons.luau")
+    existing = dict(re.findall(r"\t(\w+) = (\d+),", open(path).read())) if os.path.exists(path) else {}
     ids = {}
     for name in ICONS:
         src = os.path.join(OUT, f"{name}.png")
         if not os.path.exists(src):
+            continue
+        if name in existing and name not in only:
+            ids[name] = existing[name]
             continue
         keyed = os.path.join(keyed_dir, f"{name}_key.png")
         final = os.path.join(keyed_dir, f"{name}.png")
@@ -84,13 +94,12 @@ def upload():
              "Lipsa unei iconițe = text/emoji.", "", "return table.freeze({"]
     lines += [f"\t{name} = {asset_id}," for name, asset_id in sorted(ids.items())]
     lines += ["} :: { [string]: number })", ""]
-    path = os.path.join(ROOT, "src", "shared", "Config", "UiIcons.luau")
     open(path, "w").write("\n".join(lines))
     print("scris", path, len(ids), "iconițe")
 
 
 if len(sys.argv) > 1 and sys.argv[1] == "upload":
-    upload()
+    upload(set(sys.argv[2:]))
     sys.exit(0)
 
 os.makedirs(OUT, exist_ok=True)

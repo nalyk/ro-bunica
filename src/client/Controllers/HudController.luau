@@ -19,6 +19,7 @@ local UI = require(script.Parent.UI)
 local ShopPanel = require(script.Parent.ShopPanel)
 local CellarPanel = require(script.Parent.CellarPanel)
 local UpgradePanel = require(script.Parent.UpgradePanel)
+local NotebookPanel = require(script.Parent.NotebookPanel)
 local StorePanel = require(script.Parent.StorePanel)
 local SlipperController = require(script.Parent.SlipperController)
 
@@ -41,6 +42,7 @@ local pinButton: TextButton
 local rageButton: TextButton
 local seedBar: Frame
 local familyLabel: TextLabel
+local modeButton: TextButton
 local livePill: Frame
 local liveLabel: TextLabel
 
@@ -191,11 +193,33 @@ local function buildFamily(screen: ScreenGui)
 		}),
 		Theme.ink
 	)
+	-- Familie sau rivali: apare doar cât e un prieten pe server; apăsarea cere modul celălalt
+	modeButton = UI.button({
+		Position = UDim2.fromOffset(14, 106),
+		Size = UDim2.fromOffset(132, 38),
+		Text = ClientState.t("ui.modeFamily"),
+		swatch = "vine",
+		Visible = false,
+		Parent = screen,
+	}, function()
+		local me = game:GetService("Players").LocalPlayer
+		local next = if me:GetAttribute("FamilyMode") == "Rival" then "Family" else "Rival"
+		Net.get("FamilyMode"):FireServer(next)
+	end)
+	HudController.buttons.familyMode = modeButton
 end
 
 -- Membrii familiei: jucătorii cu același FamilyId (pus de server)
 local function renderFamily()
 	local me = game:GetService("Players").LocalPlayer
+	local rival = me:GetAttribute("FamilyMode") == "Rival"
+	modeButton.Visible = me:GetAttribute("HasFriendHere") == true
+	local label = ClientState.t(if rival then "ui.modeRival" else "ui.modeFamily")
+	if modeButton:GetAttribute("Mode") ~= label then
+		modeButton:SetAttribute("Mode", label)
+		UI.setText(modeButton, label)
+		UI.setSwatch(modeButton, if rival then "ie" else "vine")
+	end
 	local id = me:GetAttribute("FamilyId")
 	if id == nil then
 		familyLabel.Text = ""
@@ -254,19 +278,21 @@ local function roundButton(
 	return button
 end
 
+local COLUMN_HEIGHT = 636 -- 6 butoane rotunde (100) cu spațiu între ele
+
 local function buildLeft(screen: ScreenGui)
 	local column = Instance.new("Frame")
 	column.BackgroundTransparency = 1
 	column.AnchorPoint = Vector2.new(0, 0.5)
 	column.Position = UDim2.new(0, 8, 0.5, 0)
-	column.Size = UDim2.fromOffset(88, 528)
+	column.Size = UDim2.fromOffset(88, COLUMN_HEIGHT)
 	-- pe ecrane joase (telefon culcat) coloana se micșorează ca să încapă între bani și cutia de apărare
 	local columnScale = Instance.new("UIScale")
 	columnScale.Parent = column
 	local function fit()
 		local camera = workspace.CurrentCamera
 		local height = if camera then camera.ViewportSize.Y else 720
-		columnScale.Scale = math.clamp((height - 150) / 528, 0.55, 1)
+		columnScale.Scale = math.clamp((height - 150) / COLUMN_HEIGHT, 0.5, 1)
 	end
 	fit()
 	if workspace.CurrentCamera then
@@ -297,9 +323,19 @@ local function buildLeft(screen: ScreenGui)
 	end
 	HudController.actions.invite = invite
 	HudController.buttons.invite =
-		roundButton(column, 5, "family", "👪", ClientState.t("ui.invite"), "ie", invite)
+		roundButton(column, 6, "family", "👪", ClientState.t("ui.invite"), "ie", invite)
 	HudController.buttons.upgrades =
 		roundButton(column, 4, "yard", "🔨", ClientState.t("ui.upgrades"), "sky", UpgradePanel.toggle)
+	HudController.actions.notebook = NotebookPanel.toggle
+	HudController.buttons.notebook = roundButton(
+		column,
+		5,
+		"notebook",
+		"📖",
+		ClientState.t("ui.notebook"),
+		"paper",
+		NotebookPanel.toggle
+	)
 end
 
 local function buildDefense(screen: ScreenGui)

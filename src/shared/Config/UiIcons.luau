@@ -13,6 +13,7 @@ return table.freeze({
 	hora = 136212356817926,
 	lei = 122019348056466,
 	night = 123575163493481,
+	notebook = 80617018549219,
 	pedestal = 75681438564911,
 	rage = 86150771463507,
 	rollingpin = 99116773156763,
@@ -20,5 +21,6 @@ return table.freeze({
 	sharp = 73061787591057,
 	shop = 102311034809813,
 	slipper = 79529147008911,
+	trade = 108942679085434,
 	yard = 84616441587298,
 } :: { [string]: number })

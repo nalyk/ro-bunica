@@ -19,6 +19,7 @@ local PlotService = require(script.Parent.PlotService)
 local CreatureService = require(script.Parent.CreatureService)
 local Badges = require(script.Parent.Parent.Badges)
 local Analytics = require(script.Parent.Parent.Analytics)
+local Progress = require(script.Parent.Parent.Progress)
 local StateService = require(script.Parent.StateService)
 local DayNightService = require(script.Parent.DayNightService)
 local Messenger = require(script.Parent.Messenger)
@@ -244,6 +245,8 @@ local function complete(actor: Actor, thief: Owner)
 	end
 
 	thief.profile.stats.steals += 1
+	Progress.emit(thief, "steal")
+	Progress.emit(thief, "obtained", 1, record)
 	Analytics.step(thief.player, thief.profile, "FirstSteal")
 	Analytics.event(thief.player, "Steal")
 	Badges.award(thief.player, "steal")

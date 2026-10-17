@@ -72,6 +72,17 @@ local function slipperRain()
 	end
 end
 
+local scheduled = true -- evenimentele pornesc singure în fereastra lor (testele e2e le opresc)
+
+-- Oprește sau repornește programul săptămânal (forceStart merge oricum). Testele e2e îl opresc, ca
+-- rezultatele să nu depindă de ora rulării (sâmbăta 16–17 UTC plouă cu papuci peste hoții de test).
+function LiveEventService.setScheduled(value: boolean)
+	scheduled = value
+	if not value then
+		LiveEventService.stop()
+	end
+end
+
 local function tick()
 	local t = now()
 	local current = running
@@ -88,6 +99,9 @@ local function tick()
 			slipperRain()
 			current.nextRainAt = t + current.event.slipperRainEverySeconds
 		end
+		return
+	end
+	if not scheduled then
 		return
 	end
 	for _, event in LiveEventsConfig.list do

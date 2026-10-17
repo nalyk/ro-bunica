@@ -262,6 +262,65 @@ function ops.openPanel(controller: string): { [string]: number }
 	return { rows = rows, previews = previews }
 end
 
+-- Caietul Bunicii: deschide fila cerută și întoarce câte rânduri are
+function ops.notebook(tab: string): { [string]: any }
+	local module = (require :: any)(controllers:WaitForChild("NotebookPanel"))
+	if not module.isOpen() then
+		module.toggle()
+	end
+	module.select(tab)
+	task.wait(0.5)
+	local rows = 0
+	local gui = player.PlayerGui:FindFirstChild("BunicaUI")
+	for _, panel in (gui and gui:GetChildren() or {}) :: { Instance } do
+		if panel.Name == "Panel" and (panel :: Frame).Visible and panel:FindFirstChild("Tabs") then
+			local scroll = panel:FindFirstChildOfClass("ScrollingFrame")
+			for _, child in (scroll and scroll:GetChildren() or {}) :: { Instance } do
+				if child:IsA("Frame") then
+					rows += 1
+				end
+			end
+		end
+	end
+	return { rows = rows, notebook = ClientState.state.notebook }
+end
+
+-- Diagnostic: prompt-urile de furt ale unui proprietar și creaturile lui, cum le vede clientul
+function ops.prompts(ownerUserId: number, near: Vector3): { string }
+	local lines = {}
+	for _, descendant in Workspace:GetDescendants() do
+		if descendant:IsA("ProximityPrompt") and descendant:GetAttribute("OwnerUserId") == ownerUserId then
+			local parent = descendant.Parent :: BasePart
+			table.insert(
+				lines,
+				string.format(
+					"prompt %s pe %s la %.0f studs (activ %s)",
+					descendant.Name,
+					parent:GetFullName(),
+					(parent.Position - near).Magnitude,
+					tostring(descendant.Enabled)
+				)
+			)
+		elseif descendant:IsA("Model") and descendant:GetAttribute("OwnerUserId") == ownerUserId then
+			table.insert(
+				lines,
+				string.format(
+					"model %s la %.0f studs",
+					descendant:GetFullName(),
+					(descendant:GetPivot().Position - near).Magnitude
+				)
+			)
+		end
+	end
+	return lines
+end
+
+-- Schimbul: ce vede jucătorul în fereastra de schimb
+function ops.trade(): { [string]: any }
+	local module = (require :: any)(controllers:WaitForChild("TradePanel"))
+	return module.debugState()
+end
+
 function ops.closePanel(controller: string): boolean
 	local module = (require :: any)(controllers:WaitForChild(controller))
 	module.toggle()
@@ -290,6 +349,7 @@ function ops.query(): { [string]: any }
 		counters = table.clone(counters),
 		notifications = table.clone(notifications),
 		walkSpeed = humanoid and humanoid.WalkSpeed or 0,
+		familyMode = player:GetAttribute("FamilyMode"),
 		errors = table.clone(clientErrors),
 		tutorial = table.clone(tutorialStages),
 		shopStock = table.clone(ClientState.shopStock),

@@ -14,6 +14,7 @@ local CreatureService = require(script.Parent.CreatureService)
 local StateService = require(script.Parent.StateService)
 local DayNightService = require(script.Parent.DayNightService)
 local Messenger = require(script.Parent.Messenger)
+local Progress = require(script.Parent.Parent.Progress)
 
 type Owner = PlotService.Owner
 
@@ -61,6 +62,9 @@ local function applyTick(event: Weather.WeatherEvent)
 				if bed then
 					bed:SetAttribute("Mutation", result)
 				end
+				if result then
+					Progress.emit(owner, "mutation")
+				end
 				changed = true
 			end
 		end
@@ -71,6 +75,8 @@ local function applyTick(event: Weather.WeatherEvent)
 				record.mutation = result
 				CreatureService.renderKey(owner, key)
 				announceMutation(owner, record.id, result)
+				Progress.emit(owner, "mutation")
+				Progress.emit(owner, "obtained", 1, record)
 				changed = true
 			end
 		end

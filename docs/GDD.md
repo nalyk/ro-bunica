@@ -174,8 +174,8 @@ Așa ambele roluri au sens: plecat la furat riști, dar nu ești lăsat complet 
 
 | Fază | Durată (pornire) | Ce se întâmplă |
 | --- | --- | --- |
-| Zi | 6 min | crești, cumperi, vinzi, decorezi; fără furturi |
-| Noapte | 3 min | furturile sunt deschise, Bunica e de pază, tensiunea crește |
+| Zi | 4 min | crești, cumperi, vinzi, faci treburile zilei, faci schimburi; fără furturi |
+| Noapte | 3 min | furturile sunt deschise (și vecinii NPC vin să fure), Bunica e de pază, tensiunea crește |
 
 Trecerea în noapte e un moment de 3 secunde: cerul trece la indigo, ferestrele se aprind, Bunica deschide ochii. Duratele sunt în config.
 
@@ -208,8 +208,18 @@ Jucătorul nu poate fi jefuit pe toată această secvență (scutul de 20 de min
 
 ## 12. Familia și Hora
 
-- **Familia:** prietenii Roblox de pe același server formează automat o familie (maximum 4) și primesc ogrăzi alăturate. Membrii nu-și fură între ei („Nu furi de la familie!”), apără cu papucul orice ogradă din familie, iar Bunica îi consideră „ai casei” când lipsește proprietarul. Tăblițele ogrăzilor iau culoarea familiei, iar HUD-ul arată „Familia: …”. Fiecare jucător își păstrează propriile creaturi și propriul profil.
+- **Familia:** prietenii Roblox de pe același server formează o familie (maximum 4) și primesc ogrăzi alăturate. **Familia e o alegere:** fiecare jucător are modul „Familie” (implicit) sau „Rivali”; doi prieteni sunt familie doar dacă amândoi aleg „Familie”, iar unul pe „Rivali” îi face rivali, care se pot fura ca străinii. Modul se schimbă doar ziua (butonul de sub numele familiei, vizibil cât e un prieten pe server); când un prieten intră, amândoi primesc o notificare care explică alegerea. Membrii nu-și fură între ei („Nu furi de la familie!”), apără cu papucul orice ogradă din familie, iar Bunica îi consideră „ai casei” când lipsește proprietarul. Tăblițele ogrăzilor iau culoarea familiei, iar HUD-ul arată „Familia: …”. Fiecare jucător își păstrează propriile creaturi și propriul profil.
 - **Hora:** vatra satului e un cerc brodat cu o fântână în mijloc, pe drum, între ogrăzile din centru. Butonul „Horă” pornește dansul lângă fântână. 3 sau mai mulți jucători care dansează împreună 4 s cheamă Culesul de aur (de 3 ori mai probabil) sau Curcubeul pentru tot serverul. Cooldown: 20 de minute. Anunț: „3 jucători au dansat hora și au chemat…”.
+
+## 12a. Vecinii fură și ei
+
+Noaptea, vecinii NPC trimit hoți (rig-ul Hoțomanului, cu numele vecinului) după creaturile jucătorilor **activi**, ca solo să existe și apărare, nu doar furt. Valorile sunt în `Config/NpcThieves`.
+
+- **Câte încercări pe noapte:** 3 solo, 2 la 2–3 jucători, 1 la 4–5, niciuna de la 6 în sus.
+- **Ținta:** doar jucătorii care s-au mișcat în ultimele 90 s (cine e AFK nu e jefuit de boți), fără protecția de jucător nou, fără scut și sub limita de 2 furturi pe noapte. Hoțul vine de la vecinul cel mai apropiat.
+- **Creatura luată:** cea mai valoroasă creatură expusă, până la Epic. Legendarele și cele mai rare nu sunt luate niciodată.
+- **Reguli:** exact ca la jucători. Papucul îl doboară, Bunica îl vede, alarma sună, apărarea e răsplătită.
+- **Dacă reușește:** creatura ajunge pe piedestalul vecinului și se poate fura înapoi în aceeași noapte („Fură-ți creatura înapoi de la Moș Ion!”).
 
 ## 12b. Social și creștere (CCU)
 
@@ -220,6 +230,33 @@ Jucătorul nu poate fi jefuit pe toată această secvență (scutul de 20 de min
 - **Recompense obișnuite pe Roblox:** intrare în grup, like și favorite, serie zilnică de logări.
 - **Iconița și thumbnail-ul** se schimbă ușor, ca să le testăm A/B.
 - **Creatori de conținut:** creatori din MD, RO, BR, LATAM și RU primesc creaturi exclusive numite după ei. Provocări reale („Pot 5 dintre noi să fure de la o singură Bunică într-o noapte?”). Sponsorizarea se declară clar.
+
+## 12c0. Caietul Bunicii (colecție, treburile zilei, renaștere)
+
+Un panou cu trei file, deschis din butonul „Caietul”. Valorile sunt în `Config/Notebook`.
+
+- **Colecția:** o intrare înseamnă o creatură cu o mutație (sau fără); sunt 18 × 7 = 126 de intrări.
+  - Prima descoperire dă lei: jumătate din prețul de vânzare al variantei Normale, cu mutația ei, dar cel puțin 50.
+  - Descoperi o creatură când o eclozezi, o furi sau primește o mutație (cele primite la schimb nu contează).
+  - **Praguri:** la 10, 25, 50, 75, 100 și 126 de intrări, fiecare prag dă +5% venit pentru totdeauna.
+  - **La 50 de intrări, Bunica îți dă sămânța Rețetei Secrete.** E singura cale de a o avea.
+- **Treburile zilei:** 3 pe zi UTC, alese din: plantat, eclozat, cumpărat semințe, furat, apărat, vândut, horă, mutație. Toate se pot face solo.
+  - Răsplata unei treburi e venitul tău pe 90 de secunde, cel puțin 150 lei.
+  - Toate trei gata dau o sămânță Rară sau Epică.
+- **Gospodăria nouă (renaștere):** costă 1M × 4ⁿ lei, maximum 10 renașteri, și se face doar ziua.
+  - **Dai:** leii, semințele, plantele și creaturile.
+  - **Păstrezi:** creatura cea mai valoroasă, îmbunătățirile, permisele, Caietul și statisticile.
+  - **Primești:** +50% venit pentru totdeauna pe fiecare nivel, o sămânță de Mămăligator și o steluță pe tăbliță.
+  - Confirmarea e dublă.
+
+## 12c1. Schimburile
+
+- Butonul „Schimb” (cât mai e cineva pe server) deschide lista jucătorilor: ceri un schimb, iar celălalt acceptă sau refuză.
+- În fereastra de schimb, fiecare oferă cel mult 4 creaturi **din beci** și, opțional, lei. Sub fiecare ofertă se vede valoarea ei totală.
+- Orice schimbare de ofertă anulează acceptările.
+- Când acceptă amândoi, urmează o numărătoare de 3 s, apoi serverul revalidează totul și mută totul sau nimic. Așa nu pot apărea duplicate sau păcăleli.
+- Rețeta Secretă nu se schimbă: e un trofeu.
+- Creaturile primite la schimb nu intră în Caiet: caietul ține ce ai crescut sau furat tu, ca recompensele de descoperire să nu poată fi „cultivate” prin conturi noi.
 
 ## 12c. Ritmul săptămânal
 
@@ -291,7 +328,6 @@ Intră pe același sistem de evenimente, când loop-ul principal e solid:
 - **Hramul:** boss în co-op, Regele Norului de Grindină.
 - **Hora Battle:** mod scurt de ritm.
 - **Roluri pentru creaturi:** momeală, gardian (încetinește hoții).
-- **Renaștere (rebirth):** progres pe termen lung.
 - **Mașina Bunicii:** al doilea personaj.
 - **Poarta încuiată:** blocare temporară a porții, dacă apărarea în lipsa proprietarului se dovedește prea slabă.
 - **Calendar sezonier:** Revelion, Halloween, Sezonul grindinii, Culesul.

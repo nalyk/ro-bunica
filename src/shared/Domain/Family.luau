@@ -43,6 +43,16 @@ function Family.group(
 	return result
 end
 
+-- Doi prieteni formează familie doar dacă amândoi vor („Family”); unul singur pe „Rival” îi face rivali.
+function Family.bonded(modeA: string?, modeB: string?): boolean
+	return modeA ~= "Rival" and modeB ~= "Rival"
+end
+
+-- Modul se schimbă doar ziua (altfel: Rival noaptea, furi, revii la Familie) și nu mai des de `cooldown` secunde.
+function Family.canSwitch(phase: string, lastSwitch: number?, now: number, cooldown: number): boolean
+	return phase == "Day" and (lastSwitch == nil or now - lastSwitch >= cooldown)
+end
+
 -- Alege ograda liberă cea mai apropiată de ogrăzile prietenilor (sau prima liberă, dacă nu are prieteni).
 function Family.choosePlot(free: { Vector3 }, friends: { Vector3 }): number?
 	if #free == 0 then

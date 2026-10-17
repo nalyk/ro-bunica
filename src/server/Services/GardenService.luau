@@ -17,6 +17,7 @@ local PlotService = require(script.Parent.PlotService)
 local CreatureService = require(script.Parent.CreatureService)
 local Badges = require(script.Parent.Parent.Badges)
 local Analytics = require(script.Parent.Parent.Analytics)
+local Progress = require(script.Parent.Parent.Progress)
 local StateService = require(script.Parent.StateService)
 local WeatherService = require(script.Parent.WeatherService)
 local Messenger = require(script.Parent.Messenger)
@@ -95,6 +96,8 @@ local function hatch(owner: Owner, key: string): boolean
 	end
 	Messenger.notify(owner.player, "notify.Hatched", { Messenger.key("creature." .. record.id) })
 	announceHatch(owner, record)
+	Progress.emit(owner, "hatch")
+	Progress.emit(owner, "obtained", 1, record)
 	return true
 end
 
@@ -150,6 +153,7 @@ local function onPlant(player: Player, bedKey: unknown, seedId: unknown)
 	end
 	profile.beds[bedKey] = Growth.newPlant(seedId, math.random)
 	Analytics.step(player, profile, "FirstPlanted")
+	Progress.emit(owner, "plant")
 	updateBedVisual(owner, bedKey)
 	StateService.markDirty(player)
 end

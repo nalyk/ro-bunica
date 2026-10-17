@@ -10,7 +10,7 @@ FRAMES="${1:-/tmp/bunica-playtest-frames}"
 PLACES="$HOME/.var/app/org.vinegarhq.Vinegar/data/places"
 LOGS="$HOME/.var/app/org.vinegarhq.Vinegar/data/vinegar/appdata/Roblox/logs"
 export DISPLAY=:99
-TIMEOUT=480
+TIMEOUT=720
 
 rojo build playtest.project.json -o build/bunica-playtest.rbxl >/dev/null
 mkdir -p "$PLACES" "$FRAMES"

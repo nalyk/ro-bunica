@@ -11,6 +11,8 @@ return function(): Spec.Results
 	local Boot = (require :: any)(bootModule)
 	local services = Boot.start()
 	task.wait(1) -- lasă serviciile să pornească (generarea lumii, vecinii NPC)
+	-- Rezultatele nu depind de ora rulării: evenimentul de sâmbătă pornește doar din teste (forceStart)
+	services.LiveEventService.setScheduled(false)
 	local specs = {}
 	for _, child in script.Parent:GetChildren() do
 		if child:IsA("ModuleScript") and string.match(child.Name, "%.spec$") then

@@ -1,6 +1,6 @@
 # BUNICA — Progres
 
-Ultima actualizare: 2026-10-12
+Ultima actualizare: 2026-10-17
 
 ## Făcut
 
@@ -90,6 +90,33 @@ Vocea Bunicii: `docs/VOICE.md` (Gemini TTS gratuit, 4 voci proiectate în `art/v
 - [x] 4. Revenire și social (2026-10-17): „Darul Bunicii”, recompensă zilnică pe serie de 7 zile (`Domain/Daily`, testat; ziua 7 dă o sămânță rară), vine după hoțul din primul minut; butonul „Cheamă prieteni” (SocialService, +10% lei pe prieten); coloana din stânga se micșorează pe ecrane joase; un singur panou deschis odată. Verificat: e2e 31/31, playtest 28/28. Insigne (`Server/Badges`, create în Dashboard cu imagini generate): First Creature, Sneaky Neighbour, PLEOSC!, Legend of the Village, acordate la eclozare, furt, apărare și creatură legendară. Hora Dancer (horă reușită, `HoraService`) și First Million (1.000.000 de lei, `EconomyService.addLei`) create gratuit pe 2026-10-17 și legate; toate cele 6 insigne sunt active.
 - [~] 5. Sunet și voce: ambianța satului (`AmbienceController`: vânt ziua, greieri noaptea, ploaie la Rain/Hail, trecere lină; verificată în playtest). **Vocea Bunicii în română e în joc (2026-10-17):** cele 20 de replici, vocea B, `art/voice/ro/`, -14 LUFS, legate în `BunicaLines.voice.ro` (id + durată), redate de pe capul Bunicii; bula stă cât vocea, iar serverul nu întrerupe o replică lungă. Verificat în playtest (vocea se încarcă). Rămân: vocea în EN/ES/PT (zilele următoare, aceeași voce), efectele în tot UI-ul.
 - [ ] - [~] 6. Performanță și finisaj: decorul mic și repetat nu mai aruncă umbre (`ArtService.SHADOWLESS`). `StreamingEnabled` rămâne oprit: satul (8 ogrăzi, ~400×200 studs) încape oricum în raza implicită de streaming, deci n-ar descărca nimic, dar ar adăuga riscul ca modele încă neîncărcate să lipsească pe client.
+
+## Retenția (2026-10-17), după evaluarea sinceră a jocului
+
+Designul și motivele sunt în `docs/superpowers/specs/2026-10-17-retentie-design.md`; GDD-ul e actualizat (§9, §12, §12a, §12c0, §12c1).
+
+- [x] **1. Serverul de 8:** `serverSize` era 50, iar jucătorii 9–50 erau dați afară („Serverul e plin”). L-am setat la 8 din Creator Dashboard (place → Access → Maximum Visitor Count); API-ul public arată `maxPlayers: 8`.
+- [x] **2. Familie sau Rivali:**
+  - profilul are `familyMode`; `Family.bonded` și `Family.canSwitch` sunt testate;
+  - `FamilyService.setMode` (remote `FamilyMode`) merge doar ziua, cu o pauză de 10 s între schimbări;
+  - butonul din HUD apare cât e un prieten pe server, iar prietenii primesc o notificare care explică alegerea.
+- [x] **3. Ziua de 4 minute** (era de 6); noaptea rămâne de 3.
+- [x] **4. Vecinii fură și ei:**
+  - `Config/NpcThieves`, `Domain/NpcThieves` (testat) și `NpcThiefService`; hoțul e un bot cu regulile din RaidService;
+  - traseul prin sat e făcut cu pathfinding (`Walker.pathTo`), iar timpul de cărat se calculează din distanță;
+  - hoțul vine de la vecinul cel mai apropiat, iar creatura furată ajunge pe piedestalul vecinului.
+- [x] **5. Caietul Bunicii:**
+  - `Config/Notebook`, `Domain/Collection`, `Domain/Quests` și `Domain/Rebirth`, toate testate;
+  - `NotebookService` primește evenimentele prin `Server/Progress` (plantat, eclozat, cumpărat, furat, apărat, vândut, horă, mutație, creatură obținută);
+  - pe client, `NotebookPanel` are trei file;
+  - venitul include renașterile și pragurile colecției (`EconomyService.multiplier`);
+  - Rețeta Secretă vine ca sămânță la 50 de descoperiri.
+- [x] **6. Schimburile:**
+  - `Config/Trade` și `Domain/Trade` (testat: oferte, acceptări, validare, execuție totul-sau-nimic);
+  - `TradeService` lucrează pe proprietari de ogrăzi, deci și boții de test pot face schimburi;
+  - pe client, `TradePanel` are butonul „Schimb”, lista de jucători, cererea Da/Nu și fereastra cu valorile.
+- **Iconițe noi:** `notebook` și `trade`. `tools/icons.py upload [nume]` urcă acum doar ce lipsește sau ce e cerut, pentru că decuparea nu e deterministă și altfel s-ar fi dublat asset-urile.
+- **E2E independent de oră:** Runner-ul oprește programul evenimentului de sâmbătă (`LiveEventService.setScheduled(false)`). Între 16:00 și 17:00 UTC, ploaia de papuci dobora boții de test.
 
 ## Lansare publică (2026-10-16)
 

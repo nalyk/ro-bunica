@@ -13,6 +13,8 @@ local ORDER = {
 	"ShopPanel",
 	"CellarPanel",
 	"UpgradePanel",
+	"NotebookPanel",
+	"TradePanel",
 	"StorePanel",
 	"DailyPopup",
 	"SlipperController",

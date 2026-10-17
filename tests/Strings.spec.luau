@@ -4,6 +4,7 @@ local Mutations = require(Shared.Config.Mutations)
 local Rarities = require(Shared.Config.Rarities)
 local Weather = require(Shared.Config.Weather)
 local UpgradesConfig = require(Shared.Config.Upgrades)
+local Notebook = require(Shared.Config.Notebook)
 
 describe("Strings", function()
 	it("alege limba după locale, cu engleza ca rezervă", function()
@@ -25,6 +26,10 @@ describe("Strings", function()
 			end
 			for _, m in Mutations.list do
 				expect(Strings.has(language, "mutation." .. m.id)).toBe(true)
+			end
+			for _, q in Notebook.quests.kinds do
+				expect(Strings.has(language, "quest." .. q.kind)).toBe(true)
+				expect(Strings.has(language, "quest." .. q.kind .. ".desc")).toBe(true)
 			end
 			for _, r in Rarities.list do
 				expect(Strings.has(language, "rarity." .. r.id)).toBe(true)

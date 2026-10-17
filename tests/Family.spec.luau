@@ -12,6 +12,21 @@ local function friendsFrom(pairs)
 	end
 end
 
+describe("Family.bonded și canSwitch", function()
+	it("familia cere ambele moduri pe Family; un Rival îi face rivali", function()
+		expect(Family.bonded("Family", "Family")).toBe(true)
+		expect(Family.bonded(nil, "Family")).toBe(true)
+		expect(Family.bonded("Rival", "Family")).toBe(false)
+		expect(Family.bonded("Family", "Rival")).toBe(false)
+	end)
+	it("modul se schimbă doar ziua, cu pauză între schimbări", function()
+		expect(Family.canSwitch("Day", nil, 100, 10)).toBe(true)
+		expect(Family.canSwitch("Night", nil, 100, 10)).toBe(false)
+		expect(Family.canSwitch("Day", 95, 100, 10)).toBe(false)
+		expect(Family.canSwitch("Day", 90, 100, 10)).toBe(true)
+	end)
+end)
+
 describe("Family.group", function()
 	it("prietenii devin o familie, singurii rămân fără", function()
 		local result = Family.group({ 1, 2, 3 }, friendsFrom({ { 1, 2 } }), 4)

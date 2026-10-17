@@ -16,6 +16,7 @@ local StateService = require(script.Parent.StateService)
 local Analytics = require(script.Parent.Parent.Analytics)
 local EconomyService = require(script.Parent.EconomyService)
 local Messenger = require(script.Parent.Messenger)
+local Progress = require(script.Parent.Parent.Progress)
 
 local ShopService = {}
 
@@ -103,6 +104,7 @@ local function onBuy(player: Player, seedId: unknown)
 	EconomyService.addLei(owner, -(result :: number))
 	Analytics.sink(player, owner.profile, result :: number, "Shop", seedId)
 	Analytics.step(player, owner.profile, "FirstSeedBought")
+	Progress.emit(owner, "buySeed")
 	StateService.markDirty(player)
 	sendStock(player)
 end

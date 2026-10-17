@@ -30,6 +30,12 @@ local TutorialService = services.TutorialService
 local HoraService = services.HoraService
 local LiveEventService = services.LiveEventService
 local ShopService = services.ShopService
+local NpcThiefService = services.NpcThiefService
+local FamilyService = services.FamilyService
+local TradeService = services.TradeService
+local StateService = services.StateService
+local Inventory = require(Shared.Domain.Inventory)
+local NpcThieves = require(Shared.Domain.NpcThieves)
 local Hora = require(Shared.Config.Hora)
 local GameState = require(Shared.GameState)
 
@@ -181,6 +187,7 @@ check(
 task.wait(2)
 
 BunicaService.setEnabled(false)
+NpcThiefService.setEnabled(false) -- hoții vecini doar în pasul lor, ca să nu încurce celelalte scene
 DayNightService.forcePhase("Day")
 local me = PlotService.getOwner(player)
 local myActor = Actors.forPlayer(player)
@@ -409,7 +416,7 @@ step("3. Taraba se deschide și listează semințe", function()
 			tostring(pad.closeBound)
 		)
 	)
-	check(pad.glyphs == 7 and pad.reticle and pad.bound and pad.closeBound, "modul gamepad incomplet")
+	check(pad.glyphs == 8 and pad.reticle and pad.bound and pad.closeBound, "modul gamepad incomplet")
 	task.wait(0.5)
 	log("SNAP gamepad")
 	task.wait(1)
@@ -903,6 +910,291 @@ step("15b. Ecranul de încărcare (demonstrație: capturi și înregistrare vide
 	local state = call("loading", "state")
 	check(not state.present, "ecranul de încărcare a rămas pe ecran")
 	check(state.playerList and state.chat, "interfața Roblox n-a revenit după demonstrație")
+end)
+
+step("15f. Familie sau rivali: modul se schimbă doar ziua și ajunge la client", function()
+	DayNightService.forcePhase("Night")
+	check(not FamilyService.setMode(player, "Rival"), "modul s-a schimbat noaptea")
+	DayNightService.forcePhase("Day")
+	check(FamilyService.setMode(player, "Rival"), "modul nu s-a schimbat ziua")
+	check(me.profile.familyMode == "Rival", "profilul nu a salvat modul")
+	check(
+		waitFor(function()
+			return call("query").familyMode == "Rival"
+		end, 3),
+		"clientul nu vede modul Rival"
+	)
+	check(not FamilyService.setMode(player, "Family"), "modul s-a schimbat din nou fără pauză")
+	task.wait(10.5)
+	check(FamilyService.setMode(player, "Family"), "modul nu a revenit la Family")
+end)
+
+-- Pregătește un Epic expus acasă, fără scut și fără furturi în noaptea asta
+local function epicAtHome(): string
+	local record = Inventory.newRecord(me.profile, player.UserId, "Mamaligator", "Normal", nil)
+	local where, key = Inventory.place(me.profile, record)
+	check(where == "pedestal" and key, "nu e loc pe piedestal pentru Epic")
+	CreatureService.renderKey(me, key :: string)
+	me.shieldUntil = 0
+	me.stolenTonight = 0
+	return record.uid
+end
+
+step("15g. Un vecin hoț vine noaptea prin sat, ia Epicul și e doborât de papucul jucătorului", function()
+	call("walkTo", me.plot.geometry.spawnCFrame.Position)
+	DayNightService.forcePhase("Night")
+	local uid = epicAtHome()
+	local npc = NpcThiefService.freeNeighbour(me)
+	check(npc, "niciun vecin liber")
+	NpcThiefService.markActive(player)
+	check(NpcThiefService.eligible(me), "jucătorul activ nu e țintă")
+	local outcome: string? = nil
+	task.spawn(function()
+		outcome = NpcThiefService.attempt(me, npc)
+	end)
+	check(
+		waitFor(function()
+			return npc.actor ~= nil and RaidService.isCarrying(npc.actor)
+		end, 60),
+		"hoțul vecin nu a ajuns la creatură (pathfinding prin sat)"
+	)
+	check(RaidService.isCarried(uid), "hoțul a luat altă creatură decât Epicul")
+	log("SNAP vecin-hot")
+	check(
+		waitFor(function()
+			return table.find(call("query").notifications, "notify.NpcThiefComing") ~= nil
+		end, 3),
+		"jucătorul nu a fost avertizat"
+	)
+	call("throwAt", npc.name)
+	check(
+		waitFor(function()
+			return outcome ~= nil
+		end, 20),
+		"încercarea nu s-a încheiat"
+	)
+	check(outcome == "Hit", "rezultat: " .. tostring(outcome))
+	check(Inventory.findPedestal(me.profile, uid) ~= nil, "Epicul nu s-a întors acasă")
+	check(
+		waitFor(function()
+			return npc.actor == nil
+		end, 25),
+		"hoțul nu a plecat"
+	)
+	check(npc.plot.owner == npc, "vecinul a fost înlocuit")
+end)
+
+step("15h. Fără papuc, vecinul duce Epicul acasă, iar jucătorul îl poate fura înapoi", function()
+	epicAtHome()
+	-- ținta e cea mai valoroasă creatură până la Epic (acasă poate fi și Epicul din pasul anterior)
+	local targetKey = NpcThieves.pickTarget(me.profile.pedestals, RaidService.isCarried) :: string
+	local uid = me.profile.pedestals[targetKey].uid
+	local npc = NpcThiefService.freeNeighbour(me)
+	check(npc, "niciun vecin liber")
+	NpcThiefService.markActive(player)
+	local outcome = NpcThiefService.attempt(me, npc)
+	check(outcome == "Stolen", "rezultat: " .. tostring(outcome))
+	local key = Inventory.findPedestal(npc.profile, uid)
+	check(key, "Epicul nu e pe piedestalul vecinului")
+	check(CreatureService.modelAt(npc, key :: string) ~= nil, "Epicul nu se vede la vecin")
+	check(
+		waitFor(function()
+			return table.find(call("query").notifications, "notify.StealBack") ~= nil
+		end, 3),
+		"jucătorul nu a fost îndemnat să-l fure înapoi"
+	)
+	check(
+		waitFor(function()
+			return npc.actor == nil
+		end, 25),
+		"hoțul nu a plecat"
+	)
+	-- Furtul înapoi, pe căile reale: jucătorul merge la vecin și ține apăsat pe Epic. Bunica vecinului ar
+	-- arunca papucul în jucătorul intrat noaptea în ograda ei (pasul 15 o pornește): aici verificăm doar furtul
+	BunicaService.setEnabled(false)
+	call("walkTo", roadPoint(me.plot))
+	call("walkTo", roadPoint(npc.plot))
+	-- intră pe poarta vecinului (pathfinding-ul agentului nu ocolește singur gardul până la poartă)
+	local gate = npc.plot.geometry.cframe
+	call("walkTo", (gate * CFrame.new(0, 3, -World.plotSize.Z / 2 - 6)).Position, 3)
+	call("walkTo", (gate * CFrame.new(0, 3, -World.plotSize.Z / 2 + 5)).Position, 3)
+	local distance = call("walkTo", approach(npc, key :: string))
+	if distance >= 6 then
+		-- piedestalul deblocat acum poate fi încadrat de alte creaturi: încearcă și dinspre casă
+		local model = CreatureService.modelAt(npc, key :: string) :: Model
+		local behind = model:GetPivot().Position - npc.plot.geometry.cframe.LookVector * 4.5
+		distance = call("walkTo", Vector3.new(behind.X, npc.plot.geometry.cframe.Position.Y + 3, behind.Z))
+	end
+	if distance >= 6 then
+		local model = CreatureService.modelAt(npc, key :: string) :: Model
+		local position = call("query").position
+		local localTarget = npc.plot.geometry.cframe:PointToObjectSpace(model:GetPivot().Position)
+		local localMe = npc.plot.geometry.cframe:PointToObjectSpace(position)
+		log(
+			string.format(
+				"blocat la furtul înapoi: piedestal %s la (%.0f, %.0f) în ogradă, jucătorul la (%.0f, %.0f)",
+				key :: string,
+				localTarget.X,
+				localTarget.Z,
+				localMe.X,
+				localMe.Z
+			)
+		)
+		call("lookAt", model:GetPivot().Position, position + Vector3.new(0, 25, 0), 1.5)
+		task.wait(0.6)
+		log("SNAP blocat-furt-inapoi")
+	end
+	check(distance < 6, "nu a ajuns la Epic (rămas " .. math.floor(distance) .. ")")
+	local model = CreatureService.modelAt(npc, key :: string) :: Model
+	local result = call("holdPrompt", "StealPrompt", npc.userId, model:GetPivot().Position)
+	if result ~= "ok" then
+		log(
+			"server: modelul Epicului "
+				.. model:GetFullName()
+				.. ", prompt "
+				.. tostring(model:FindFirstChildWhichIsA("ProximityPrompt", true))
+		)
+		for _, line in call("prompts", npc.userId, model:GetPivot().Position) do
+			log("client: " .. line)
+		end
+	end
+	check(result == "ok", "prompt de furt înapoi: " .. tostring(result))
+	check(
+		waitFor(function()
+			return RaidService.isCarrying(myActor)
+		end, 3),
+		"furtul înapoi nu a început"
+	)
+	RaidService.drop(myActor)
+	call("walkTo", roadPoint(npc.plot))
+	call("walkTo", roadPoint(me.plot))
+	DayNightService.forcePhase("Day")
+end)
+
+step("15i. Caietul Bunicii: colecția și treburile zilei, cu răsplata luată din Caiet", function()
+	local collection = call("notebook", "collection")
+	check(collection.notebook and collection.notebook.count >= 1, "colecția e goală")
+	check(collection.rows >= #Creatures.list, "colecția nu listează creaturile (" .. collection.rows .. ")")
+	check(table.find(call("query").notifications, "notify.Discovered") ~= nil, "nicio descoperire anunțată")
+	task.wait(0.4)
+	log("SNAP caiet-colectie")
+	local quests = call("notebook", "quests")
+	check(quests.rows >= 5, "treburile nu apar (" .. quests.rows .. " rânduri)")
+	local first = me.profile.quests.list[1]
+	first.progress = first.goal
+	StateService.markDirty(player)
+	local before = me.profile.lei
+	call("fire", "Notebook", "claimQuest", 1)
+	check(
+		waitFor(function()
+			return me.profile.quests.list[1].claimed
+		end, 3),
+		"răsplata treburii nu s-a luat"
+	)
+	check(me.profile.lei > before, "leii nu au crescut")
+	check(
+		waitFor(function()
+			return table.find(call("query").notifications, "notify.QuestReward") ~= nil
+		end, 3),
+		"fără notificarea răsplății"
+	)
+	call("notebook", "quests")
+	task.wait(0.4)
+	log("SNAP caiet-treburi")
+	call("closePanel", "NotebookPanel")
+end)
+
+step("15j. Schimb cu un vecin-bot: cererea, fereastra, ofertele, acceptarea, numărătoarea", function()
+	DayNightService.forcePhase("Day")
+	local plot = nearestNpcPlots(me.plot)[1]
+	local traderBot = Actors.createBot("Negustor", plot.geometry.spawnCFrame)
+	local trader = PlotService.assignBot(plot, traderBot)
+	local gift = Inventory.newRecord(trader.profile, traderBot.id, "SarmalinaBallerina", "Big", "Wet")
+	table.insert(trader.profile.cellar, gift)
+	trader.profile.lei = 1000
+	local mine = Inventory.newRecord(me.profile, player.UserId, "CeapaTurbo", "Normal", nil)
+	table.insert(me.profile.cellar, mine)
+	StateService.markDirty(player)
+	local leiBefore = me.profile.lei
+	check(TradeService.request(trader, me), "cererea botului a fost refuzată")
+	check(
+		waitFor(function()
+			return call("trade").request
+		end, 3),
+		"cererea nu apare la jucător"
+	)
+	log("SNAP schimb-cerere")
+	call("fire", "Trade", "respond", trader.userId, true)
+	check(
+		waitFor(function()
+			return call("trade").window
+		end, 3),
+		"fereastra de schimb nu s-a deschis"
+	)
+	call("fire", "Trade", "offer", { mine.uid }, 0)
+	TradeService.offer(trader, { gift.uid }, 250)
+	check(
+		waitFor(function()
+			local view = call("trade")
+			return view.theirsRows >= 2 and string.find(view.status, "Negustor") == nil
+		end, 3),
+		"oferta botului nu apare în fereastră"
+	)
+	task.wait(0.4)
+	log("SNAP schimb-fereastra")
+	TradeService.accept(trader)
+	call("fire", "Trade", "accept")
+	check(
+		waitFor(function()
+			return TradeService.confirmAt(me) ~= nil
+		end, 3),
+		"numărătoarea nu a pornit"
+	)
+	check(
+		waitFor(function()
+			return not TradeService.isTrading(me)
+		end, 6),
+		"schimbul nu s-a încheiat"
+	)
+	check(Inventory.findCellar(me.profile, gift.uid) ~= nil, "creatura primită lipsește din beci")
+	check(Inventory.findCellar(trader.profile, mine.uid) ~= nil, "creatura dată n-a ajuns la bot")
+	check(me.profile.lei >= leiBefore + 250, "leii din schimb nu au venit")
+	check(
+		me.profile.collection["SarmalinaBallerina:Wet"] == nil,
+		"creatura primită la schimb a intrat în Caiet"
+	)
+	check(
+		waitFor(function()
+			return not call("trade").window
+		end, 3),
+		"fereastra a rămas deschisă"
+	)
+	Actors.removeBot(traderBot)
+end)
+
+step("15k. Gospodăria nouă: renașterea din Caiet", function()
+	DayNightService.forcePhase("Day")
+	me.profile.lei = 1e6
+	StateService.markDirty(player)
+	call("notebook", "rebirth")
+	task.wait(0.4)
+	log("SNAP caiet-renastere")
+	call("fire", "Notebook", "rebirth")
+	check(
+		waitFor(function()
+			return me.profile.rebirths == 1
+		end, 3),
+		"renașterea nu s-a făcut"
+	)
+	check(string.find(me.plot.geometry.sign.Text, "★", 1, true) ~= nil, "tăblița nu are steluța")
+	check(count(me.profile.pedestals) == 1 and #me.profile.cellar == 0, "inventarul nu s-a golit corect")
+	check(
+		waitFor(function()
+			return call("query").pedestals == 1
+		end, 3),
+		"clientul nu vede gospodăria nouă"
+	)
+	call("closePanel", "NotebookPanel")
 end)
 
 step("16. Fără erori de script (server și client)", function()

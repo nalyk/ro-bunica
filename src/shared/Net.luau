@@ -17,6 +17,9 @@ local NAMES = {
 	"Hora", -- () jucătorul dansează hora (în vatra satului)
 	"BuyUpgrade", -- (upgradeId: string) îmbunătățire a ogrăzii, pe lei
 	"ClientReady", -- () clientul și-a conectat ascultătorii; serverul retrimite starea
+	"Trade", -- (action: "request" | "respond" | "offer" | "accept" | "cancel", a, b) schimburile
+	"Notebook", -- (action: "claimQuest" | "claimBonus" | "rebirth", arg: number?) Caietul Bunicii
+	"FamilyMode", -- (mode: "Family" | "Rival") alegerea față de prietenii de pe server
 	"Greeted", -- () ecranul de încărcare s-a închis: Bunica îl întâmpină (o dată pe sesiune)
 	-- S→C
 	"State", -- (snapshot: PlayerState) starea completă a jucătorului
@@ -29,6 +32,7 @@ local NAMES = {
 	"Shop", -- (stock: {[string]: number}, nextRestockAt: number)
 	"Tutorial", -- (stage: string, data: {any}?) pașii din primul minut
 	"Replay", -- (best: BestThrow) lovitura nopții, reluată la răsărit
+	"TradeUpdate", -- (kind: "request" | "state" | "closed", data) cereri și fereastra de schimb
 	"Daily", -- (claim: {day, lei, seed?}, serverTime) recompensa zilnică
 }
 

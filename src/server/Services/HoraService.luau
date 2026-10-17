@@ -12,9 +12,11 @@ local Ritual = require(Shared.Domain.Ritual)
 local RandomUtil = require(Shared.Domain.Random)
 local RateLimiter = require(Shared.Domain.RateLimiter)
 local WeatherService = require(script.Parent.WeatherService)
+local PlotService = require(script.Parent.PlotService)
 local Messenger = require(script.Parent.Messenger)
 local Actors = require(script.Parent.Parent.Actors)
 local Badges = require(script.Parent.Parent.Badges)
+local Progress = require(script.Parent.Parent.Progress)
 
 type Actor = Actors.Actor
 
@@ -111,6 +113,7 @@ function HoraService.start()
 			return
 		end
 		HoraService.setDancing(actor)
+		Progress.emit(PlotService.getOwner(player), "hora")
 	end)
 	Actors.onRemoving(function(actor)
 		dancingUntil[actor] = nil

@@ -38,6 +38,14 @@ export type Profile = {
 	receipts: { string }, -- PurchaseId-urile procesate (anti-dublare la ProcessReceipt)
 	funnel: { [string]: boolean }, -- pașii din funnel-ul primelor minute deja măsurați
 	daily: { lastDay: number, streak: number }, -- recompensa zilnică: ultima zi UTC luată și seria
+	familyMode: string, -- "Family" (prietenii se ajută) sau "Rival" (prietenii se pot fura)
+	collection: { [string]: boolean }, -- Caietul Bunicii: intrările descoperite ("id" sau "id:mutație")
+	quests: {
+		day: number,
+		list: { { kind: string, goal: number, progress: number, claimed: boolean } },
+		bonusClaimed: boolean,
+	},
+	rebirths: number, -- renașteri făcute (+50% venit fiecare)
 }
 
 local DataTemplate = {}
@@ -66,6 +74,10 @@ function DataTemplate.new(): Profile
 		receipts = {},
 		funnel = {},
 		daily = { lastDay = -1, streak = 0 },
+		familyMode = "Family",
+		collection = {},
+		quests = { day = -1, list = {}, bonusClaimed = false },
+		rebirths = 0,
 	}
 end
 

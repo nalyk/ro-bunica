@@ -139,7 +139,8 @@ function UI.button(props: { [string]: any }, onClick: () -> ()): TextButton
 	lip.BackgroundColor3 = if swatch then swatch.dark else Theme.shadow
 	lip.Size = UDim2.fromScale(1, 1)
 	lip.Position = UDim2.fromOffset(0, Theme.lip)
-	lip.ZIndex = button.ZIndex - 1
+	-- sub conținut: în modul Sibling, ZIndex-ul copiilor e relativ între frați (nu față de buton)
+	lip.ZIndex = 0
 	lip.BorderSizePixel = 0
 	local lipCorner = corner:Clone()
 	lipCorner.Parent = lip

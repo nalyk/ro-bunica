@@ -14,6 +14,7 @@ return function(Spec: any, services: { [string]: any })
 	local Actors = (require :: any)(ServerScriptService:WaitForChild("Server"):WaitForChild("Actors"))
 	local PlotService = services.PlotService
 	local MonetizationService = services.MonetizationService
+	local WeatherService = services.WeatherService
 
 	describe("Magazinul pe Robux", function()
 		it("punga de lei, îngrășământul și permisul VIP", function()
@@ -37,6 +38,19 @@ return function(Spec: any, services: { [string]: any })
 			expect(owner.profile.pedestalCount).toBe(before + 4)
 			expect(MonetizationService.grantProduct(owner, "nu-exista")).toBe(false)
 			local _ = Inventory
+			Actors.removeBot(bot)
+		end)
+
+		it("semințele proaspete și vremea pentru tot satul", function()
+			local plot = PlotService.plots[6]
+			local bot = Actors.createBot("Cumparator", plot.geometry.spawnCFrame)
+			local owner = PlotService.assignBot(plot, bot)
+			expect(MonetizationService.grantProduct(owner, "restock")).toBe(true)
+			-- vremea cumpărată pornește chiar peste o vreme în curs
+			expect(MonetizationService.grantProduct(owner, "weather_rainbow")).toBe(true)
+			expect(WeatherService.current().id).toBe("Rainbow")
+			expect(MonetizationService.grantProduct(owner, "weather_gold")).toBe(true)
+			expect(WeatherService.current().id).toBe("GoldHarvest")
 			Actors.removeBot(bot)
 		end)
 	end)

@@ -158,6 +158,7 @@ return {
 	["ui.products"] = "Acum",
 	["notify.LeiPack"] = "Ai primit {1} lei!",
 	["notify.Fertilized"] = "Toate plantele au crescut!",
+	["notify.Restocked"] = "Taraba s-a umplut cu semințe proaspete!",
 	["notify.PassBought"] = "Mulțumim! Ai {1}",
 	["announce.WeatherGift"] = "{1} a chemat {2} pentru tot satul!",
 	["pass.vip"] = "VIP Bunica",

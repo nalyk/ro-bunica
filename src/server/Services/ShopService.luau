@@ -70,6 +70,17 @@ function ShopService.setExclusive(seedId: string?)
 	end
 end
 
+-- „Semințe proaspete” (produs pe Robux): taraba jucătorului se umple acum, fără să aștepte reînnoirea serverului
+function ShopService.restockFor(player: Player)
+	local stock = personalStock[player]
+	if not stock then
+		return
+	end
+	personalStock[player] = Shop.merge(stock, Shop.restock(math.random))
+	addExclusive(player)
+	sendStock(player)
+end
+
 local function onBuy(player: Player, seedId: unknown)
 	if typeof(seedId) ~= "string" or not buyLimiter:allow(player.UserId, os.clock()) then
 		return

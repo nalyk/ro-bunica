@@ -20,6 +20,7 @@ local EconomyService = require(script.Parent.EconomyService)
 local CreatureService = require(script.Parent.CreatureService)
 local GardenService = require(script.Parent.GardenService)
 local WeatherService = require(script.Parent.WeatherService)
+local ShopService = require(script.Parent.ShopService)
 local Messenger = require(script.Parent.Messenger)
 
 type Owner = PlotService.Owner
@@ -95,6 +96,11 @@ function MonetizationService.grantProduct(owner: Owner, key: string): boolean
 	elseif product.kind == "fertilizer" then
 		GardenService.fertilize(owner)
 		Messenger.notify(player, "notify.Fertilized")
+	elseif product.kind == "restock" then
+		if player then
+			ShopService.restockFor(player)
+		end
+		Messenger.notify(player, "notify.Restocked")
 	elseif product.kind == "weather" and product.weather then
 		WeatherService.trigger(product.weather, true)
 		Messenger.announce(

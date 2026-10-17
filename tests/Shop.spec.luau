@@ -32,6 +32,13 @@ describe("Shop", function()
 		expect(price).toBe("NotForSale")
 	end)
 
+	it("semințele proaspete nu iau nimic din stocul rămas", function()
+		local stock = Shop.merge({ CartofelAgent = 2, DovleacDJ = 1 }, { CartofelAgent = 8, ArdeiasIute = 4 })
+		expect(stock.CartofelAgent).toBe(8)
+		expect(stock.DovleacDJ).toBe(1)
+		expect(stock.ArdeiasIute).toBe(4)
+	end)
+
 	it("reînnoirea e aliniată la ceas", function()
 		expect(Shop.nextRestockAt(0)).toBe(300)
 		expect(Shop.nextRestockAt(299)).toBe(300)

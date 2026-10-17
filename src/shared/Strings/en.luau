@@ -146,6 +146,7 @@ return {
 	["ui.products"] = "Right now",
 	["notify.LeiPack"] = "You got {1} lei!",
 	["notify.Fertilized"] = "All your plants have grown!",
+	["notify.Restocked"] = "The stall is full of fresh seeds!",
 	["notify.PassBought"] = "Thank you! You now have {1}",
 	["announce.WeatherGift"] = "{1} called {2} for the whole village!",
 	["pass.vip"] = "VIP Bunica",

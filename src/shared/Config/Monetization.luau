@@ -25,9 +25,21 @@ local products: { Product } = {
 	{ key = "lei_m", id = 3719054588, icon = "lei_m", kind = "lei" },
 	{ key = "lei_l", id = 3719054681, icon = "lei_l", kind = "lei" },
 	{ key = "fertilizer", id = 3719054853, icon = "fertilizer", kind = "fertilizer" },
-	{ key = "restock", id = 0, icon = "restock", kind = "restock" },
-	{ key = "weather_gold", id = 0, icon = "weather_gold", kind = "weather", weather = "GoldHarvest" },
-	{ key = "weather_rainbow", id = 0, icon = "weather_rainbow", kind = "weather", weather = "Rainbow" },
+	{ key = "restock", id = 3719165422, icon = "restock", kind = "restock" },
+	{
+		key = "weather_gold",
+		id = 3719165896,
+		icon = "weather_gold",
+		kind = "weather",
+		weather = "GoldHarvest",
+	},
+	{
+		key = "weather_rainbow",
+		id = 3719166385,
+		icon = "weather_rainbow",
+		kind = "weather",
+		weather = "Rainbow",
+	},
 }
 
 local passByKey: { [string]: Pass } = {}

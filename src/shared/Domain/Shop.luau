@@ -28,6 +28,16 @@ function Shop.restock(rng: () -> number): Stock
 	return stock
 end
 
+-- Stocul personal după „Semințe proaspete” (produs pe Robux): o tragere nouă peste stocul rămas, cu cantitatea
+-- mai mare din fiecare sămânță, deci cumpărătorul nu pierde niciodată ce avea deja la tarabă.
+function Shop.merge(current: Stock, fresh: Stock): Stock
+	local stock = table.clone(current)
+	for id, count in fresh do
+		stock[id] = math.max(stock[id] or 0, count)
+	end
+	return stock
+end
+
 -- Verifică o cumpărare. Întoarce (ok, preț sau motiv).
 function Shop.checkPurchase(stock: Stock, seedId: string, lei: number): (boolean, number | string)
 	local creature = Creatures.byId[seedId]

@@ -51,7 +51,7 @@ local function stationX(ctx: any): number
 end
 
 local function trainAt(_ctx: any, x: number): CFrame
-	local z = Village.railwayZ + 4
+	local z = Village.railwayZ
 	local y = Kit.groundY(x, z) + 0.6
 	return CFrame.new(x, y, z)
 end
@@ -152,7 +152,7 @@ function Tren.tick(ctx: any, _dt: number)
 		for _, owner in ctx.owners() do
 			local root = Kit.root(owner)
 			if root then
-				local dz = math.abs(root.Position.Z - (Village.railwayZ + 4))
+				local dz = math.abs(root.Position.Z - Village.railwayZ)
 				local dx = root.Position.X - front.X
 				if dz <= LINE_HIT and dx > -48 and dx < 10 then
 					Kit.slow(owner, "train", 0, 1.5)

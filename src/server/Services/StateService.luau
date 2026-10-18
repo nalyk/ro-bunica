@@ -51,6 +51,8 @@ local function snapshot(player: Player): { [string]: any }?
 		fish = profile.fish, -- pescuitul (FishingController)
 		eggs = profile.eggs, -- ouăle de ciocnit
 		records = profile.records,
+		decor = profile.decor,
+		ownedDecor = profile.ownedDecor,
 	}
 	for _, provider in providers do
 		provider(player, state)

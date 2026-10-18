@@ -57,7 +57,7 @@ return table.freeze({
 	treeSets = 4, -- seturi de decor: nuci și vișini, bolta de vie, stupii, lemnele și căpița
 	variantSeed = 7,
 	bridges = table.freeze({ -120, 140 }), -- podurile peste pârâu (parametrul x pe drumul mare)
-	railwayZ = -235, -- linia ferată, de la vest la est
+	railwayZ = -243, -- linia ferată, de la vest la est (la sud de peronul gării)
 	-- înălțimea terenului: valea plană între sud și nord, dealuri în afara ei
 	valley = table.freeze({ south = -260, north = 275, hillSlope = 0.22, hillMax = 32 }),
 })

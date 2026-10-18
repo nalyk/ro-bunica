@@ -11,6 +11,8 @@ local Economy = require(Shared.Domain.Economy)
 local ClientState = require(script.Parent.ClientState)
 local Theme = require(script.Parent.Theme)
 local UI = require(script.Parent.UI)
+local DecorPanel = require(script.Parent.DecorPanel)
+local WardrobePanel = require(script.Parent.WardrobePanel)
 
 local UpgradePanel = {}
 
@@ -54,6 +56,27 @@ end
 local function build()
 	UI.clear(scroll)
 	table.clear(rows)
+	-- decorul ogrăzii (pe lei, doar frumusețe): panoul lui
+	UI.button({
+		Size = UDim2.new(1, -12, 0, 46),
+		LayoutOrder = 0,
+		Text = "🌼 " .. ClientState.t("decor.title"),
+		swatch = "vine",
+		Parent = scroll,
+	}, function()
+		UI.show(panel, false)
+		DecorPanel.toggle()
+	end)
+	UI.button({
+		Size = UDim2.new(1, -12, 0, 46),
+		LayoutOrder = 0,
+		Text = "👗 " .. ClientState.t("outfit.title"),
+		swatch = "plum",
+		Parent = scroll,
+	}, function()
+		UI.show(panel, false)
+		WardrobePanel.toggle()
+	end)
 	for order, def in UpgradesConfig.list do
 		local row =
 			UI.frame({ Size = UDim2.new(1, -12, 0, ROW_HEIGHT), LayoutOrder = order, Parent = scroll })

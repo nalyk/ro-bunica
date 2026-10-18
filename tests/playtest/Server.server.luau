@@ -1546,6 +1546,58 @@ step("15s. Ceasul satului: anunțul, semnul de deasupra locului și întâmplăr
 	Clock.stop()
 end)
 
+step(
+	"15t. Mini-jocurile și pescuitul: înscrierea, numărătoarea, tabela de scor, undița (capturi)",
+	function()
+		local Minigames = services.MinigameService
+		DayNightService.forcePhase("Day")
+		local Village = require(Shared.Config.Village)
+		-- jucătorul merge la centru și intră la „Prinde cocoșul” cu un vecin-bot
+		call("walkTo", Hora.center + Vector3.new(6, 3, -14), 4)
+		check(Minigames.open("Cocos", 30), "Prinde cocoșul nu se deschide")
+		check(
+			waitFor(function()
+				return call("debugState", "MinigameController").join == true
+			end, 4),
+			"butonul „Intră” nu apare lângă loc"
+		)
+		log("SNAP minijoc-inscriere")
+		call("fire", "MinigameAction", "join", "Cocos")
+		local friend = Actors.createBot("Coleg", CFrame.new(Hora.center + Vector3.new(-6, 3, -14)))
+		local friendOwner = PlotService.assignBot(victimPlot, friend)
+		Minigames.join(friendOwner, "Cocos")
+		Minigames.closeEnrollment("centru")
+		check(
+			waitFor(function()
+				return call("debugState", "MinigameController").running == "Cocos"
+			end, 4),
+			"jocul nu pornește pentru jucător"
+		)
+		task.wait(1.5)
+		log("SNAP minijoc-numaratoare")
+		task.wait(3)
+		check(call("debugState", "MinigameController").board ~= nil, "tabela de scor nu apare")
+		photograph(
+			"minijoc-cocos",
+			Hora.center + Vector3.new(0, 2, 0),
+			Hora.center + Vector3.new(24, 18, -36)
+		)
+		Minigames.stop("centru")
+		Actors.removeBot(friend)
+		-- pescuitul: la iaz apare butonul undiței
+		local pond = Village.sites.iaz
+		call("walkTo", pond + Vector3.new(0, 3, 38), 4)
+		check(
+			waitFor(function()
+				return call("debugState", "FishingController").cast == true
+			end, 4),
+			"butonul undiței nu apare la iaz"
+		)
+		log("SNAP pescuit")
+		photograph("iazul", pond + Vector3.new(0, 1, 0), pond + Vector3.new(20, 16, 60))
+	end
+)
+
 step("16. Fără erori de script (server și client)", function()
 	local serverErrors = {}
 	for _, entry in LogService:GetLogHistory() do

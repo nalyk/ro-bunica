@@ -33,7 +33,18 @@ export type Profile = {
 	lastSeen: number, -- os.time() la ultima salvare, pentru venitul offline
 	tutorialDone: boolean, -- sămânța de start a fost dată
 	tutorialThiefDone: boolean, -- hoțul din primul minut a fost prins
-	stats: { steals: number, defends: number, hatched: number },
+	stats: {
+		steals: number,
+		defends: number,
+		hatched: number,
+		fish: number?, -- pești prinși (titlul „Pescarul”)
+		hora: number?, -- hore dansate („Dansatoarea”)
+		happenings: number?, -- întâmplări la care a ajutat („Prietenul satului”)
+		minigames: number?, -- mini-jocuri terminate
+	},
+	title: string?, -- titlul ales (Domain/Titles)
+	outfits: { [string]: boolean }, -- ținutele Bunicii cumpărate (Config/Outfits)
+	outfit: string?, -- ținuta purtată
 	uidCounter: number,
 	passes: { [string]: boolean }, -- permisele Robux deja aplicate (efectele permanente, o singură dată)
 	receipts: { string }, -- PurchaseId-urile procesate (anti-dublare la ProcessReceipt)
@@ -50,6 +61,8 @@ export type Profile = {
 	eggs: { [string]: number }, -- ouăle pentru ciocnit (Domain/EggDuel): colecția câștigată
 	records: { [string]: number }, -- recordurile personale la mini-jocuri (Șotron, Moara)
 	fish: { [string]: number }, -- peștii prinși la iaz (Config/Fish): de vândut sau hrană pentru creaturi
+	decor: { [string]: string }, -- decorul ogrăzii: slot → obiect (Config/Decor)
+	ownedDecor: { [string]: number }, -- obiectele de decor cumpărate (câte bucăți)
 }
 
 local DataTemplate = {}
@@ -85,6 +98,9 @@ function DataTemplate.new(): Profile
 		eggs = { Alb = 3 },
 		records = {},
 		fish = {},
+		decor = {},
+		ownedDecor = {},
+		outfits = {},
 	}
 end
 

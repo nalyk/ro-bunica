@@ -24,6 +24,7 @@ local EconomyService = require(script.Parent.EconomyService)
 local StateService = require(script.Parent.StateService)
 local Messenger = require(script.Parent.Messenger)
 local Analytics = require(script.Parent.Parent.Analytics)
+local Progress = require(script.Parent.Parent.Progress)
 
 type Owner = PlotService.Owner
 type Cast = { biteAt: number, seed: number, bitten: boolean }
@@ -137,6 +138,7 @@ function FishingService.reel(owner: Owner, inputs: { boolean }): string?
 		total += n
 	end
 	Records.submit("Pescuit", owner, total)
+	Progress.emit(owner, "fish")
 	StateService.markDirty(owner.player)
 	tell(owner, { state = "result", fish = fishId })
 	return fishId

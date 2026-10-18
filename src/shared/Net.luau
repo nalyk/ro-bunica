@@ -20,6 +20,11 @@ local NAMES = {
 	"Trade", -- (action: "request" | "respond" | "offer" | "accept" | "cancel", a, b) schimburile
 	"Notebook", -- (action: "claimQuest" | "claimBonus" | "rebirth", arg: number?) Caietul Bunicii
 	"Rutiera", -- C→S ("board" | "alight" | "destination", stop: string?); S→C ({ riding: boolean, destination: string? })
+	"SetTitle", -- (id: string?) titlul de deasupra numelui (Domain/Titles)
+	"BuyOutfit", -- (id: string) ținută pentru Bunica, pe lei
+	"WearOutfit", -- (id: string?) ținuta purtată de Bunica
+	"BuyDecor", -- (id: string) decorul ogrăzii, pe lei
+	"PlaceDecor", -- (id: string?, slot: string) așază sau golește un slot
 	"Fishing", -- C→S ("cast" | "reel" | "sell", a, b); S→C ({ state: "waiting" | "bite" | "result", ... })
 	"MinigameAction", -- ("open" | "join" | "act", arg) mini-jocurile (MinigameService)
 	"HappeningAction", -- (payload: any) acțiunea jucătorului în întâmplarea activă (VillageClockService)

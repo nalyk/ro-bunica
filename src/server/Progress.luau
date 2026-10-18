@@ -8,6 +8,10 @@ export type Kind =
 	| "hatch"
 	| "buySeed"
 	| "steal"
+	| "decor" -- câte obiecte de decor sunt așezate (titlul „Gospodina”)
+	| "fish" -- un pește prins
+	| "minigame" -- un mini-joc terminat
+	| "happening" -- o întâmplare a satului la care a participat
 	| "defend"
 	| "sell"
 	| "hora"
@@ -21,7 +25,8 @@ local Progress = {}
 local listeners: { Listener } = {}
 
 function Progress.emit(owner: any, kind: Kind, amount: number?, record: any?)
-	if not owner or owner.kind ~= "Player" then
+	-- jucătorii și boții care țin locul unui jucător (teste); vecinii NPC nu au progres
+	if not owner or (owner.kind ~= "Player" and not owner.standIn) then
 		return
 	end
 	for _, listener in listeners do

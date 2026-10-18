@@ -24,6 +24,7 @@ local EconomyService = require(script.Parent.EconomyService)
 local StateService = require(script.Parent.StateService)
 local Messenger = require(script.Parent.Messenger)
 local Analytics = require(script.Parent.Parent.Analytics)
+local Progress = require(script.Parent.Parent.Progress)
 
 type Owner = PlotService.Owner
 export type Match = {
@@ -126,6 +127,7 @@ local function finishMatch(site: string)
 		if owner.plot.owner == owner and owner.actor and owner.actor.alive then
 			present[owner.userId] = true
 			byId[owner.userId] = owner
+			Progress.emit(owner, "minigame")
 		end
 		if owner.actor then
 			Busy.set(owner.actor, nil)

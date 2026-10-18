@@ -265,6 +265,15 @@ local function onGround(cf: CFrame): CFrame
 	return cf + Vector3.new(0, SiteBuilder.groundY(p.X, p.Z) - p.Y, 0)
 end
 
+-- Pune un model sculptat cu baza (nu pivotul) pe `cf`, ca WorldBuilder.placeArt
+local function placeOnBase(model: Model, cf: CFrame)
+	model:PivotTo(cf)
+	local bounds, size = model:GetBoundingBox()
+	model:PivotTo(
+		model:GetPivot() + Vector3.new(cf.X - bounds.X, cf.Y - (bounds.Y - size.Y / 2), cf.Z - bounds.Z)
+	)
+end
+
 local builders: { [string]: (Model, CFrame) -> () } = {}
 
 -- Centrul: avizierul, băncile, țarcul de gâște, zona fără bătaie (fântâna și hora: WorldBuilder.buildHearth)
@@ -664,7 +673,7 @@ builders.livada = function(model, cf)
 		local art = ArtLibrary.get("world.Visin")
 		if art then
 			art.Name = "Cires"
-			art:PivotTo(onGround(place))
+			placeOnBase(art, onGround(place))
 			art.Parent = model
 		else
 			tree(model, onGround(place), 11, C.leaf, C.red)
@@ -982,15 +991,15 @@ builders.gara = function(model, cf)
 		model,
 		"Peron",
 		Vector3.new(44, 1, 6),
-		cf * CFrame.new(0, 0.5, -2),
+		cf * CFrame.new(0, 0.5, 2),
 		C.concrete,
 		{ Material = Enum.Material.Concrete }
 	)
 	local line = Instance.new("Model")
 	line.Name = "Linie"
 	line.Parent = model
-	-- linia e paralelă cu axa X a lumii, la z = Village.railwayZ
-	local z = Village.railwayZ + 4
+	-- linia e paralelă cu axa X a lumii, la z = Village.railwayZ (la sud de peron)
+	local z = Village.railwayZ
 	local y = cf.Position.Y
 	box(
 		line,
@@ -1168,6 +1177,14 @@ function SiteBuilder.build(sites: { [string]: CFrame }, parent: Instance): Folde
 		local model = Instance.new("Model")
 		model.Name = key
 		model:SetAttribute("Site", key)
+		-- pe deal, locul stă pe un platou drept (altfel panta neregulată îngroapă clădirile)
+		local center = cf.Position
+		local y = SiteBuilder.groundY(center.X, center.Z)
+		if y > 1 then
+			local terrain = Workspace.Terrain
+			terrain:FillCylinder(CFrame.new(center.X, y + 30, center.Z), 60, 36, Enum.Material.Air)
+			terrain:FillCylinder(CFrame.new(center.X, y - 6, center.Z), 12, 38, Enum.Material.Grass)
+		end
 		local base = onGround(CFrame.new(cf.Position.X, 0, cf.Position.Z) * cf.Rotation)
 		local anchor = marker(model, "Ancora", Vector3.new(2, 2, 2), base)
 		model.PrimaryPart = anchor

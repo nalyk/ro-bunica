@@ -34,6 +34,11 @@ function VillageBuilder.hillHeight(x: number, z: number): number
 	elseif z < v.south then
 		rise = (v.south - z) * v.hillSlope
 	end
+	-- și la capetele de est și vest: valea e închisă de dealuri pe toate laturile (nu se vede marginea lumii)
+	local edge = Village.extent + 60
+	if math.abs(x) > edge then
+		rise = math.max(rise, (math.abs(x) - edge) * v.hillSlope)
+	end
 	if rise <= 0 then
 		return 0
 	end

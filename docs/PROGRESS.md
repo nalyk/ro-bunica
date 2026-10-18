@@ -1,6 +1,6 @@
 # BUNICA — Progres
 
-Ultima actualizare: 2026-10-17
+Ultima actualizare: 2026-10-18
 
 ## Făcut
 
@@ -186,6 +186,19 @@ Designul e în `docs/superpowers/specs/2026-10-17-mobil-hud-design.md`, pornit d
   - drumurile paralele spre statut.
 - **Blocant de platformă:** publicul copiilor cere ID verificat, 2FA și Roblox Plus (de confirmat). Ține de om.
 - **Următorul pas:** omul alege pachetul și ordinea (§8).
+
+## Satul viu, pachetul C complet (în lucru, 2026-10-18)
+
+Omul a cerut tot pachetul C din `docs/RESEARCH_SAT_VIU.md`, „full featured”. Planul: `docs/superpowers/plans/2026-10-18-satul-viu-full.md` (37 de sarcini). Execuția e în ledger-ul local `.superpowers/sdd/2026-10-18-satul-viu-full/progress.md` (ignorat de git), cu toate deciziile („Ruling”).
+
+**Gata (sarcinile 1–24, commit-urile până la 87031a6):**
+- **M1:** creaturile de suflet (cel mult 3, nu se fură, nu se schimbă); răzbunarea (hoțul vizibil până în zori, bonus la furtul înapoi); avertizarea la schimburi dezechilibrate.
+- **M2, satul de vale:** `Domain/VillageLayout`, cu echitatea raidurilor testată (CV 0,084, max/min 1,22, niciun drum prin ogrăzi). Teren cu dealuri, pârâu și iaz cu apă reală, drumuri curbe, poduri, poteci dincolo de pârâu. Ogrăzi variate (porți vopsite prin masca de alfa a texturii, `tools/paint_mask.py`; 4 seturi de decor), cu aceleași poziții de joc. 17 locuri (`SiteBuilder`), cu centrul ca zonă fără bătaie. Decor Poisson. Viața satului pe client (gâște, găini, câini care latră în lanț noaptea, săteni, berze, rufe). Rutiera (traseu în opt, 150 s, oprire la fiecare ogradă). Streaming și bugetul de randare (decor ≤ 120k pe ogradă, ≤ 1,2M în sat; gardul, floarea-soarelui și straturile decimate).
+- **M3, ceasul satului:** o întâmplare la 6–8 minute (`VillageClockService`), anunțată cu 30 s înainte, cu semn în lume și săgeată. Întâmplările: gâștele, ploaia de cireșe (cu mătușa Mărioara), negustorul cu rutiera, nunta (horă cu cortegiul), ceața (Bunicile văd la jumătate), lupii la stână (co-op), Muma Pădurii (mini-boss), trenul de la Ungheni.
+- **M4, mini-jocurile (`MinigameService`):** înscriere la loc, numărătoare, tabela de scor (bandă sub mesaje), podium, fantome care încurajează. Jocurile: prinde cocoșul, șotronul, ciocnitul ouălor, oina cu papuci, ascunselea în porumb, Păcală se ascunde, cursa cu roaba, obby-ul morii, zdrobitul strugurilor, Discoteca (dans sau „Cea mai tare Bunică”, cu vot), plăcintăria (co-op, cu creștere mai rapidă), „Țară, țară, vrem ostași”. Plus hora pe ritm („cercul perfect” cheamă Curcubeul), pescuitul la iaz și recordurile pe avizierul din centru.
+- **Verificare:** 250 de teste unitare, e2e 77/77 (în loturi paralele: o sarcină Open Cloud are cel mult 5 minute), playtest complet de peste 40 de pași (`PLAYTEST_UNTIL=<pas>` rulează doar până la un pas).
+
+**Urmează:** M5 (decorul ogrăzii, ținutele și titlurile, îngrijirea, hibrizii, siluetele), M6 (QuickChat, bazarul, codurile), M7 (anotimpurile, cu Paștele ortodox), M8 (RU/ES/PT), M9 (modele TRELLIS pentru locuri), M10 (chestionarul de maturitate, Experience Events, review-ul final).
 
 ## Acoperișul casei (2026-10-18)
 

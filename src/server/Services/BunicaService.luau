@@ -32,6 +32,7 @@ type Bunica = {
 	rig: Model,
 	humanoid: Humanoid,
 	root: BasePart,
+	head: BasePart,
 	stateLabel: TextLabel,
 	home: CFrame,
 	suspicion: number,
@@ -105,6 +106,7 @@ local function finishRig(rig: Model, humanoid: Humanoid, root: BasePart, head: B
 		rig = rig,
 		humanoid = humanoid,
 		root = root,
+		head = head,
 		stateLabel = label,
 		home = home,
 		suspicion = 0,
@@ -425,6 +427,15 @@ local function onRage(player: Player)
 	bunica.root.Anchored = false
 	bunica.humanoid.WalkSpeed = Defense.rage.bunicaSpeed
 	bunica.root:SetNetworkOwner(nil)
+end
+
+-- Bunica unei ogrăzi (pentru ținute): modelul și capul
+function BunicaService.rigFor(plotIndex: number): (Model?, BasePart?)
+	local bunica = bunicas[plotIndex]
+	if bunica then
+		return bunica.rig, bunica.head
+	end
+	return nil, nil
 end
 
 function BunicaService.start()

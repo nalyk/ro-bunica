@@ -22,6 +22,7 @@ local EconomyService = require(script.Parent.EconomyService)
 local StateService = require(script.Parent.StateService)
 local Messenger = require(script.Parent.Messenger)
 local Analytics = require(script.Parent.Parent.Analytics)
+local Progress = require(script.Parent.Parent.Progress)
 
 type Owner = PlotService.Owner
 export type Context = {
@@ -147,6 +148,7 @@ local function finishActive()
 			StateService.markDirty(owner.player)
 		end
 		results[owner.userId] = lei
+		Progress.emit(owner, "happening")
 		if owner.player then
 			Messenger.notify(
 				owner.player,

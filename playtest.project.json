@@ -49,6 +49,11 @@
         "StreamingTargetRadius": 1024,
         "StreamingMinRadius": 256
       }
+    },
+    "HttpService": {
+      "$properties": {
+        "HttpEnabled": true
+      }
     }
   }
 }

@@ -353,7 +353,11 @@ local function buildDecor(model: Model, cf: CFrame, index: number, look: Village
 	end
 end
 
-local function buildHouse(model: Model, cf: CFrame)
+-- Bunica stă în fața casei, nu sub streașină: capul ei (6,2 studs) intra în acoperișul casei sculptate
+local BUNICA_CLEARANCE = 1.8
+
+-- Construiește casa; întoarce Z-ul (în coordonatele ogrăzii) unde stă Bunica: în fața streașinii
+local function buildHouse(model: Model, cf: CFrame): number
 	local z = World.plotSize.Z / 2 - 9
 	local art = placeArt("world.Casa", cf * CFrame.new(0, 0, z), model)
 	local walls = part({
@@ -404,7 +408,11 @@ local function buildHouse(model: Model, cf: CFrame)
 			end
 		end
 		hide(hidden)
+		-- fața casei (cu streașina, cea mai ieșită în afară) e la z − adâncime/2
+		return z - size.Z / 2 - BUNICA_CLEARANCE
 	end
+	-- casa procedurală: prispa nu are acoperiș, Bunica stă pe marginea ei
+	return z - 10
 end
 
 local function gridPositions(columns: number, rows: number, spacing: number, origin: Vector3): { Vector3 }
@@ -439,7 +447,7 @@ local function buildPlot(
 		Parent = model,
 	})
 	buildFence(model, cf, look)
-	buildHouse(model, cf)
+	local bunicaZ = buildHouse(model, cf)
 
 	local beds: { [string]: BasePart } = {}
 	local bedGrid = World.bedGrid
@@ -577,8 +585,9 @@ local function buildPlot(
 		pedestals = pedestals,
 		showcase = showcase,
 		deposit = deposit,
-		bunicaCFrame = cf * CFrame.new(0, 1, World.plotSize.Z / 2 - 17) * CFrame.Angles(0, math.pi, 0),
-		-- Mijlocul ogrăzii, cu fața spre drum: camera nu intră în Bunica de pe prispă
+		-- în fața scărilor prispei, cu fața spre drum (pe pământ: rădăcina rig-ului e ridicată de BunicaService)
+		bunicaCFrame = cf * CFrame.new(0, 0, bunicaZ) * CFrame.Angles(0, math.pi, 0),
+		-- Mijlocul ogrăzii, cu fața spre drum: camera nu intră în Bunica
 		spawnCFrame = cf * CFrame.new(0, 3, 0),
 		spawn = spawn,
 		sign = label,

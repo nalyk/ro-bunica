@@ -38,6 +38,11 @@
       "Loading": {
         "$path": "src/first"
       }
+    },
+    "HttpService": {
+      "$properties": {
+        "HttpEnabled": true
+      }
     }
   }
 }

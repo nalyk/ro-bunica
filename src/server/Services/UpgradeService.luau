@@ -53,7 +53,7 @@ local function renderDog(owner: Owner)
 		return
 	end
 	model.Name = "Grivei"
-	-- în fața prispei, la stânga Bunicii, cu fața spre drum (Bunica stă la Z/2 − 17)
+	-- în fața prispei, la stânga Bunicii, cu fața spre drum (Bunica stă în fața scărilor, la x = 0)
 	local at = owner.plot.geometry.cframe * CFrame.new(-7, 0, World.plotSize.Z / 2 - 23)
 	model:PivotTo(at)
 	local box, size = model:GetBoundingBox()

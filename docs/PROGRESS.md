@@ -229,10 +229,10 @@ Auditul e în `docs/RESEARCH_PLATFORMA.md`, planul și progresul în `docs/super
   - anunțuri rare pe toate serverele; `cloud.py announce|live|ban|unban`.
 - **Senzație:** textul crește după setarea jucătorului; Bunica își urmărește cu privirea vizitatorii.
 - **Monetizare:** abonamentul „Grandma's Friends” (99 Robux pe lună, doar cosmetice; în review la Roblox).
+- **Managed Pricing:** pornit pe permise. Produsele rămân pe preț fix, din cauza schimburilor (arbitraj regional).
 - **Ce ține de om:**
-  - (1) cheia Open Cloud cu `user.user-notification:write` pusă în Secrets-ul experienței, sub numele „notifications” (fără ea notificările nu pleacă);
-  - (2) acordul pentru termenii Managed Pricing;
-  - (3) reclamele cu recompensă, după 2.000 de vizitatori unici pe lună.
+  - (1) cheia Open Cloud cu `user.user-notification:write` pusă în Secrets-ul experienței, sub numele „notifications” (fără ea notificările nu pleacă; cheile nu le introduc eu);
+  - (2) reclamele cu recompensă, după 2.000 de vizitatori unici pe lună.
 
 ## Politicile Roblox, chestionarul și grafica (2026-10-18, după pachetul C)
 

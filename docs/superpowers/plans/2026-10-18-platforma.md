@@ -73,7 +73,7 @@ Verificarea fiecărui lot: `./tools.sh` (teste Lune pentru tot ce e în `Domain`
   - Ruling: Input Action System amânat. Câștigul pentru jucători e mic, iar o regresie pe atingere ar costa mult. Devine necesar doar cu Server Authority, pe care nu-l folosim.
 - **Lotul 5 (monetizare):**
   - Abonamentul „Grandma's Friends” (99 Robux pe lună, EXP-4024965016297013811, în review), cu beneficii doar cosmetice: coronița de aur a Bunicii și titlul „Prietenul Bunicii”.
-  - Managed Pricing: oprit la pasul de acceptare a termenilor; cere acordul omului.
+  - Managed Pricing (omul a aprobat, 2026-10-18): pornit pe cele 5 permise. Produsele (lei, îngrășământ, vreme, reînnoire) au rămas pe preț fix: Roblox avertizează că schimburile permit arbitrajul între regiuni, iar la noi leii și creaturile se schimbă. Ar cere Price Levels API și verificări în schimburi.
   - Reclamele cu recompensă: neeligibil încă (2.000 de vizitatori unici pe lună).
 - **Lecții:**
   - Fereastra Roblox de acord pentru notificări acoperă jocul. În playtest a blocat mersul scriptat și a făcut să pice 3 pași.

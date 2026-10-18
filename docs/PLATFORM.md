@@ -32,7 +32,15 @@ Politicile sunt respectate în cod (`Domain/Policy`, `RegionPolicyService`). Und
 | Culesul | 15 septembrie – 15 octombrie | „Harvest Time” / „Culesul” | Știuletele roșu ascuns în lan, strugurii de zdrobit mai des. |
 | Iarna | 15 decembrie – 14 ianuarie | „Winter Carols” / „Colindele de iarnă” | Colinde la porțile vecinilor, Capra și Ursul, masca de Malanca. |
 
-Datele vin din `Domain/Seasons` (aceleași ferestre ca în joc). Imaginile evenimentelor: `tools/event_art.py` → `art/ui/events/` (fundalul ecranului de încărcare, personajele din concepte, titlul cu Luckiest Guy din `art/fonts`). Evenimentele se publică după refacerea graficii din sat (cerința omului, 2026-10-18).
+Datele vin din `Domain/Seasons` (aceleași ferestre ca în joc). Imaginile evenimentelor: `tools/event_art.py` → `art/ui/events/` (fundalul ecranului de încărcare, personajele din concepte, titlul cu Luckiest Guy din `art/fonts`). Publicate pe 2026-10-18, după refacerea graficii (toate Public, ora din Dashboard e a Chișinăului: EEST vara, EET iarna, deci ferestrele UTC sunt decalate cu +2/+3 h):
+
+- Saturday in the Village (Challenge): 24 oct. 2026, 19:00–23:00 (16:00–20:00 UTC). Doar sâmbăta aceasta: Dashboard-ul nu are repetare, deci sâmbetele următoare se creează din nou.
+- Big Sunday Bazaar (Festival): 25 oct. 2026, toată ziua UTC. Tot o singură duminică.
+- Winter Carols (Festival): 15 dec. 2026 – 14 ian. 2027.
+- Martisor Spring (New season): 1–14 mar. 2027.
+- Easter Egg Hunt (Quest): 29 apr. – 9 mai 2027.
+- Dragaica Wreaths (Challenge): 20–27 iun. 2027.
+- Harvest Time (Quest): 15 sept. – 15 oct. 2027.
 
 ## Ce ține de om
 

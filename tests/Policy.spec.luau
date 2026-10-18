@@ -37,5 +37,37 @@ describe("Policy", function()
 	it("boții și proprietarii fără jucător au voie la toate", function()
 		expect(Policy.OPEN.randomRestricted).toBe(false)
 		expect(Policy.OPEN.tradingAllowed).toBe(true)
+		expect(Policy.OPEN.priceLevel).toBe(1000)
+	end)
+
+	local function at(level: number?, trading: boolean?): any
+		return { randomRestricted = false, tradingAllowed = trading ~= false, priceLevel = level }
+	end
+
+	it(
+		"schimburile (valoare în ambele sensuri): doar între niveluri de preț apropiate (Managed Pricing)",
+		function()
+			expect(Policy.canTrade(at(1000), at(1000))).toBe(true)
+			expect(Policy.canTrade(at(410), at(410 + Policy.PRICE_TOLERANCE))).toBe(true)
+			expect(Policy.canTrade(at(410), at(410 + Policy.PRICE_TOLERANCE + 1))).toBe(false)
+			expect(Policy.canTrade(at(300), at(1000))).toBe(false)
+			expect(Policy.canTrade(at(1000), at(300))).toBe(false)
+		end
+	)
+
+	it(
+		"bazarul (leii merg de la cumpărător la vânzător): cumpărătorul nu poate fi dintr-o regiune mai ieftină",
+		function()
+			expect(Policy.canGive(at(1000), at(300))).toBe(true)
+			expect(Policy.canGive(at(300), at(1000))).toBe(false)
+			expect(Policy.canGive(at(500), at(500 + Policy.PRICE_TOLERANCE))).toBe(true)
+		end
+	)
+
+	it("nivel necunoscut sau schimb nepermis: nu", function()
+		expect(Policy.canTrade(at(nil), at(1000))).toBe(false)
+		expect(Policy.canGive(at(1000), at(nil))).toBe(false)
+		expect(Policy.canTrade(at(1000, false), at(1000))).toBe(false)
+		expect(Policy.canGive(at(1000), at(1000, false))).toBe(false)
 	end)
 end)

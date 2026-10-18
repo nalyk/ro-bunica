@@ -229,7 +229,7 @@ Auditul e în `docs/RESEARCH_PLATFORMA.md`, planul și progresul în `docs/super
   - anunțuri rare pe toate serverele; `cloud.py announce|live|ban|unban`.
 - **Senzație:** textul crește după setarea jucătorului; Bunica își urmărește cu privirea vizitatorii.
 - **Monetizare:** abonamentul „Grandma's Friends” (99 Robux pe lună, doar cosmetice; în review la Roblox).
-- **Managed Pricing:** pornit pe permise. Produsele rămân pe preț fix, din cauza schimburilor (arbitraj regional).
+- **Managed Pricing:** pornit pe permise. Pentru produse, verificările anti-arbitraj sunt în joc: nivelul de preț (`GetUsersPriceLevelsAsync`, citit la intrare de RegionPolicyService). Schimburile cer niveluri apropiate (toleranță 25/1000). La bazar leii nu urcă spre o regiune mai scumpă. Necunoscut = închis. Nivelul real măsurat: Moldova 400, global 1000.
 - **Ce ține de om:**
   - reclamele cu recompensă, după 2.000 de vizitatori unici pe lună.
 - **Notificările merg:** cheia e în Secrets („notifications”); trimiterea e verificată din Open Cloud.

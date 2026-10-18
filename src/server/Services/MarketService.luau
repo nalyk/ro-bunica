@@ -173,6 +173,11 @@ function MarketService.buy(owner: Owner, id: string): (boolean, string?)
 		Messenger.notify(owner.player, "market.Policy")
 		return false, "Policy"
 	end
+	-- leii merg la vânzător: nu dinspre o regiune cu prețuri mai mici (Managed Pricing, arbitraj)
+	if not RegionPolicyService.canGive(owner, seller) then
+		Messenger.notify(owner.player, "market.PriceLevel")
+		return false, "PriceLevel"
+	end
 	if not near(owner) then
 		return false, "Far"
 	end

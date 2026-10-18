@@ -57,5 +57,51 @@ return function(Spec: any, services: { [string]: any })
 			Actors.removeBot(botA)
 			Actors.removeBot(botB)
 		end)
+
+		it(
+			"prețuri regionale diferite (Managed Pricing): fără schimb; la bazar leii nu urcă spre regiunea scumpă",
+			function()
+				local botA, cheap = bot("Ieftin", 6)
+				local botB, full = bot("Scump", 7)
+				RegionPolicyService.set(
+					cheap.userId,
+					{ randomRestricted = false, tradingAllowed = true, priceLevel = 300 }
+				)
+				RegionPolicyService.set(
+					full.userId,
+					{ randomRestricted = false, tradingAllowed = true, priceLevel = 1000 }
+				)
+				expect(TradeService.request(cheap, full)).toBe(false)
+				expect(TradeService.request(full, cheap)).toBe(false)
+
+				-- cel din regiunea ieftină nu cumpără de la cel din regiunea scumpă (leii ar urca)
+				local fromFull = Inventory.newRecord(full.profile, botB.id, "CeapaTurbo", "Normal", nil)
+				table.insert(full.profile.cellar, fromFull)
+				local listing = MarketService.list(full, fromFull.uid, Economy.sellPrice(fromFull)) :: string
+				cheap.profile.lei = 1000000
+				local ok, why = MarketService.buy(cheap, listing)
+				expect(ok).toBe(false)
+				expect(why).toBe("PriceLevel")
+
+				-- invers merge: leii coboară spre regiunea ieftină
+				local fromCheap = Inventory.newRecord(cheap.profile, botA.id, "Mamaligator", "Normal", nil)
+				table.insert(cheap.profile.cellar, fromCheap)
+				local other = MarketService.list(cheap, fromCheap.uid, Economy.sellPrice(fromCheap)) :: string
+				full.profile.lei = 1000000
+				expect((MarketService.buy(full, other))).toBe(true)
+
+				-- niveluri apropiate: schimbul e permis
+				RegionPolicyService.set(
+					cheap.userId,
+					{ randomRestricted = false, tradingAllowed = true, priceLevel = 990 }
+				)
+				expect(TradeService.request(cheap, full)).toBe(true)
+				TradeService.cancel(cheap)
+				RegionPolicyService.set(cheap.userId, nil)
+				RegionPolicyService.set(full.userId, nil)
+				Actors.removeBot(botA)
+				Actors.removeBot(botB)
+			end
+		)
 	end)
 end

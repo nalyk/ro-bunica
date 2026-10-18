@@ -165,6 +165,11 @@ function TradeService.request(from: Owner, to: Owner): boolean
 		Messenger.notify(from.player, "notify.TradePolicyOther", { to.name })
 		return false
 	end
+	-- prețuri regionale diferite (Managed Pricing): schimbul ar permite arbitrajul
+	if not RegionPolicyService.canTrade(from, to) then
+		Messenger.notify(from.player, "notify.TradePriceLevel", { to.name })
+		return false
+	end
 	if trades[from] or trades[to] then
 		Messenger.notify(from.player, "notify.TradeBusy")
 		return false
@@ -207,6 +212,10 @@ function TradeService.respond(to: Owner, from: Owner, yes: boolean): boolean
 	end
 	if not (RegionPolicyService.tradingAllowed(from) and RegionPolicyService.tradingAllowed(to)) then
 		Messenger.notify(to.player, "notify.TradePolicy")
+		return false
+	end
+	if not RegionPolicyService.canTrade(from, to) then
+		Messenger.notify(to.player, "notify.TradePriceLevel", { from.name })
 		return false
 	end
 	startTrade(from, to)

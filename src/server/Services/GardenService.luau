@@ -22,6 +22,7 @@ local Progress = require(script.Parent.Parent.Progress)
 local StateService = require(script.Parent.StateService)
 local WeatherService = require(script.Parent.WeatherService)
 local Messenger = require(script.Parent.Messenger)
+local Broadcast = require(script.Parent.Parent.Social.Broadcast)
 local ArtFade = require(script.Parent.Parent.World.ArtFade)
 
 type Owner = PlotService.Owner
@@ -67,7 +68,12 @@ local function announceHatch(owner: Owner, record: { id: string, size: string, m
 	local rarity = Rarities.byId[creature.rarity]
 	local size = Sizes.byId[record.size]
 	local mutation = if record.mutation then Mutations.byId[record.mutation] else nil
-	if rarity.announceHatch or (size and size.announce) or (mutation and mutation.announce) then
+	if rarity.announceEverywhere then -- mitice și secrete: tot satul, pe toate serverele
+		Broadcast.everywhere(
+			"announce.HatchEverywhere",
+			{ owner.name, Messenger.key("creature." .. record.id) }
+		)
+	elseif rarity.announceHatch or (size and size.announce) or (mutation and mutation.announce) then
 		Messenger.announce("announce.Hatch", { owner.name, Messenger.key("creature." .. record.id) })
 	end
 end

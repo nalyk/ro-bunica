@@ -174,6 +174,8 @@ local function rad(x: number): number
 	return math.rad(x)
 end
 
+local lookYaw: (Model) -> number?
+
 -- Poziția fiecărei articulații pentru o stare, la timpul t
 local function pose(mood: string, t: number, throwing: boolean): { [string]: CFrame }
 	local p: { [string]: CFrame } = {}
@@ -219,6 +221,24 @@ local function pose(mood: string, t: number, throwing: boolean): { [string]: CFr
 		p.Neck = CFrame.Angles(0, rad(math.sin(t * 0.7) * 20), 0)
 	end
 	return p
+end
+
+-- Unghiul capului spre jucătorul local (fața modelelor e spre −Z); nil dacă e departe sau prea în spate
+local LOOK_RANGE = 45
+local LOOK_MAX = math.rad(55)
+lookYaw = function(model: Model): number?
+	local character = Players.LocalPlayer.Character
+	local me = character and character:FindFirstChild("HumanoidRootPart") :: BasePart?
+	local root = model.PrimaryPart or model:FindFirstChild("HumanoidRootPart") :: BasePart?
+	if not me or not root then
+		return nil
+	end
+	local d = root.CFrame:PointToObjectSpace(me.Position)
+	if Vector3.new(d.X, 0, d.Z).Magnitude > LOOK_RANGE then
+		return nil
+	end
+	local yaw = math.atan2(-d.X, -d.Z)
+	return if math.abs(yaw) <= LOOK_MAX * 1.6 then math.clamp(yaw, -LOOK_MAX, LOOK_MAX) else nil
 end
 
 -- Bula de dialog -----------------------------------------------------------------
@@ -407,6 +427,13 @@ function BunicaController.start()
 			local throwing = t < rig.throwUntil
 			local target =
 				pose(if model:GetAttribute("Windup") == true then "Awake" else mood, t + rig.phase, throwing)
+			-- de pază sau bănuitoare: își urmărește cu privirea jucătorul apropiat
+			if not throwing and (mood == "Watching" or mood == "Suspicious") then
+				local yaw = lookYaw(model)
+				if yaw then
+					target.Neck = CFrame.Angles(rad(5), yaw, 0)
+				end
+			end
 			for name, joint in rig.joints do
 				local goal = target[name] or CFrame.identity
 				-- tranziții moi între poze, aplicate peste cadrul de bază al articulației

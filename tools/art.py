@@ -127,6 +127,7 @@ def build_textured(filter_):
                                      "--height", str(spec["height"]), "--tris", str(spec.get("tris", 19000)),
                                      "--texture", "1024", "--preview", png]
                                     + (["--trim-base"] if spec.get("trimBase") else [])
+                                    + (["--no-normal"] if spec.get("normal") is False else [])
                                     + (["--color-gain", ",".join(str(g) for g in spec["colorGain"])]
                                        if spec.get("colorGain") else []), capture_output=True, text=True,
                                     timeout=600)

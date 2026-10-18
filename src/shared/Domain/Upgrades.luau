@@ -73,8 +73,13 @@ function Upgrades.buy(profile: Profile, id: string): (BuyResult, number?)
 end
 
 -- Efectele pe luptă (ammo e citit direct din upgrades.ammo de SlipperService)
-function Upgrades.regenSeconds(profile: Profile): number
-	return Defense.slipper.regenSeconds - Config.regenPerLevel * Upgrades.level(profile, "regen")
+Upgrades.MIN_REGEN_SECONDS = 0.6
+
+-- `base`: reîncărcarea de bază (reglată pe jucător prin Configs), altfel cea din Config.Defense
+function Upgrades.regenSeconds(profile: Profile, base: number?): number
+	local seconds = (base or Defense.slipper.regenSeconds)
+		- Config.regenPerLevel * Upgrades.level(profile, "regen")
+	return math.max(seconds, Upgrades.MIN_REGEN_SECONDS)
 end
 
 function Upgrades.dogSlow(profile: Profile): number

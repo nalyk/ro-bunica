@@ -1,7 +1,8 @@
 --!strict
 -- Economia de bază (lei).
 
-return table.freeze({
+-- Nu e înghețat: TuningService (Domain/Tuning) scrie aici valorile reglate live din Roblox Configs.
+return {
 	startingLei = 60,
 	incomeTickSeconds = 1,
 	sellMultiplier = 30, -- prețul de vânzare = valoare pe secundă × asta
@@ -27,4 +28,4 @@ return table.freeze({
 			Mythic = 1,
 		}),
 	}),
-})
+}

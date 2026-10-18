@@ -14,23 +14,23 @@
     "moderation": "Approved"
   },
   "char.Gaina": {
-    "id": "116392113208320",
+    "id": "111705626527173",
     "type": "Model",
-    "sha": "495ba4899f561bcf",
+    "sha": "f59482c4c899baf2",
     "file": "build/art/char.Gaina.glb",
     "moderation": "Approved"
   },
   "char.Gasca": {
-    "id": "104307958349388",
+    "id": "135965194947274",
     "type": "Model",
-    "sha": "49c10c8974560d15",
+    "sha": "b6006cc913964760",
     "file": "build/art/char.Gasca.glb",
     "moderation": "Approved"
   },
   "char.Grivei": {
-    "id": "71622054534823",
+    "id": "123850916552092",
     "type": "Model",
-    "sha": "44032cf98b773690",
+    "sha": "67fcc1cbcfaa8ad0",
     "file": "build/art/char.Grivei.glb",
     "moderation": "Approved"
   },
@@ -42,86 +42,86 @@
     "moderation": "Approved"
   },
   "char.Lautar": {
-    "id": "130414967704915",
+    "id": "123202547621741",
     "type": "Model",
-    "sha": "23bee3acb81f7758",
+    "sha": "1514ef55bbf32c4d",
     "file": "build/art/char.Lautar.glb",
     "moderation": "Approved"
   },
   "char.Lupul": {
-    "id": "115911953683035",
+    "id": "116354182827872",
     "type": "Model",
-    "sha": "689e18340fffa9c8",
+    "sha": "dfa8ea44b866047a",
     "file": "build/art/char.Lupul.glb",
     "moderation": "Approved"
   },
   "char.Marioara": {
-    "id": "95750674384013",
+    "id": "108796223964007",
     "type": "Model",
-    "sha": "b97b0b649f674b0f",
+    "sha": "9ed3d6807066aaa2",
     "file": "build/art/char.Marioara.glb",
     "moderation": "Approved"
   },
   "char.Mireasa": {
-    "id": "85546915279585",
+    "id": "126012417555269",
     "type": "Model",
-    "sha": "f1599931da16809b",
+    "sha": "8612ea33f083405e",
     "file": "build/art/char.Mireasa.glb",
     "moderation": "Approved"
   },
   "char.Mirele": {
-    "id": "134922498103308",
+    "id": "108236452414285",
     "type": "Model",
-    "sha": "a0feff426008bbc2",
+    "sha": "19362ca5aa6facd0",
     "file": "build/art/char.Mirele.glb",
     "moderation": "Approved"
   },
   "char.MumaPadurii": {
-    "id": "104348320338100",
+    "id": "135431588236201",
     "type": "Model",
-    "sha": "267993cfa85cd5e3",
+    "sha": "09e3e0062d08e254",
     "file": "build/art/char.MumaPadurii.glb",
     "moderation": "Approved"
   },
   "char.Negustorul": {
-    "id": "88702193222034",
+    "id": "73527759950525",
     "type": "Model",
-    "sha": "abff5e4ac2bf9a7f",
+    "sha": "f04680e71deb7d57",
     "file": "build/art/char.Negustorul.glb",
     "moderation": "Approved"
   },
   "char.Oaia": {
-    "id": "127104864557602",
+    "id": "97488364517183",
     "type": "Model",
-    "sha": "554d5db46f9d7877",
+    "sha": "ecec46f63c4f433c",
     "file": "build/art/char.Oaia.glb",
     "moderation": "Approved"
   },
   "char.Rutiera": {
-    "id": "117960504051028",
+    "id": "98586476003524",
     "type": "Model",
-    "sha": "6c8c2e7ad0aa1cfb",
+    "sha": "7c0ea9460717e8d7",
     "file": "build/art/char.Rutiera.glb",
     "moderation": "Approved"
   },
   "char.Satean1": {
-    "id": "81456150607397",
+    "id": "73386637809978",
     "type": "Model",
-    "sha": "89b8760c0d24f02c",
+    "sha": "f92c3b9d7d351127",
     "file": "build/art/char.Satean1.glb",
     "moderation": "Approved"
   },
   "char.Satean2": {
-    "id": "103775392878379",
+    "id": "96944132038873",
     "type": "Model",
-    "sha": "343260463583b4de",
+    "sha": "dfd983a87533cc44",
     "file": "build/art/char.Satean2.glb",
     "moderation": "Approved"
   },
   "char.Satean3": {
-    "id": "116859215054669",
+    "id": "95957546023199",
     "type": "Model",
-    "sha": "fd5e85278c7dca5d",
+    "sha": "6bc2926e006c554e",
     "file": "build/art/char.Satean3.glb",
     "moderation": "Approved"
   },
@@ -133,16 +133,16 @@
     "moderation": "Approved"
   },
   "creature.BranzoiSumo": {
-    "id": "76349532278722",
+    "id": "110142961210891",
     "type": "Model",
-    "sha": "5591cf340cb582a3",
+    "sha": "feb21aee5d007c8f",
     "file": "build/art/creature.BranzoiSumo.glb",
     "moderation": "Approved"
   },
   "creature.CartofelAgent": {
-    "id": "101455736790877",
+    "id": "131520037956448",
     "type": "Model",
-    "sha": "0c5babe7b176be99",
+    "sha": "49f02ad303b2625a",
     "file": "build/art/creature.CartofelAgent.glb",
     "moderation": "Approved"
   },
@@ -154,93 +154,93 @@
     "moderation": "Approved"
   },
   "creature.ColtunasPirat": {
-    "id": "102399163916647",
+    "id": "117182916862067",
     "type": "Model",
-    "sha": "44c3ca3ef25110ee",
+    "sha": "0005333f43318c34",
     "file": "build/art/creature.ColtunasPirat.glb",
     "moderation": "Approved"
   },
   "creature.CovrigSkater": {
-    "id": "86820505541891",
+    "id": "74592864402535",
     "type": "Model",
-    "sha": "3080eb6ec9d94404",
+    "sha": "7a5b7d5e179d891c",
     "file": "build/art/creature.CovrigSkater.glb",
     "moderation": "Approved"
   },
   "creature.CozonacRobot": {
-    "id": "124316993687533",
+    "id": "98798377459168",
     "type": "Model",
-    "sha": "543a7860fe049fca",
+    "sha": "7b5a7608af7733de",
     "file": "build/art/creature.CozonacRobot.glb",
     "moderation": "Approved"
   },
   "creature.DovleacDJ": {
-    "id": "138458223048660",
+    "id": "107423438177802",
     "type": "Model",
-    "sha": "9697003940874443",
+    "sha": "965038498b7d1ab1",
     "file": "build/art/creature.DovleacDJ.glb",
     "moderation": "Approved"
   },
   "creature.GogoasaNinja": {
-    "id": "109720620070039",
+    "id": "98890799325657",
     "type": "Model",
-    "sha": "af356adf39979de0",
+    "sha": "11e4dea44df8e1fa",
     "file": "build/art/creature.GogoasaNinja.glb",
     "moderation": "Approved"
   },
   "creature.Mamaligator": {
-    "id": "113637658530694",
+    "id": "93901887553371",
     "type": "Model",
-    "sha": "653dba607aefd9e2",
+    "sha": "5d85fadffc3c0de9",
     "file": "build/art/creature.Mamaligator.glb",
     "moderation": "Approved"
   },
   "creature.Martisorel": {
-    "id": "106835030203233",
+    "id": "81926241102193",
     "type": "Model",
-    "sha": "5639951a94af3571",
+    "sha": "7e575e6a371daac9",
     "file": "build/art/creature.Martisorel.glb",
     "moderation": "Approved"
   },
   "creature.Papucel": {
-    "id": "114552589034664",
+    "id": "125219389934272",
     "type": "Model",
-    "sha": "af00c5e2849d1e19",
+    "sha": "aa2a8fe4ab2549ce",
     "file": "build/art/creature.Papucel.glb",
     "moderation": "Approved"
   },
   "creature.PepeneBoxer": {
-    "id": "126353718233028",
+    "id": "102458363365290",
     "type": "Model",
-    "sha": "833cc06b4f4998c8",
+    "sha": "d2077a1133c77fd0",
     "file": "build/art/creature.PepeneBoxer.glb",
     "moderation": "Approved"
   },
   "creature.PlacintonioBombardino": {
-    "id": "97858374299046",
+    "id": "130722843608208",
     "type": "Model",
-    "sha": "60c5e0647224efc8",
+    "sha": "6c869a6b55aa66af",
     "file": "build/art/creature.PlacintonioBombardino.glb",
     "moderation": "Approved"
   },
   "creature.RetetaSecreta": {
-    "id": "80428205584362",
+    "id": "135396847401101",
     "type": "Model",
-    "sha": "6c005d5cc2d412e9",
+    "sha": "1d6fcb615d1704ee",
     "file": "build/art/creature.RetetaSecreta.glb",
     "moderation": "Approved"
   },
   "creature.SarmalinaBallerina": {
-    "id": "101739650950607",
+    "id": "129832085193832",
     "type": "Model",
-    "sha": "fdea893763b6e60a",
+    "sha": "9caff7a3f3b1a3c8",
     "file": "build/art/creature.SarmalinaBallerina.glb",
     "moderation": "Approved"
   },
   "creature.StrugurelFurios": {
-    "id": "136869326640536",
+    "id": "73150724075332",
     "type": "Model",
-    "sha": "17c9d482024c876c",
+    "sha": "b72663db510a9159",
     "file": "build/art/creature.StrugurelFurios.glb",
     "moderation": "Approved"
   },
@@ -434,16 +434,16 @@
     "moderation": "Reviewing"
   },
   "prop.Facalet": {
-    "id": "137982069008185",
+    "id": "127781265895957",
     "type": "Model",
-    "sha": "7754d9fe57569931",
+    "sha": "2195139b31908bba",
     "file": "build/art/prop.Facalet.glb",
     "moderation": "Approved"
   },
   "prop.Papuc": {
-    "id": "129252523117926",
+    "id": "138774030404435",
     "type": "Model",
-    "sha": "9a14f500c19980a2",
+    "sha": "070eff2ceaf0ae1b",
     "file": "build/art/prop.Papuc.glb",
     "moderation": "Approved"
   },
@@ -529,6 +529,48 @@
     "type": "Image",
     "sha": "c267e9fa6e673d58",
     "file": "build/store_items/weather_rainbow_256.png",
+    "moderation": "Reviewing"
+  },
+  "terrain.Iarba.color": {
+    "id": "137418217683674",
+    "type": "Image",
+    "sha": "183bce2f8f563d23",
+    "file": "art/terrain/Iarba_color.png",
+    "moderation": "Reviewing"
+  },
+  "terrain.Iarba.normal": {
+    "id": "112860079107787",
+    "type": "Image",
+    "sha": "6c709018225537a6",
+    "file": "art/terrain/Iarba_normal.png",
+    "moderation": "Reviewing"
+  },
+  "terrain.Noroi.color": {
+    "id": "94223053147756",
+    "type": "Image",
+    "sha": "8a04c984ae908a0a",
+    "file": "art/terrain/Noroi_color.png",
+    "moderation": "Reviewing"
+  },
+  "terrain.Noroi.normal": {
+    "id": "104265144350789",
+    "type": "Image",
+    "sha": "92b0b9f860c4faa8",
+    "file": "art/terrain/Noroi_normal.png",
+    "moderation": "Reviewing"
+  },
+  "terrain.Pamant.color": {
+    "id": "116448117097557",
+    "type": "Image",
+    "sha": "5e46f98afbf00c8f",
+    "file": "art/terrain/Pamant_color.png",
+    "moderation": "Reviewing"
+  },
+  "terrain.Pamant.normal": {
+    "id": "108146667129346",
+    "type": "Image",
+    "sha": "f0b4ea04f9ed8a02",
+    "file": "art/terrain/Pamant_normal.png",
     "moderation": "Reviewing"
   },
   "test.textured": {
@@ -679,107 +721,107 @@
     "moderation": "Reviewing"
   },
   "world.Banca": {
-    "id": "71325399856814",
+    "id": "115143186011719",
     "type": "Model",
-    "sha": "a72c2c8f3ad3d0f7",
+    "sha": "9fe9ae4d2f1474d3",
     "file": "build/art/world.Banca.glb",
     "moderation": "Approved"
   },
   "world.Beci": {
-    "id": "88582491830104",
+    "id": "122183090841091",
     "type": "Model",
-    "sha": "ea9551cc0ffcb1d8",
+    "sha": "1efe4b6fc318b5b8",
     "file": "build/art/world.Beci.glb",
     "moderation": "Approved"
   },
   "world.Biserica": {
-    "id": "85641580835282",
+    "id": "129430559129737",
     "type": "Model",
-    "sha": "3528a3df1717ab7f",
+    "sha": "942c8e19ac37fd5a",
     "file": "build/art/world.Biserica.glb",
     "moderation": "Approved"
   },
   "world.Bucatarie": {
-    "id": "95509086007115",
+    "id": "96188780523881",
     "type": "Model",
-    "sha": "5eeb47f752badc0e",
+    "sha": "8209cf19394017c3",
     "file": "build/art/world.Bucatarie.glb",
     "moderation": "Approved"
   },
   "world.ButucVie": {
-    "id": "111511491158112",
+    "id": "133174002602647",
     "type": "Model",
-    "sha": "3168b405a2b86bc6",
+    "sha": "bd48f46c07a2602e",
     "file": "build/art/world.ButucVie.glb",
     "moderation": "Approved"
   },
   "world.Caruta": {
-    "id": "116274059524848",
+    "id": "84674004680285",
     "type": "Model",
-    "sha": "8dac0821d8644222",
+    "sha": "befda9cf5f9024b8",
     "file": "build/art/world.Caruta.glb",
     "moderation": "Approved"
   },
   "world.Casa": {
-    "id": "105745303908079",
+    "id": "72015551030707",
     "type": "Model",
-    "sha": "3da4dcec17b53a18",
+    "sha": "755e8225a9bdbcfc",
     "file": "build/art/world.Casa.glb",
     "moderation": "Approved"
   },
   "world.CasaCultura": {
-    "id": "136564012147225",
+    "id": "114519569843224",
     "type": "Model",
-    "sha": "4f252abfa17256b4",
+    "sha": "2718f94302503123",
     "file": "build/art/world.CasaCultura.glb",
     "moderation": "Approved"
   },
   "world.Cires": {
-    "id": "114575588922453",
+    "id": "125108663454832",
     "type": "Model",
-    "sha": "f869684275af669f",
+    "sha": "589a8d4afd05c003",
     "file": "build/art/world.Cires.glb",
     "moderation": "Approved"
   },
   "world.Claie": {
-    "id": "87522802125353",
+    "id": "74039388490951",
     "type": "Model",
-    "sha": "aac4a52d609fa795",
+    "sha": "4868918b291688f1",
     "file": "build/art/world.Claie.glb",
     "moderation": "Approved"
   },
   "world.Cuptor": {
-    "id": "120966962043256",
+    "id": "136043343149510",
     "type": "Model",
-    "sha": "c6d7c76eb4d6fdf8",
+    "sha": "13181b0a7d492fb4",
     "file": "build/art/world.Cuptor.glb",
     "moderation": "Approved"
   },
   "world.Fantana": {
-    "id": "100366595488338",
+    "id": "85048438632162",
     "type": "Model",
-    "sha": "025eddbe6c0604d0",
+    "sha": "de76aa0cbe1450b5",
     "file": "build/art/world.Fantana.glb",
     "moderation": "Approved"
   },
   "world.FloareaSoarelui": {
-    "id": "119659802573930",
+    "id": "92544360902899",
     "type": "Model",
-    "sha": "77e0e806ca1f2567",
+    "sha": "805d2366680e89ce",
     "file": "build/art/world.FloareaSoarelui.glb",
     "moderation": "Approved"
   },
   "world.Flori": {
-    "id": "71293047214338",
+    "id": "93989370583252",
     "type": "Model",
-    "sha": "102a39e7d210661b",
+    "sha": "ef81b65b330b8a9f",
     "file": "build/art/world.Flori.glb",
     "moderation": "Approved"
   },
   "world.Gara": {
-    "id": "136793895339048",
+    "id": "83888605196056",
     "type": "Model",
-    "sha": "99a7cc019dd984d7",
+    "sha": "089cfd5322136043",
     "file": "build/art/world.Gara.glb",
     "moderation": "Approved"
   },
@@ -791,58 +833,58 @@
     "moderation": "Approved"
   },
   "world.GardLow": {
-    "id": "130621974094525",
+    "id": "122533137615657",
     "type": "Model",
-    "sha": "e2b2908eac9b9321",
+    "sha": "054cbb23e9c6513e",
     "file": "build/art/world.GardLow.glb",
     "moderation": "Approved"
   },
   "world.Lemne": {
-    "id": "126044142006769",
+    "id": "73872180858026",
     "type": "Model",
-    "sha": "c79309b70939b66c",
+    "sha": "80fe847fd47817ed",
     "file": "build/art/world.Lemne.glb",
     "moderation": "Approved"
   },
   "world.Liliac": {
-    "id": "135200498304597",
+    "id": "131226998693142",
     "type": "Model",
-    "sha": "c82a5cad96069a9d",
+    "sha": "6d493c47d7f6222f",
     "file": "build/art/world.Liliac.glb",
     "moderation": "Approved"
   },
   "world.Magazin": {
-    "id": "86660011845157",
+    "id": "138763849577953",
     "type": "Model",
-    "sha": "2641fda14bd54f1b",
+    "sha": "1c7bfc8adb701020",
     "file": "build/art/world.Magazin.glb",
     "moderation": "Approved"
   },
   "world.Mar": {
-    "id": "109767739795129",
+    "id": "80555990353420",
     "type": "Model",
-    "sha": "3d34f94253a4813f",
+    "sha": "39c2cb2faf7a827f",
     "file": "build/art/world.Mar.glb",
     "moderation": "Approved"
   },
   "world.Moara": {
-    "id": "98394452193556",
+    "id": "123172070654784",
     "type": "Model",
-    "sha": "3d405a993837ade7",
+    "sha": "696fb11faed58a68",
     "file": "build/art/world.Moara.glb",
     "moderation": "Approved"
   },
   "world.Nuc": {
-    "id": "126743760652396",
+    "id": "137580155467505",
     "type": "Model",
-    "sha": "f71d3da9daaa9d41",
+    "sha": "f615ef5a0e1b4403",
     "file": "build/art/world.Nuc.glb",
     "moderation": "Approved"
   },
   "world.Patul": {
-    "id": "94592964133280",
+    "id": "85725904552426",
     "type": "Model",
-    "sha": "4d9bc8ccd4d55292",
+    "sha": "b29cf6a993b05914",
     "file": "build/art/world.Patul.glb",
     "moderation": "Approved"
   },
@@ -861,51 +903,51 @@
     "moderation": "Approved"
   },
   "world.Plop": {
-    "id": "122674319727336",
+    "id": "112437495478560",
     "type": "Model",
-    "sha": "d5336e8478bb13bb",
+    "sha": "ff368034a13138ea",
     "file": "build/art/world.Plop.glb",
     "moderation": "Approved"
   },
   "world.Poarta": {
-    "id": "102671002844678",
+    "id": "135769432956885",
     "type": "Model",
-    "sha": "991b7c2a0caf12b8",
+    "sha": "0b55a848638c50db",
     "file": "build/art/world.Poarta.glb",
     "moderation": "Approved"
   },
   "world.Pod": {
-    "id": "109332477595439",
+    "id": "118924595599491",
     "type": "Model",
-    "sha": "7701d4dd28a28756",
+    "sha": "5d25e0d427ddf2ae",
     "file": "build/art/world.Pod.glb",
     "moderation": "Approved"
   },
   "world.Ponton": {
-    "id": "92501019806068",
+    "id": "82447091421339",
     "type": "Model",
-    "sha": "bf1750349de0b8e0",
+    "sha": "e95165d311246aab",
     "file": "build/art/world.Ponton.glb",
     "moderation": "Approved"
   },
   "world.Porumb": {
-    "id": "113268748102816",
+    "id": "81101953566188",
     "type": "Model",
-    "sha": "f3009a37c4359051",
+    "sha": "bf58347d08c4bdf1",
     "file": "build/art/world.Porumb.glb",
     "moderation": "Approved"
   },
   "world.Prun": {
-    "id": "105998693506090",
+    "id": "100381529627257",
     "type": "Model",
-    "sha": "4e2e7c17466b6309",
+    "sha": "8bd6cf9f553e41ba",
     "file": "build/art/world.Prun.glb",
     "moderation": "Approved"
   },
   "world.Puntea": {
-    "id": "112321166089298",
+    "id": "140517944973498",
     "type": "Model",
-    "sha": "756614a5a392ee02",
+    "sha": "f03848157198fd18",
     "file": "build/art/world.Puntea.glb",
     "moderation": "Approved"
   },
@@ -924,121 +966,121 @@
     "moderation": "Approved"
   },
   "world.Roaba": {
-    "id": "80216289373986",
+    "id": "131753430504099",
     "type": "Model",
-    "sha": "47250e459e48cc01",
+    "sha": "8f6af66686fe1c6e",
     "file": "build/art/world.Roaba.glb",
     "moderation": "Approved"
   },
   "world.Saci": {
-    "id": "140268764166109",
+    "id": "139140746664588",
     "type": "Model",
-    "sha": "598d38d41b433f8e",
+    "sha": "077f74f1ce2d527f",
     "file": "build/art/world.Saci.glb",
     "moderation": "Approved"
   },
   "world.Salcam": {
-    "id": "111884564176456",
+    "id": "90065353869894",
     "type": "Model",
-    "sha": "95e19f5c2bdaa048",
+    "sha": "7b7e6cc3cc3ecded",
     "file": "build/art/world.Salcam.glb",
     "moderation": "Approved"
   },
   "world.Scoala": {
-    "id": "76971628688656",
+    "id": "124919265741642",
     "type": "Model",
-    "sha": "9e36d97040aed047",
+    "sha": "880c5d6aa3a5ca79",
     "file": "build/art/world.Scoala.glb",
     "moderation": "Approved"
   },
   "world.Sperietoare": {
-    "id": "104400656281631",
+    "id": "122206580828042",
     "type": "Model",
-    "sha": "71312c4647cc6a1e",
+    "sha": "4fb60f76f09cfd57",
     "file": "build/art/world.Sperietoare.glb",
     "moderation": "Approved"
   },
   "world.StalpBarza": {
-    "id": "103735321337860",
+    "id": "103123323154006",
     "type": "Model",
-    "sha": "79635d9d1d9cd63a",
+    "sha": "114a4519e9f8aae2",
     "file": "build/art/world.StalpBarza.glb",
     "moderation": "Approved"
   },
   "world.Stana": {
-    "id": "111349667828288",
+    "id": "137475149907380",
     "type": "Model",
-    "sha": "8c470090884af727",
+    "sha": "ba7a8fd026547b60",
     "file": "build/art/world.Stana.glb",
     "moderation": "Approved"
   },
   "world.Statie": {
-    "id": "126195375289879",
+    "id": "75766733033158",
     "type": "Model",
-    "sha": "620dc06ee0b5cf53",
+    "sha": "9d6b5112a96d5880",
     "file": "build/art/world.Statie.glb",
     "moderation": "Approved"
   },
   "world.Stejar": {
-    "id": "84874277675071",
+    "id": "103044498550701",
     "type": "Model",
-    "sha": "14d273b563995dcd",
+    "sha": "def5092b7c4d31f7",
     "file": "build/art/world.Stejar.glb",
     "moderation": "Approved"
   },
   "world.Stiulete": {
-    "id": "135481075211611",
+    "id": "109389721704225",
     "type": "Model",
-    "sha": "a1395b8b8dca345d",
+    "sha": "1cf0aa7c83f29735",
     "file": "build/art/world.Stiulete.glb",
     "moderation": "Approved"
   },
   "world.Strat": {
-    "id": "120394716901147",
+    "id": "84174923929047",
     "type": "Model",
-    "sha": "ac392e462b381f90",
+    "sha": "93f43f1fa2d3cff9",
     "file": "build/art/world.Strat.glb",
     "moderation": "Approved"
   },
   "world.Stuf": {
-    "id": "107683915489019",
+    "id": "137792136800032",
     "type": "Model",
-    "sha": "08427d44e6fba652",
+    "sha": "61fa02cc3760fe30",
     "file": "build/art/world.Stuf.glb",
     "moderation": "Approved"
   },
   "world.Tabla": {
-    "id": "113880549730245",
+    "id": "140526796394106",
     "type": "Model",
-    "sha": "8bf70a0bf5e198a0",
+    "sha": "fe4a86b37720faeb",
     "file": "build/art/world.Tabla.glb",
     "moderation": "Approved"
   },
   "world.Taraba": {
-    "id": "115966608931833",
+    "id": "96028044475998",
     "type": "Model",
-    "sha": "d88f12adf51743d8",
+    "sha": "ae8e7d7d87ecd38f",
     "file": "build/art/world.Taraba.glb",
     "moderation": "Approved"
   },
   "world.Tufa": {
-    "id": "96210928363505",
+    "id": "92257926338276",
     "type": "Model",
-    "sha": "d308f605841df5ff",
+    "sha": "4929e92718fbe1ed",
     "file": "build/art/world.Tufa.glb",
     "moderation": "Approved"
   },
   "world.Uluci": {
-    "id": "121069257140062",
+    "id": "99461706411231",
     "type": "Model",
-    "sha": "5b436bb51b6fe9aa",
+    "sha": "184009b6b1169686",
     "file": "build/art/world.Uluci.glb",
     "moderation": "Approved"
   },
   "world.Visin": {
-    "id": "95420317810334",
+    "id": "110781076774029",
     "type": "Model",
-    "sha": "e2890bd3f682fc57",
+    "sha": "44c1b9f86805a5c5",
     "file": "build/art/world.Visin.glb",
     "moderation": "Approved"
   }

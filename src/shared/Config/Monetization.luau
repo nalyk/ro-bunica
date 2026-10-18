@@ -63,6 +63,8 @@ for _, product in products do
 end
 
 return table.freeze({
+	-- abonamentul lunar „Prietenii Bunicii” (Domain/Subscription); id-ul din Dashboard (EXP-…), gol = oprit
+	subscription = "EXP-4024965016297013811",
 	passes = table.freeze(passes),
 	products = table.freeze(products),
 	passByKey = table.freeze(passByKey),

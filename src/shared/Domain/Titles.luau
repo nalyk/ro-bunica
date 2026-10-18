@@ -14,6 +14,9 @@ Titles.list = {
 	{ id = "colectionar", stat = "collection", need = 20 }, -- Colecționarul
 	{ id = "gospodina", stat = "decor", need = 8 }, -- Gospodina
 	{ id = "prieten", stat = "happenings", need = 10 }, -- Prietenul satului (ajută la întâmplări)
+	{ id = "gazda", stat = "referrals", need = 1 }, -- Gazda satului (a adus un prieten nou)
+	{ id = "musafir", stat = "welcomed", need = 1 }, -- Musafirul (a venit adus de un prieten)
+	{ id = "prietenBunicii", stat = "subscriber", need = 1 }, -- Prietenul Bunicii (abonații, Domain/Subscription)
 } :: { Title }
 
 Titles.byId = {} :: { [string]: Title }

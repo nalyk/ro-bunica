@@ -46,6 +46,41 @@
       "Loading": {
         "$path": "src/first"
       }
+    },
+    "HttpService": {
+      "$properties": {
+        "HttpEnabled": true
+      }
+    },
+    "MaterialService": {
+      "$className": "MaterialService",
+      "SatIarba": {
+        "$className": "MaterialVariant",
+        "$properties": {
+          "BaseMaterial": "Grass",
+          "StudsPerTile": 10,
+          "ColorMap": "rbxassetid://137418217683674",
+          "NormalMap": "rbxassetid://112860079107787"
+        }
+      },
+      "SatPamant": {
+        "$className": "MaterialVariant",
+        "$properties": {
+          "BaseMaterial": "Ground",
+          "StudsPerTile": 8,
+          "ColorMap": "rbxassetid://116448117097557",
+          "NormalMap": "rbxassetid://108146667129346"
+        }
+      },
+      "SatNoroi": {
+        "$className": "MaterialVariant",
+        "$properties": {
+          "BaseMaterial": "Mud",
+          "StudsPerTile": 8,
+          "ColorMap": "rbxassetid://94223053147756",
+          "NormalMap": "rbxassetid://104265144350789"
+        }
+      }
     }
   }
 }

@@ -1,6 +1,7 @@
 --!strict
 -- Mic kit de interfață în stilul „Satul brodat”: rame roșii cusute, colțuri rotunjite, text mare.
 
+local GuiService = game:GetService("GuiService")
 local Layout = require(script.Parent.Layout)
 local HudLayout = require(game:GetService("ReplicatedStorage"):WaitForChild("Shared").Domain.HudLayout)
 local Motion = require(script.Parent.Motion)
@@ -65,9 +66,19 @@ end
 
 -- Text cu mărime plafonată: rândurile au aceeași mărime de literă (TextScaled singur ar mări textele scurte);
 -- textele prea lungi se micșorează în continuare (telefoane).
+-- Textul mai mare cerut de jucător în setările Roblox (GuiService.PreferredTextSize): plafonul crește,
+-- textul scalat umple apoi spațiul disponibil
+local TEXT_SCALE: { [string]: number } = { Medium = 1, Large = 1.15, Larger = 1.3, Largest = 1.5 }
+function UI.textScale(): number
+	local ok, size = pcall(function()
+		return (GuiService :: any).PreferredTextSize.Name
+	end)
+	return if ok then TEXT_SCALE[size] or 1 else 1
+end
+
 function UI.capText(label: TextLabel, maxSize: number): TextLabel
 	local constraint = Instance.new("UITextSizeConstraint")
-	constraint.MaxTextSize = maxSize
+	constraint.MaxTextSize = math.floor(maxSize * UI.textScale() + 0.5)
 	constraint.Parent = label
 	return label
 end

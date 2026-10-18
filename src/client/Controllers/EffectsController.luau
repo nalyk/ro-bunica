@@ -17,6 +17,8 @@ local ClientState = require(script.Parent.ClientState)
 local Music = require(script.Parent.Music)
 local Sfx = require(script.Parent.Sfx)
 local Haptics = require(script.Parent.Haptics)
+local ClipShare = require(script.Parent.ClipShare)
+local NotifyPrompt = require(script.Parent.NotifyPrompt)
 local UI = require(script.Parent.UI)
 
 local EffectsController = {}
@@ -310,6 +312,7 @@ local function onHit(info: { [string]: any })
 	end
 	if mine then
 		Haptics.impact(heavy)
+		NotifyPrompt.moment()
 	end
 end
 
@@ -320,6 +323,7 @@ local function onReplay(best: { [string]: any })
 		return
 	end
 	local part = makeProjectile(best.kind)
+	ClipShare.begin(best.throwerId)
 	local banner = UI.frame({
 		AnchorPoint = Vector2.new(0.5, 0),
 		Position = UDim2.new(0.5, 0, 0, 230),
@@ -355,6 +359,7 @@ local function onReplay(best: { [string]: any })
 				part:Destroy()
 				banner:Destroy()
 				camera.CameraType = Enum.CameraType.Custom
+				ClipShare.finish()
 			end)
 		end
 	end)

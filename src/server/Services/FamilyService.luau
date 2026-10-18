@@ -1,5 +1,6 @@
 --!strict
--- Familiile: prietenii Roblox de pe server (maximum 4). Membrii nu-și fură între ei,
+-- Familiile: prietenii Roblox de pe server (maximum 4), plus cei din același grup Roblox (party) și cei
+-- veniți prin link-ul ogrăzii cuiva (LaunchService.bond, pe sesiune). Membrii nu-și fură între ei,
 -- își apără ogrăzile reciproc cu papucul, iar Bunica îi consideră „ai casei”.
 -- Familia e o alegere: doi prieteni sunt familie doar dacă amândoi au modul „Family”; unul pe „Rival”
 -- îi face rivali (se pot fura, ca străinii). Modul se schimbă doar ziua.
@@ -16,6 +17,7 @@ local Actors = require(script.Parent.Parent.Actors)
 local Friends = require(script.Parent.Parent.Social.Friends)
 local DayNightService = require(script.Parent.DayNightService)
 local Messenger = require(script.Parent.Messenger)
+local Analytics = require(script.Parent.Parent.Analytics)
 local Net = require(Shared.Net)
 
 local SWITCH_COOLDOWN = 10
@@ -31,6 +33,27 @@ local overrides: { [Actor]: number } = {} -- boți din teste
 local joinOrder: { Player } = {}
 local lastSwitch: { [Player]: number } = {}
 local greetedPairs: { [string]: boolean } = {} -- prietenii anunțați deja unul despre altul (o dată pe sesiune)
+local bonds: { [string]: boolean } = {} -- perechi legate pe sesiune (gazda și cel venit prin link-ul ei)
+
+local function pairKey(a: number, b: number): string
+	return math.min(a, b) .. ":" .. math.max(a, b)
+end
+
+-- Același grup Roblox (party): „PartyId” gol înseamnă fără grup
+local function sameParty(a: Player, b: Player): boolean
+	local ok, partyA = pcall(function()
+		return (a :: any).PartyId
+	end)
+	local okB, partyB = pcall(function()
+		return (b :: any).PartyId
+	end)
+	return ok and okB and type(partyA) == "string" and partyA ~= "" and partyA == partyB
+end
+
+-- Cei doi pot fi familie: prieteni, același grup sau legați prin link
+local function close(a: Player, b: Player): boolean
+	return bonds[pairKey(a.UserId, b.UserId)] == true or sameParty(a, b) or Friends.areFriends(a, b)
+end
 
 local function modeOf(player: Player): string?
 	local owner = PlotService.getOwner(player)
@@ -47,7 +70,11 @@ local function applyAttributes()
 		plot.geometry.sign.TextColor3 = color
 	end
 	for _, player in Players:GetPlayers() do
-		player:SetAttribute("FamilyId", familyOf[Actors.forPlayer(player)])
+		local id = familyOf[Actors.forPlayer(player)]
+		if id ~= nil then
+			Analytics.social(player, "FamilyFormed")
+		end
+		player:SetAttribute("FamilyId", id)
 		player:SetAttribute("FamilyMode", modeOf(player) or "Family")
 	end
 end
@@ -59,10 +86,10 @@ local function greetFriends(present: { number }, byId: { [number]: Player })
 		for j = i + 1, #present do
 			local b = present[j]
 			local playerA, playerB = byId[a], byId[b]
-			if Friends.areFriends(playerA, playerB) then
+			if close(playerA, playerB) then
 				hasFriend[playerA] = true
 				hasFriend[playerB] = true
-				local key = math.min(a, b) .. ":" .. math.max(a, b)
+				local key = pairKey(a, b)
 				if not greetedPairs[key] then
 					greetedPairs[key] = true
 					Messenger.notify(playerA, "notify.FriendHere", { playerB.DisplayName })
@@ -86,7 +113,7 @@ function FamilyService.recompute()
 		end
 	end
 	local groups = Family.group(present, function(a, b)
-		return Friends.areFriends(byId[a], byId[b]) and Family.bonded(modeOf(byId[a]), modeOf(byId[b]))
+		return close(byId[a], byId[b]) and Family.bonded(modeOf(byId[a]), modeOf(byId[b]))
 	end, Families.maxSize)
 	table.clear(familyOf)
 	for userId, familyId in groups do
@@ -146,6 +173,14 @@ function FamilyService.familyOwners(owner: Owner): { Owner }
 		end
 	end
 	return list
+end
+
+-- Leagă doi jucători pe sesiunea asta (cel venit prin link-ul ogrăzii celuilalt), apoi refă familiile
+function FamilyService.bond(a: Player, b: Player)
+	if a ~= b then
+		bonds[pairKey(a.UserId, b.UserId)] = true
+		FamilyService.recompute()
+	end
 end
 
 -- Pentru teste (boți): pune un actor într-o familie.

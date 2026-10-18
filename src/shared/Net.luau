@@ -36,6 +36,7 @@ local NAMES = {
 	"SetSoul", -- (uid: string, on: boolean) creatură de suflet (nu se fură, nu se schimbă)
 	"FamilyMode", -- (mode: "Family" | "Rival") alegerea față de prietenii de pe server
 	"Greeted", -- () ecranul de încărcare s-a închis: Bunica îl întâmpină (o dată pe sesiune)
+	"Share", -- ("link" | "invite") link-ul ogrăzii de partajat (PromptLinkSharingAsync pe server) | invitația deschisă
 	-- S→C
 	"Minigame", -- ({ id, site, state: "enroll" | "countdown" | "running" | "results" | "cancelled", ... })
 	"Happening", -- ({ id, state: "warn" | "active" | "end", startsAt?, endsAt?, location? }) ceasul satului

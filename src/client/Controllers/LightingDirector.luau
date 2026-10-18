@@ -40,6 +40,43 @@ local WEATHER_TINT: { [string]: { color: Color3, amount: number, saturation: num
 		},
 	}
 
+-- Norii (Clouds) și vântul (GlobalWind, mișcă iarba terenului și particulele) după vreme
+local SKY_WEATHER: { [string]: { cover: number, density: number, color: Color3, wind: Vector3 } } = {
+	Rain = {
+		cover = 0.88,
+		density = 0.75,
+		color = Color3.fromRGB(150, 155, 165),
+		wind = Vector3.new(16, 0, 7),
+	},
+	Hail = {
+		cover = 0.92,
+		density = 0.8,
+		color = Color3.fromRGB(165, 172, 185),
+		wind = Vector3.new(20, 0, 9),
+	},
+	FrostNight = {
+		cover = 0.3,
+		density = 0.3,
+		color = Color3.fromRGB(220, 230, 245),
+		wind = Vector3.new(4, 0, 2),
+	},
+	BunicaAngry = {
+		cover = 0.8,
+		density = 0.7,
+		color = Color3.fromRGB(190, 120, 110),
+		wind = Vector3.new(18, 0, 6),
+	},
+	Rainbow = {
+		cover = 0.55,
+		density = 0.45,
+		color = Color3.fromRGB(255, 255, 255),
+		wind = Vector3.new(6, 0, 3),
+	},
+}
+local CALM =
+	{ cover = 0.48, density = 0.42, color = Color3.fromRGB(255, 255, 255), wind = Vector3.new(7, 0, 3) }
+local clouds: Clouds? = nil
+
 local atmosphere: Atmosphere
 local correction: ColorCorrectionEffect
 local bloom: BloomEffect
@@ -119,6 +156,15 @@ local function apply(dt: number)
 	correction.Contrast = look.contrast
 	bloom.Intensity = look.bloom
 	rays.Intensity = look.sunRays
+
+	local sky = SKY_WEATHER[weather or ""] or CALM
+	local blend = math.clamp(dt / 4, 0, 1) -- trecere lină (≈ 4 s)
+	if clouds then
+		clouds.Cover += (sky.cover - clouds.Cover) * blend
+		clouds.Density += (sky.density - clouds.Density) * blend
+		clouds.Color = clouds.Color:Lerp(sky.color, blend)
+	end
+	Workspace.GlobalWind = Workspace.GlobalWind:Lerp(sky.wind, blend)
 end
 
 function LightingDirector.start()
@@ -139,6 +185,15 @@ function LightingDirector.start()
 	sky.StarCount = 3000
 	sky.SunAngularSize = 14
 	sky.MoonAngularSize = 16
+	local terrain = Workspace:FindFirstChildOfClass("Terrain")
+	if terrain then
+		local existing = terrain:FindFirstChildOfClass("Clouds")
+		clouds = existing or Instance.new("Clouds")
+		local made = clouds :: Clouds
+		made.Cover = CALM.cover
+		made.Density = CALM.density
+		made.Parent = terrain
+	end
 	-- 10 actualizări pe secundă ajung pentru un soare care se mișcă lent
 	local accumulator = 0
 	RunService.Heartbeat:Connect(function(dt)

@@ -1,9 +1,14 @@
 --!strict
--- Garderoba: ținutele Bunicii (cumpără pe lei, îmbracă) și titlurile câștigate (alege unul).
+-- Garderoba: ținutele Bunicii (cumpără pe lei, îmbracă) și titlurile câștigate (alege unul). Ținuta de aur e
+-- a abonaților „Prietenii Bunicii” (Domain/Subscription): fără abonament, butonul deschide abonarea Roblox.
+
+local MarketplaceService = game:GetService("MarketplaceService")
+local Players = game:GetService("Players")
 
 local Shared = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
 local Net = require(Shared.Net)
 local Outfits = require(Shared.Config.Outfits)
+local Monetization = require(Shared.Config.Monetization)
 local Titles = require(Shared.Domain.Titles)
 local Economy = require(Shared.Domain.Economy)
 local ClientState = require(script.Parent.ClientState)
@@ -27,9 +32,33 @@ local function render()
 		props.Parent = scroll
 		UI.button(props, onClick)
 	end
+	local subscribed = Players.LocalPlayer:GetAttribute("Subscriber") == true
 	for _, outfit in Outfits.list do
 		local name = ClientState.t("outfit." .. outfit.id)
-		if owned[outfit.id] then
+		if outfit.subscriber then
+			if Monetization.subscription == "" then
+				continue -- abonamentul nu e încă creat
+			end
+			local wearing = state.outfit == outfit.id
+			add({
+				Text = name .. (if not subscribed
+					then "  · " .. ClientState.t("outfit.subscribe")
+					elseif wearing then "  ✓"
+					else "  · " .. ClientState.t("outfit.wear")),
+				swatch = if wearing then "ie" elseif subscribed then "vine" else "wheat",
+			}, function()
+				if subscribed then
+					Net.get("WearOutfit"):FireServer(if wearing then nil else outfit.id)
+				else
+					pcall(
+						MarketplaceService.PromptSubscriptionPurchase,
+						MarketplaceService,
+						Players.LocalPlayer,
+						Monetization.subscription
+					)
+				end
+			end)
+		elseif owned[outfit.id] then
 			local wearing = state.outfit == outfit.id
 			add({
 				Text = name .. (if wearing then "  ✓" else "  · " .. ClientState.t("outfit.wear")),

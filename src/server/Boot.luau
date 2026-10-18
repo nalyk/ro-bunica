@@ -7,6 +7,7 @@ local Net = require(Shared.Net)
 
 local ORDER = {
 	"ArtService", -- întâi: modelele trebuie să existe când se construiește satul
+	"TuningService", -- devreme: valorile reglate live intră în Config înainte să le folosească restul
 	"DataService",
 	"RegionPolicyService",
 	"PlotService",
@@ -44,6 +45,11 @@ local ORDER = {
 	"TradeService",
 	"HoraService",
 	"LiveEventService",
+	"LaunchService",
+	"NotificationService",
+	"LeaderboardService",
+	"BroadcastService",
+	"SubscriptionService",
 	"MetricsService",
 }
 

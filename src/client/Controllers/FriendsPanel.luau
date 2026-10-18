@@ -2,12 +2,15 @@
 -- Panoul „Prieteni”: tot ce ține de ceilalți oameni de pe server, într-un singur loc (în locul butoanelor
 -- care pluteau peste HUD). Cheamă prieteni (invitația Roblox, +10% lei de prieten), Familie sau Rivali
 -- (cât e un prieten pe server; se schimbă doar ziua, regula e pe server) și jucătorii de pe server, fiecare
--- cu butonul „Schimb”.
+-- cu butonul „Schimb”. Invitația și link-ul ogrăzii duc la tine (LaunchData, LaunchService pe server);
+-- dacă urmează un Experience Event, cardul „Vin și eu” (RSVP la Roblox).
 
 local Players = game:GetService("Players")
 local SocialService = game:GetService("SocialService")
 
 local Shared = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
+local Launch = require(Shared.Domain.Launch)
+local Notifications = require(Shared.Config.Notifications)
 local Net = require(Shared.Net)
 local ClientState = require(script.Parent.ClientState)
 local TradePanel = require(script.Parent.TradePanel)
@@ -20,11 +23,40 @@ local me = Players.LocalPlayer
 local panel: Frame
 local scroll: ScrollingFrame
 local shown = ""
+local build: () -> ()
 
 function FriendsPanel.invite()
 	local ok, can = pcall(SocialService.CanSendGameInviteAsync, SocialService, me)
 	if ok and can then
-		pcall(SocialService.PromptGameInvite, SocialService, me)
+		-- prietenul invitat ajunge la ograda ta (și contează ca recomandare, dacă e nou în joc)
+		local options = Instance.new("ExperienceInviteOptions")
+		options.LaunchData = Launch.encode({ kind = "yard", host = me.UserId, referrer = me.UserId })
+		options.PromptMessage = ClientState.t("ui.invitePrompt")
+		options.InviteMessageId = Notifications.invite
+		pcall(SocialService.PromptGameInvite, SocialService, me, options)
+		Net.get("Share"):FireServer("invite")
+	end
+end
+
+-- Următorul Experience Event care n-a început (nil dacă nu e niciunul sau API-ul lipsește)
+local upcoming: { id: string, title: string? }? = nil
+local rsvpGoing = false
+local function refreshEvent()
+	local ok, events = pcall(SocialService.GetUpcomingExperienceEventsAsync, SocialService)
+	upcoming = nil
+	if ok and type(events) == "table" then
+		for _, event in events :: { any } do
+			if not event.HasStarted and not event.HasEnded and type(event.Id) == "string" then
+				local okTitle, title = pcall(function()
+					return event.Title or event.DisplayTitle
+				end)
+				upcoming =
+					{ id = event.Id, title = if okTitle and type(title) == "string" then title else nil }
+				local okStatus, status = pcall(SocialService.GetEventRsvpStatusAsync, SocialService, event.Id)
+				rsvpGoing = okStatus and status == Enum.RsvpStatus.Going
+				break
+			end
+		end
 	end
 end
 
@@ -53,7 +85,7 @@ local function signature(): string
 	return table.concat(parts, ",")
 end
 
-local function build()
+build = function()
 	shown = signature()
 	UI.clear(scroll)
 	-- Cheamă prieteni
@@ -74,17 +106,67 @@ local function build()
 		TextWrapped = true,
 	}, 17)
 
+	-- Link-ul ogrăzii (pentru cine nu e prieten pe Roblox: colegii de clasă, grupul de pe telefon)
+	local share = row(70, 2)
+	UI.button({
+		Size = UDim2.new(0.5, -12, 0, 56),
+		Position = UDim2.fromOffset(8, 7),
+		Text = ClientState.t("ui.shareLink"),
+		swatch = "sky",
+		icon = "family",
+		Parent = share,
+	}, function()
+		Net.get("Share"):FireServer("link")
+	end)
+	text(share, {
+		Size = UDim2.new(0.5, -16, 1, 0),
+		Position = UDim2.new(0.5, 8, 0, 0),
+		Text = ClientState.t("ui.shareLinkHint"),
+		TextColor3 = Theme.swatches.vine.dark,
+		TextWrapped = true,
+	}, 17)
+
+	-- Evenimentul următor din sat: „Vin și eu” (Roblox îi amintește jucătorului)
+	local event = upcoming
+	if event then
+		local card = row(70, 3)
+		text(card, {
+			Size = UDim2.new(0.58, -12, 1, 0),
+			Position = UDim2.fromOffset(8, 0),
+			Text = if event.title
+				then ClientState.t("ui.nextEventNamed", { event.title })
+				else ClientState.t("ui.nextEvent"),
+			TextWrapped = true,
+		}, 17)
+		UI.button({
+			Size = UDim2.new(0.4, -10, 0, 52),
+			Position = UDim2.new(0.6, 0, 0, 9),
+			Text = ClientState.t(if rsvpGoing then "ui.rsvpGoing" else "ui.rsvp"),
+			swatch = if rsvpGoing then "vine" else "ie",
+			Parent = card,
+		}, function()
+			if rsvpGoing then
+				return
+			end
+			task.spawn(function()
+				local ok, status = pcall(SocialService.PromptRsvpToEventAsync, SocialService, event.id)
+				rsvpGoing = ok and status == Enum.RsvpStatus.Going
+				build()
+			end)
+		end)
+	end
+
 	-- Familie sau rivali (doar cu un prieten pe server)
 	local familyId = me:GetAttribute("FamilyId")
 	if me:GetAttribute("HasFriendHere") == true then
 		local rival = me:GetAttribute("FamilyMode") == "Rival"
-		text(row(30, 2), {
+		text(row(30, 4), {
 			Size = UDim2.new(1, -16, 1, 0),
 			Position = UDim2.fromOffset(8, 0),
 			Text = ClientState.t("ui.familyTitle"),
 			TextColor3 = Theme.swatches.ie.dark,
 		}, 20)
-		local choice = row(84, 3)
+		local choice = row(84, 5)
 		text(choice, {
 			Size = UDim2.new(0.58, -12, 1, -8),
 			Position = UDim2.fromOffset(8, 4),
@@ -110,7 +192,7 @@ local function build()
 			table.insert(others, player)
 		end
 	end
-	text(row(30, 4), {
+	text(row(30, 6), {
 		Size = UDim2.new(1, -16, 1, 0),
 		Position = UDim2.fromOffset(8, 0),
 		Text = if #others > 0 then ClientState.t("ui.onServer") else ClientState.t("ui.aloneOnServer"),
@@ -149,6 +231,12 @@ function FriendsPanel.toggle()
 	UI.show(panel, not panel.Visible)
 	if panel.Visible then
 		build()
+		task.spawn(function()
+			refreshEvent()
+			if panel.Visible then
+				build()
+			end
+		end)
 	end
 end
 

@@ -8,6 +8,7 @@ export type Rarity = {
 	stealHoldSeconds: number, -- cât ține hoțul apăsat ca să ridice creatura
 	carrySpeedMultiplier: number, -- viteza hoțului cât o cară
 	announceHatch: boolean, -- eclozarea e anunțată pe server
+	announceEverywhere: boolean?, -- și pe toate serverele (BroadcastService)
 	announceSteal: boolean, -- furtul e anunțat pe server
 	shopChance: number, -- șansa ca o sămânță de această raritate să apară în stoc la reînnoire
 }
@@ -60,6 +61,7 @@ local list: { Rarity } = {
 		stealHoldSeconds = 3.5,
 		carrySpeedMultiplier = 0.6,
 		announceHatch = true,
+		announceEverywhere = true,
 		announceSteal = true,
 		shopChance = 0.03,
 	},
@@ -70,6 +72,7 @@ local list: { Rarity } = {
 		stealHoldSeconds = 4,
 		carrySpeedMultiplier = 0.55,
 		announceHatch = true,
+		announceEverywhere = true,
 		announceSteal = true,
 		shopChance = 0,
 	},

@@ -1,6 +1,8 @@
 --!strict
 -- Locurile satului pe client: tăblițele (TextKey) traduse în limba jucătorului și palele morii care se rotesc.
 
+local HttpService = game:GetService("HttpService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
@@ -72,12 +74,55 @@ local function watchBoard(sites: Instance)
 	refresh()
 end
 
+-- Al doilea avizier: topul săptămânii din toate satele (LeaderboardService → atributul „TopWeek”, JSON)
+local function watchTop(sites: Instance)
+	local centre = sites:WaitForChild("centru", 30)
+	local part = centre and centre:FindFirstChild("AvizierTop", true) :: BasePart?
+	if not part then
+		return
+	end
+	local gui = Instance.new("SurfaceGui")
+	gui.Face = Enum.NormalId.Front
+	gui.PixelsPerStud = 40
+	gui.Parent = part
+	local label = Instance.new("TextLabel")
+	label.Size = UDim2.fromScale(1, 1)
+	label.BackgroundTransparency = 1
+	label.TextScaled = true
+	label.Font = Enum.Font.FredokaOne
+	label.TextColor3 = Color3.fromRGB(250, 240, 210)
+	label.Parent = gui
+	local function section(lines: { string }, title: string, list: any)
+		table.insert(lines, title)
+		if type(list) ~= "table" or #list == 0 then
+			table.insert(lines, "  " .. ClientState.t("ui.topEmpty"))
+			return
+		end
+		for i = 1, math.min(#list, 3) do
+			local entry = list[i]
+			table.insert(lines, string.format("  %d. %s  %s", i, tostring(entry[1]), tostring(entry[2])))
+		end
+	end
+	local function refresh()
+		local text = ReplicatedStorage:GetAttribute("TopWeek")
+		local ok, board =
+			pcall(HttpService.JSONDecode, HttpService, if type(text) == "string" then text else "{}")
+		local lines = {}
+		section(lines, "👡 " .. ClientState.t("ui.topPapuc"), ok and board.papuc)
+		section(lines, "💃 " .. ClientState.t("ui.topHora"), ok and board.hora)
+		label.Text = table.concat(lines, "\n")
+	end
+	ReplicatedStorage:GetAttributeChangedSignal("TopWeek"):Connect(refresh)
+	refresh()
+end
+
 function SiteController.start()
 	task.spawn(function()
 		local village = Workspace:WaitForChild("Village")
 		local sites = village:WaitForChild("Sites")
 		watch(sites)
 		watchBoard(sites)
+		task.spawn(watchTop, sites)
 	end)
 	RunService.RenderStepped:Connect(function()
 		local t = os.clock()

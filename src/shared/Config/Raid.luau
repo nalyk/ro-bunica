@@ -1,7 +1,8 @@
 --!strict
 -- Reguli de furt și protecții.
 
-return table.freeze({
+-- Nu e înghețat: TuningService (Domain/Tuning) scrie aici valorile reglate live din Roblox Configs.
+return {
 	victimShieldSeconds = 60,
 	maxStealsPerVictimPerNight = 2, -- apoi ograda e protejată până dimineață
 	defenseRewardShare = 0.5, -- cine salvează o creatură primește această parte din prețul ei
@@ -9,4 +10,4 @@ return table.freeze({
 	promptMaxDistance = 10,
 	depositRadius = 7,
 	jumpPowerWhileCarrying = 0,
-})
+}

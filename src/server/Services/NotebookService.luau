@@ -23,6 +23,7 @@ local RaidService = require(script.Parent.RaidService)
 local DayNightService = require(script.Parent.DayNightService)
 local TutorialService = require(script.Parent.TutorialService)
 local Messenger = require(script.Parent.Messenger)
+local Broadcast = require(script.Parent.Parent.Social.Broadcast)
 local Progress = require(script.Parent.Parent.Progress)
 local Analytics = require(script.Parent.Parent.Analytics)
 
@@ -74,7 +75,7 @@ local function discover(owner: Owner, record: any)
 		local secret = Notebook.collection.secretId
 		owner.profile.seeds[secret] = (owner.profile.seeds[secret] or 0) + 1
 		Messenger.notify(player, "notify.SecretRecipe")
-		Messenger.announce("announce.SecretRecipe", { owner.name })
+		Broadcast.everywhere("announce.SecretRecipe", { owner.name })
 	end
 	StateService.markDirty(player)
 end

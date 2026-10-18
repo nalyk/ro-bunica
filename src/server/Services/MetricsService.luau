@@ -13,6 +13,7 @@ local MetricsService = {}
 
 function MetricsService.start()
 	game:GetService("Players").PlayerRemoving:Connect(Badges.forget)
+	game:GetService("Players").PlayerRemoving:Connect(Analytics.forget)
 	PlotService.onOwnerAdded(function(owner)
 		if owner.kind == "Player" then
 			Analytics.step(owner.player, owner.profile, "Joined")

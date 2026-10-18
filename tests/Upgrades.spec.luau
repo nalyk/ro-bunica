@@ -43,6 +43,19 @@ describe("Upgrades", function()
 		expect(Upgrades.nextCost(profile, "pedestal")).toBeNil()
 	end)
 
+	it(
+		"reîncărcarea nu coboară sub 0,6 s, nici cu baza reglată jos (Configs) și regen la maximum",
+		function()
+			local profile = DataTemplate.new()
+			profile.lei = 10 ^ 9
+			for _ = 1, 3 do
+				Upgrades.buy(profile, "regen")
+			end
+			expect(Upgrades.regenSeconds(profile, 1)).toBe(0.6)
+			expect(math.abs(Upgrades.regenSeconds(profile, 4) - 3.1) < 1e-9).toBe(true)
+		end
+	)
+
 	it("beciul crește cu 10 locuri, papucii se reîncarcă mai repede, Grivei încetinește", function()
 		local profile = DataTemplate.new()
 		profile.lei = 10 ^ 9

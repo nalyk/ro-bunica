@@ -6,6 +6,10 @@ Comenzi:
   cloud.py publish-live <fișier.rbxl> publică versiunea live, cea care se joacă din link (locul e privat)
   cloud.py run <versiune> <script.luau> rulează un script Luau pe acea versiune, afișează log-urile
   cloud.py e2e                         build test.project.json + publish + rulează tests/e2e
+  cloud.py announce "<text>"           anunț pe toate serverele live (topicul „Sat”, BroadcastService)
+  cloud.py live <EventId> [secunde]    pornește un eveniment live pe toate serverele (Config/LiveEvents)
+  cloud.py ban <userId> <zile> "<motiv>"   interdicție (Open Cloud user restrictions; 0 zile = permanent)
+  cloud.py unban <userId>
 
 Configurare în `.env.cloud` (ignorat de git):
   ROBLOX_API_KEY=...        drepturi: universe-places (write), luau-execution-sessions (read, write)
@@ -171,6 +175,29 @@ def main() -> int:
         return 0 if task.get("state") == "COMPLETE" else 1
     if command == "e2e":
         return e2e(env)
+    if command in ("announce", "live") and len(sys.argv) >= 3:
+        message = ({"k": "announce.Admin", "a": [sys.argv[2]], "j": "admin"} if command == "announce"
+                   else {"live": sys.argv[2], "s": int(sys.argv[3]) if len(sys.argv) > 3 else None, "j": "admin"})
+        url = f"{API}/cloud/v2/universes/{env['ROBLOX_UNIVERSE_ID']}:publishMessage"
+        body = json.dumps({"topic": "Sat", "message": json.dumps(message, ensure_ascii=False)}).encode()
+        request(env, "POST", url, body, "application/json")
+        print(f"[cloud] trimis pe toate serverele: {message}")
+        return 0
+    if command in ("ban", "unban") and len(sys.argv) >= 3:
+        url = (f"{API}/cloud/v2/universes/{env['ROBLOX_UNIVERSE_ID']}/user-restrictions/{int(sys.argv[2])}"
+               "?updateMask=gameJoinRestriction")
+        if command == "ban":
+            days = int(sys.argv[3]) if len(sys.argv) > 3 else 0
+            restriction = {"active": True, "privateReason": sys.argv[4] if len(sys.argv) > 4 else "",
+                           "displayReason": sys.argv[4] if len(sys.argv) > 4 else "", "excludeAltAccounts": False}
+            if days > 0:
+                restriction["duration"] = f"{days * 86400}s"
+        else:
+            restriction = {"active": False}
+        body = json.dumps({"gameJoinRestriction": restriction}).encode()
+        result = request(env, "PATCH", url, body, "application/json")
+        print(f"[cloud] {command}: {json.dumps(result, ensure_ascii=False)[:300]}")
+        return 0
     print(__doc__)
     return 2
 

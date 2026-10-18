@@ -31,6 +31,9 @@ function TitleService.stats(owner: Owner): { [string]: number }
 		minigames = s.minigames or 0,
 		collection = collection,
 		decor = Decor.placedCount(profile :: any),
+		referrals = s.referrals or 0,
+		welcomed = s.welcomed or 0,
+		subscriber = if owner.player and owner.player:GetAttribute("Subscriber") == true then 1 else 0,
 	}
 end
 

@@ -10,6 +10,9 @@
   orizontal mare din sfertul de jos; se șterge tot ce e sub ea (talpa picioarelor rămâne deschisă, nu se vede).
 - `--color-gain r,g,b`: corecție per canal a texturii (TRELLIS poate devia spre cald; factorii se măsoară pe
   zonele deschise ale corpului, concept vs textură).
+- Harta normală: relieful plasei întregi (TRELLIS, 40k) se coace pe plasa redusă (Cycles, „selected to
+  active”, spațiu tangent) și se leagă la BSDF; Roblox o citește ca NormalMap în SurfaceAppearance.
+  `--no-normal` o oprește.
 """
 
 import math
@@ -32,6 +35,7 @@ texture = opt("--texture", 1024, int)
 preview = opt("--preview", None, str)
 trim_base = "--trim-base" in argv
 color_gain = [float(x) for x in opt("--color-gain", "1,1,1", str).split(",")]
+bake_normal = "--no-normal" not in argv
 
 bpy.ops.wm.read_factory_settings(use_empty=True)
 bpy.ops.import_scene.gltf(filepath=src)
@@ -71,6 +75,12 @@ if trim_base:
     print("TRIM", round((top - z0) / (z1 - z0), 3))
 
 tris = sum(len(p.vertices) - 2 for p in obj.data.polygons)
+high = None
+if bake_normal and tris > max_tris:
+    # copia întreagă: sursa reliefului pentru harta normală (aceeași scară, aplicată mai jos)
+    high = obj.copy()
+    high.data = obj.data.copy()
+    bpy.context.scene.collection.objects.link(high)
 if tris > max_tris:
     m = obj.modifiers.new("dec", "DECIMATE")
     m.ratio = max_tris / tris
@@ -87,6 +97,49 @@ for v in vs:
 obj.name = obj.data.name = "body"
 for p in obj.data.polygons:
     p.use_smooth = True
+
+
+def bake_normal_map():
+    for v in high.data.vertices:
+        v.co = (v.co - base) * s
+    for p in high.data.polygons:
+        p.use_smooth = True
+    mat = obj.active_material
+    if not mat or not mat.use_nodes:
+        return False
+    nodes, links = mat.node_tree.nodes, mat.node_tree.links
+    bsdf = next((n for n in nodes if n.type == "BSDF_PRINCIPLED"), None)
+    if not bsdf:
+        return False
+    img = bpy.data.images.new("normal", texture, texture, alpha=False)
+    img.colorspace_settings.name = "Non-Color"
+    target = nodes.new("ShaderNodeTexImage")
+    target.image = img
+    nodes.active = target
+    scene = bpy.context.scene
+    scene.render.engine = "CYCLES"
+    scene.cycles.samples = 1
+    bake = scene.render.bake
+    bake.use_selected_to_active = True
+    bake.cage_extrusion = 0.012 * height
+    bake.max_ray_distance = 0.06 * height
+    bake.margin = 6
+    bpy.ops.object.select_all(action="DESELECT")
+    high.select_set(True)
+    obj.select_set(True)
+    bpy.context.view_layer.objects.active = obj
+    bpy.ops.object.bake(type="NORMAL", normal_space="TANGENT")
+    img.pack()
+    normal_map = nodes.new("ShaderNodeNormalMap")
+    links.new(target.outputs["Color"], normal_map.inputs["Color"])
+    links.new(normal_map.outputs["Normal"], bsdf.inputs["Normal"])
+    return True
+
+
+if high is not None:
+    baked = bake_normal_map()
+    bpy.data.objects.remove(high, do_unlink=True)
+    print("NORMAL", baked)
 
 if color_gain != [1.0, 1.0, 1.0]:
     for img in bpy.data.images:

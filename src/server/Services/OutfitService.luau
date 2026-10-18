@@ -5,6 +5,7 @@
 local Shared = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
 local Net = require(Shared.Net)
 local Outfits = require(Shared.Config.Outfits)
+local Subscription = require(Shared.Domain.Subscription)
 local RateLimiter = require(Shared.Domain.RateLimiter)
 local PlotService = require(script.Parent.PlotService)
 local BunicaService = require(script.Parent.BunicaService)
@@ -27,10 +28,18 @@ local function clear(plotIndex: number)
 	end
 end
 
+local function subscribed(owner: Owner): boolean
+	return owner.player ~= nil and owner.player:GetAttribute("Subscriber") == true
+end
+
 -- Îmbracă Bunica ogrăzii cu ținuta proprietarului (sau nimic)
 function OutfitService.apply(owner: Owner)
 	clear(owner.plot.index)
 	local outfit = owner.profile.outfit and Outfits.byId[owner.profile.outfit]
+	-- ținuta abonaților rămâne în profil, dar nu se poartă cât abonamentul e oprit
+	if outfit and outfit.subscriber and not subscribed(owner) then
+		outfit = nil
+	end
 	local rig, head = BunicaService.rigFor(owner.plot.index)
 	if not outfit or not rig or not head then
 		return
@@ -66,7 +75,7 @@ end
 
 function OutfitService.buy(owner: Owner, id: string): boolean
 	local outfit = Outfits.byId[id]
-	if not outfit or owner.profile.outfits[id] then
+	if not outfit or owner.profile.outfits[id] or not Subscription.canBuy(outfit) then
 		return false
 	end
 	if owner.profile.lei < outfit.price then
@@ -81,7 +90,13 @@ function OutfitService.buy(owner: Owner, id: string): boolean
 end
 
 function OutfitService.wear(owner: Owner, id: string?): boolean
-	if id ~= nil and not owner.profile.outfits[id] then
+	local outfit = if id then Outfits.byId[id] else nil
+	if
+		id ~= nil
+		and not (
+			outfit and Subscription.canWear(outfit, owner.profile.outfits[id] == true, subscribed(owner))
+		)
+	then
 		return false
 	end
 	owner.profile.outfit = id

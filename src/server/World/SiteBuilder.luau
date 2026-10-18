@@ -340,6 +340,21 @@ builders.centru = function(model, cf)
 	)
 	sign(model, board * CFrame.new(0, 7.6, -0.1), 8, "site.avizier", "AVIZIERUL SATULUI")
 	wedge(model, "AvizierAcoperis", Vector3.new(9.4, 1, 1.6), board * CFrame.new(0, 8.4 + 0.7, 0), C.roof)
+	-- al doilea avizier, alături: topul săptămânii din toate satele (LeaderboardService, atributul „TopWeek”)
+	local top = board * CFrame.new(-10.5, 0, 0)
+	for _, side in { -1, 1 } do
+		box(model, "AvizierStalp", Vector3.new(0.6, 7, 0.6), top * CFrame.new(side * 4.5, 3.5, 0), C.darkWood)
+	end
+	box(
+		model,
+		"AvizierTop",
+		Vector3.new(8.4, 4.4, 0.4),
+		top * CFrame.new(0, 4.6, 0),
+		C.wood,
+		{ Material = Enum.Material.WoodPlanks }
+	)
+	sign(model, top * CFrame.new(0, 7.6, -0.1), 8, "site.topWeek", "TOPUL SĂPTĂMÂNII")
+	wedge(model, "AvizierAcoperis", Vector3.new(9.4, 1, 1.6), top * CFrame.new(0, 8.4 + 0.7, 0), C.roof)
 	-- băncile, la vest de horă (pe est trece rutiera)
 	for _, at in
 		{

@@ -213,6 +213,27 @@ Omul a cerut tot pachetul C din `docs/RESEARCH_SAT_VIU.md`, „full featured”.
 - Review-ul final independent al ramurii (dfa57c0..3656e64): o problemă critică (NaN la vânzarea peștilor → lei NaN, cumpărături gratuite) și cinci importante (Secretele la bazar, mini-jocuri fără efort, refresh scump la bazar, tarabele rămase la 12, duplicare la preluarea sesiunii), toate reparate cu teste (commit bfdbe42; unit 299, e2e 91/91). Minorii amânați sunt în ledger: negustorul NPC nu actualizează clasamentul, renașterea lasă oferte moarte, actor recreat la ieșire, titlul „Dansatoarea” farmabil, ouăle de Paște reapar imediat, limitatoarele nu uită jucătorii.
 - Rutiera a rămas procedurală (TRELLIS rămâne fără memorie pe acest concept); Casa de cultură procedurală (interiorul e folosit de Discotecă).
 
+## Platforma Roblox la maximum (2026-10-18, pasul 7 deblocat)
+
+Auditul e în `docs/RESEARCH_PLATFORMA.md`, planul și progresul în `docs/superpowers/plans/2026-10-18-platforma.md`.
+
+- **Creștere:**
+  - link-ul ogrăzii și invitația cu LaunchData (cine vine ajunge pe serverul gazdei și intră în familia ei);
+  - recomandările („Gazda satului”, „Musafirul”); grupurile Roblox (party) devin familie;
+  - „Vin și eu” la evenimente; clipul loviturii nopții;
+  - notificările după plecare (plantele coapte, sâmbăta în sat, bazarul de duminică).
+- **Grafică:** hărți normale coapte pe toate modelele (PBR complet în Roblox), texturi proprii pentru iarbă, drum și cărări (MaterialVariant), nori dinamici și vânt după vreme.
+- **Live ops:**
+  - 12 valori reglabile din Roblox Configs (papucul se poate testa A/B pe jucători);
+  - analytics segmentat și funnel social; topul săptămânal din toate satele pe avizier;
+  - anunțuri rare pe toate serverele; `cloud.py announce|live|ban|unban`.
+- **Senzație:** textul crește după setarea jucătorului; Bunica își urmărește cu privirea vizitatorii.
+- **Monetizare:** abonamentul „Grandma's Friends” (99 Robux pe lună, doar cosmetice; în review la Roblox).
+- **Ce ține de om:**
+  - (1) cheia Open Cloud cu `user.user-notification:write` pusă în Secrets-ul experienței, sub numele „notifications” (fără ea notificările nu pleacă);
+  - (2) acordul pentru termenii Managed Pricing;
+  - (3) reclamele cu recompensă, după 2.000 de vizitatori unici pe lună.
+
 ## Politicile Roblox, chestionarul și grafica (2026-10-18, după pachetul C)
 
 - **Politicile pe jucător:** `Domain/Policy` și `RegionPolicyService` (PolicyService, cerut la intrare; fără răspuns înseamnă restricționat). Magazinul ascunde produsele marcate `random` în `Config/Monetization` (lei, reînnoire, vreme, 2× lei) unde `ArePaidRandomItemsRestricted`. Schimburile și bazarul se închid unde `IsPaidItemTradingAllowed` e fals (verificat pe server; butoanele nu apar). Teste: `tests/Policy.spec.luau`, e2e `99_Policy`, playtest 3c (12 rânduri în magazin, 5 când e restricționat).

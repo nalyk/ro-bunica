@@ -22,6 +22,25 @@ Analytics.FUNNEL = {
 
 local CURRENCY = "Lei"
 
+-- Funnel-ul social (al doilea funnel): cum ajung jucătorii să joace cu prietenii
+Analytics.SOCIAL = { "Invited", "FriendArrived", "FamilyFormed" }
+local socialSession: { [Player]: string } = {}
+local socialDone: { [Player]: { [string]: boolean } } = {}
+
+-- Câmpurile custom (segmentarea în Dashboard): limba, familie sau singur, regiune cu restricții
+local function fields(player: Player): { [string]: string }
+	return {
+		[Enum.AnalyticsCustomFieldKeys.CustomField01.Name] = string.sub(player.LocaleId, 1, 2),
+		[Enum.AnalyticsCustomFieldKeys.CustomField02.Name] = if player:GetAttribute("FamilyId") ~= nil
+			then "familie"
+			else "singur",
+		[Enum.AnalyticsCustomFieldKeys.CustomField03.Name] = if player:GetAttribute("PaidRandomRestricted")
+				== true
+			then "restrictii"
+			else "liber",
+	}
+end
+
 type ProfileLike = { lei: number, funnel: { [string]: boolean } }
 
 local function safe(fn: () -> ())
@@ -60,7 +79,8 @@ function Analytics.source(player: Player?, profile: ProfileLike, amount: number,
 			math.floor(amount),
 			math.floor(profile.lei),
 			transaction,
-			sku
+			sku,
+			fields(player)
 		)
 	end)
 end
@@ -78,7 +98,8 @@ function Analytics.sink(player: Player?, profile: ProfileLike, amount: number, k
 			math.floor(amount),
 			math.floor(profile.lei),
 			kind,
-			sku
+			sku,
+			fields(player)
 		)
 	end)
 end
@@ -89,8 +110,32 @@ function Analytics.event(player: Player?, name: string, value: number?)
 		return
 	end
 	safe(function()
-		AnalyticsService:LogCustomEvent(player, name, value or 1)
+		AnalyticsService:LogCustomEvent(player, name, value or 1, fields(player))
 	end)
+end
+
+-- Un pas din funnel-ul social, o dată pe sesiune
+function Analytics.social(player: Player?, name: string)
+	local index = table.find(Analytics.SOCIAL, name)
+	if not player or not index then
+		return
+	end
+	local done = socialDone[player] or {}
+	socialDone[player] = done
+	if done[name] then
+		return
+	end
+	done[name] = true
+	local session = socialSession[player] or (tostring(player.UserId) .. ":" .. tostring(os.time()))
+	socialSession[player] = session
+	safe(function()
+		AnalyticsService:LogFunnelStepEvent(player, "Social", session, index, name, fields(player))
+	end)
+end
+
+function Analytics.forget(player: Player)
+	socialSession[player] = nil
+	socialDone[player] = nil
 end
 
 return Analytics

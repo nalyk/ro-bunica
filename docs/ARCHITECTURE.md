@@ -55,6 +55,13 @@ tests/        teste Lune (*.spec.luau) și harness-ul de rulare
 - **Calendarul** (`Domain/Seasons`, `SeasonService`): sărbătorile active ajung în `GameState.Holidays` (și anotimpul în `GameState.Season`); serviciile citesc steaguri simple (`GardenService.seasonFactor`, `RaidService.holiday`, `EconomyService.seasonalMultiplier`), deci nu depind de `SeasonService`. `SeasonService.force(list)` impune sărbători în teste.
 - Toate trec prin abstracția Owner/Actor, deci se testează cu boți (`Actors.createBot`, `PlotService.assignBot`, `standIn = true`).
 
+## Platforma (pasul 7)
+
+- **Reglaj live:** `Domain/Tuning` (lista albă cu limite) → `TuningService` (Roblox Configs; valorile de server intră în tabelele din Config și ajung la client prin atributul „Tuning”; valorile pe jucător, pentru Experiments, prin `TuningService.forPlayer`). Config-urile reglabile (Raid, DayNight, Economy, Defense.slipper/bunicaNpc) nu sunt înghețate.
+- **Sosiri și social:** `Domain/Launch` (LaunchData), `LaunchService` (gazda, recomandările), `Social/Presence` (pe ce server e fiecare, MemoryStore), `FamilyService` (prieteni, party, legături pe sesiune).
+- **Între servere:** `Social/Broadcast` + `BroadcastService` (MessagingService „Sat”), `LeaderboardService` (OrderedDataStore pe săptămâna ISO, `Domain/Week`), `NotificationService` (MemoryStore + Open Cloud).
+- **Admin:** `tools/cloud.py announce|live|ban|unban`.
+
 ## Convenții de cod
 
 - `--!strict` în fiecare modul.

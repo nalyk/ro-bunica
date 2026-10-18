@@ -6,6 +6,7 @@
 -- - podurile de lemn peste pârâu.
 -- Gameplay-ul nu depinde de teren: ogrăzile, drumurile și locurile stau pe valea plană.
 
+local MaterialService = game:GetService("MaterialService")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
@@ -152,7 +153,22 @@ local function polyline(
 	end
 end
 
+-- Texturile satului peste materialele terenului (MaterialService „Sat…”, din tools/terrain_tex.py)
+local TERRAIN_VARIANTS: { { material: Enum.Material, variant: string } } = {
+	{ material = Enum.Material.Grass, variant = "SatIarba" },
+	{ material = Enum.Material.Ground, variant = "SatPamant" },
+	{ material = Enum.Material.Mud, variant = "SatNoroi" },
+}
+local function applyTerrainVariants()
+	for _, pair in TERRAIN_VARIANTS do
+		if MaterialService:FindFirstChild(pair.variant) then
+			pcall(MaterialService.SetBaseMaterialOverride, MaterialService, pair.material, pair.variant)
+		end
+	end
+end
+
 local function buildTerrain(layout: VillageLayout.Layout)
+	applyTerrainVariants()
 	local terrain = Workspace.Terrain
 	-- departe în toate direcțiile: dealurile închid orizontul (nici de sus nu se vede marginea lumii)
 	local extentX = Village.extent + 700

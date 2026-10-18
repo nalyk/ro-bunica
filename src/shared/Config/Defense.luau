@@ -2,7 +2,7 @@
 -- Papucul, făcălețul, Furia Bunicii și Bunica NPC.
 
 return table.freeze({
-	slipper = table.freeze({
+	slipper = { -- nu e înghețat: valori reglabile live (Domain/Tuning)
 		maxAmmo = 3,
 		regenSeconds = 2.5,
 		speed = 90, -- studs/s
@@ -12,7 +12,7 @@ return table.freeze({
 		maxLifetime = 2,
 		stunSeconds = 1.2,
 		knockbackSpeed = 70,
-	}),
+	},
 	rollingPin = table.freeze({
 		cost = 50, -- Nervi
 		speed = 75,
@@ -35,7 +35,7 @@ return table.freeze({
 		max = 100,
 		perHit = 25,
 	}),
-	bunicaNpc = table.freeze({
+	bunicaNpc = { -- nu e înghețat: valori reglabile live (Domain/Tuning)
 		sightRange = 60, -- acoperă toată ograda de pe prispă (ograda are 80 × 70)
 		suspicionPerSecond = 0.35, -- de la 0 la 1
 		suspicionDecayPerSecond = 0.2,
@@ -44,7 +44,7 @@ return table.freeze({
 		throwSpeed = 45, -- lent: se poate evita
 		aimErrorStuds = 3,
 		ownerNearbyRange = 40, -- dacă proprietarul e aproape, Bunica doar reacționează
-	}),
+	},
 	-- Toleranța pentru verificarea de viteză pe server (hoț care cară o creatură)
 	speedCheckTolerance = 1.6,
 })

@@ -46,7 +46,11 @@ export type Profile = {
 		hora: number?, -- hore dansate („Dansatoarea”)
 		happenings: number?, -- întâmplări la care a ajutat („Prietenul satului”)
 		minigames: number?, -- mini-jocuri terminate
+		referrals: number?, -- prieteni noi aduși în sat („Gazda satului”, Domain/Referral)
+		welcomed: number?, -- a venit adus de un prieten („Musafirul”)
 	},
+	referredBy: number?, -- cine l-a adus (UserId), o singură dată, la un jucător nou
+	referralRewarded: boolean?, -- recompensa recomandării a fost dată (după 10 minute)
 	title: string?, -- titlul ales (Domain/Titles)
 	outfits: { [string]: boolean }, -- ținutele Bunicii cumpărate (Config/Outfits)
 	outfit: string?, -- ținuta purtată

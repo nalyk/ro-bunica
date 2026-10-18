@@ -11,7 +11,7 @@ export type Piece = {
 	material: Enum.Material?,
 	attach: "head" | "root",
 }
-export type Outfit = { id: string, price: number, pieces: { Piece } }
+export type Outfit = { id: string, price: number, pieces: { Piece }, subscriber: boolean? }
 
 local UP = CFrame.Angles(0, 0, math.pi / 2)
 
@@ -186,6 +186,42 @@ local list: { Outfit } = {
 		},
 	},
 }
+
+-- Ținuta abonaților „Prietenii Bunicii” (Domain/Subscription): coroniță de aur cu o piatră roșie și șal auriu
+table.insert(list, {
+	id = "aur",
+	price = 0,
+	subscriber = true,
+	pieces = {
+		{
+			name = "CoronitaAur",
+			shape = "Cylinder",
+			size = Vector3.new(0.5, 2.2, 2.2),
+			offset = CFrame.new(0, 0.95, 0) * UP,
+			color = Color3.fromRGB(240, 190, 60),
+			material = Enum.Material.Metal,
+			attach = "head",
+		},
+		{
+			name = "Piatra",
+			shape = "Ball",
+			size = Vector3.new(0.5, 0.5, 0.5),
+			offset = CFrame.new(0, 1.2, -1.05),
+			color = Color3.fromRGB(210, 30, 50),
+			material = Enum.Material.Neon,
+			attach = "head",
+		},
+		{
+			name = "SalAuriu",
+			shape = "Block",
+			size = Vector3.new(2.8, 0.6, 1.8),
+			offset = CFrame.new(0, 1.7, 0),
+			color = Color3.fromRGB(230, 170, 50),
+			material = Enum.Material.Fabric,
+			attach = "root",
+		},
+	},
+})
 
 local byId: { [string]: Outfit } = {}
 for _, outfit in list do

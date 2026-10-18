@@ -9,6 +9,7 @@ local Shared = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
 local Net = require(Shared.Net)
 local Defense = require(Shared.Config.Defense)
 local Upgrades = require(Shared.Domain.Upgrades)
+local TuningService = require(script.Parent.TuningService)
 local World = require(Shared.Config.World)
 local Slipper = require(Shared.Domain.Slipper)
 local AimAssist = require(Shared.Domain.AimAssist)
@@ -78,6 +79,7 @@ export type BestThrow = {
 	gravity: number,
 	duration: number,
 	plotIndex: number,
+	throwerId: number, -- cine a aruncat (clipul de partajat e al lui, EffectsController/ClipShare)
 }
 local bestThrow: BestThrow? = nil
 
@@ -85,13 +87,16 @@ local function now(): number
 	return Workspace:GetServerTimeNow()
 end
 
+-- Muniția și reîncărcarea de bază pot fi reglate pe jucător (Configs/Experiments, TuningService)
 local function maxAmmo(owner: Owner): number
-	return Defense.slipper.maxAmmo + (owner.profile.upgrades.ammo or 0)
+	local base = TuningService.forPlayer(owner.player, "slipper_maxAmmo", Defense.slipper.maxAmmo)
+	return base + (owner.profile.upgrades.ammo or 0)
 end
 
 -- Secunde între doi papuci (îmbunătățirea „regen”)
 local function regenSeconds(owner: Owner): number
-	return Upgrades.regenSeconds(owner.profile)
+	local base = TuningService.forPlayer(owner.player, "slipper_regenSeconds", Defense.slipper.regenSeconds)
+	return Upgrades.regenSeconds(owner.profile, base)
 end
 
 local function isFiniteVector(v: Vector3): boolean
@@ -213,6 +218,7 @@ local function applyHit(projectile: Projectile, victim: Actor, root: BasePart, d
 				gravity = params.gravity,
 				duration = projectile.age,
 				plotIndex = projectile.owner.plot.index,
+				throwerId = thrower.id,
 			}
 		end
 	end

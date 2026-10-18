@@ -275,6 +275,21 @@ local function placeOnBase(model: Model, cf: CFrame)
 	)
 end
 
+-- Modelul sculptat (TRELLIS, art/models.json), așezat cu baza pe `cf` și fața spre −Z; nil dacă nu există încă
+local function sculpted(parent: Instance, key: string, cf: CFrame, name: string?, scale: number?): Model?
+	local art = ArtLibrary.get(key)
+	if not art then
+		return nil
+	end
+	art.Name = name or string.match(key, "%.(.+)$") or key
+	if scale and scale ~= 1 then
+		art:ScaleTo(scale)
+	end
+	placeOnBase(art, cf)
+	art.Parent = parent
+	return art
+end
+
 local builders: { [string]: (Model, CFrame) -> () } = {}
 
 -- Centrul: avizierul, băncile, țarcul de gâște, zona fără bătaie (fântâna și hora: WorldBuilder.buildHearth)
@@ -356,6 +371,10 @@ end
 
 -- Magazinul satului: casă albă cu firmă, prispă, lăzi
 builders.magazin = function(model, cf)
+	if sculpted(model, "world.Magazin", cf) then
+		marker(model, "Tejghea", Vector3.new(4, 4, 4), cf * CFrame.new(0, 2, -11))
+		return
+	end
 	house(model, cf, 16, 11, 8, C.wall, C.tin)
 	sign(model, cf * CFrame.new(0, 7, -5.7), 9, "site.magazin", "MAGAZIN")
 	box(
@@ -389,6 +408,10 @@ end
 
 -- Stația de autobuz cu mozaic (ca cele sovietice, colorate)
 builders.statie = function(model, cf)
+	if sculpted(model, "world.Statie", cf) then
+		marker(model, "Oprire", Vector3.new(6, 4, 6), cf * CFrame.new(0, 2, -5))
+		return
+	end
 	box(
 		model,
 		"Placa",
@@ -671,7 +694,7 @@ end
 builders.livada = function(model, cf)
 	for i, at in { { -14, -6 }, { 0, -10 }, { 14, -6 }, { -8, 8 }, { 9, 9 } } do
 		local place = cf * CFrame.new(at[1], 0, at[2]) * CFrame.Angles(0, math.rad(i * 71), 0)
-		local art = ArtLibrary.get("world.Visin")
+		local art = ArtLibrary.get("world.Cires") or ArtLibrary.get("world.Visin")
 		if art then
 			art.Name = "Cires"
 			placeOnBase(art, onGround(place))
@@ -746,6 +769,14 @@ builders.lanPorumb = function(model, cf)
 		local x, z = (i * 37) % (N * CELL), (i * 53) % (N * CELL)
 		cyl(walls, "Mot", 1.2, 0.3, origin * CFrame.new(x, 7.6, z), C.gold, soft())
 	end
+	-- pătulul lângă intrare și sperietoarea în colțul de la ieșire (în afara labirintului)
+	sculpted(
+		model,
+		"world.Patul",
+		onGround(origin * CFrame.new(-7, 0, 6) * CFrame.Angles(0, math.rad(-90), 0)),
+		"Patul"
+	)
+	sculpted(model, "world.Sperietoare", onGround(origin * CFrame.new(N * CELL + 5, 0, -4)), "Sperietoare")
 	marker(model, "Intrare", Vector3.new(6, 4, 6), origin * CFrame.new(CELL / 2, 2, -3))
 	marker(model, "Mijloc", Vector3.new(6, 4, 6), cf * CFrame.new(0, 2, 0))
 	marker(model, "Iesire", Vector3.new(6, 4, 6), origin * CFrame.new(N * CELL + 3, 2, N * CELL - CELL / 2))
@@ -769,23 +800,28 @@ builders.via = function(model, cf)
 				C.darkWood,
 				{ Material = Enum.Material.Wood }
 			)
-			ball(
-				rowModel,
-				"Vita",
-				Vector3.new(3.6, 2.2, 1.6),
-				post * CFrame.new(2.5, 2.6, 0),
-				C.leaf,
-				soft({ Material = Enum.Material.Grass })
-			)
-			if k % 2 == 0 then
+			-- butucul sculptat la fiecare al doilea arac (restul: frunzișul simplu, pentru bugetul de triunghiuri)
+			local vine = k % 2 == 0
+				and sculpted(rowModel, "world.ButucVie", post * CFrame.new(2.5, 0, 0), "Butuc")
+			if not vine then
 				ball(
 					rowModel,
-					"Strugure",
-					Vector3.new(0.7, 1.1, 0.7),
-					post * CFrame.new(1.6, 1.6, -0.6),
-					Color3.fromRGB(96, 44, 110),
-					soft()
+					"Vita",
+					Vector3.new(3.6, 2.2, 1.6),
+					post * CFrame.new(2.5, 2.6, 0),
+					C.leaf,
+					soft({ Material = Enum.Material.Grass })
 				)
+				if k % 2 == 0 then
+					ball(
+						rowModel,
+						"Strugure",
+						Vector3.new(0.7, 1.1, 0.7),
+						post * CFrame.new(1.6, 1.6, -0.6),
+						Color3.fromRGB(96, 44, 110),
+						soft()
+					)
+				end
 			end
 			local top = (post * CFrame.new(0, 3.8, 0)).Position
 			if previous then
@@ -834,6 +870,9 @@ builders.stana = function(model, cf)
 	for i = 1, 6 do
 		local a = i * 1.05
 		local p = onGround(cf * CFrame.new(math.cos(a) * 5, 0, math.sin(a) * 5) * CFrame.Angles(0, a, 0))
+		if sculpted(model, "char.Oaia", p, "Oaie") then
+			continue
+		end
 		local sheep = Instance.new("Model")
 		sheep.Name = "Oaie"
 		sheep.Parent = model
@@ -855,6 +894,9 @@ builders.stana = function(model, cf)
 		)
 	end
 	local hut = onGround(cf * CFrame.new(18, 0, 6) * CFrame.Angles(0, math.rad(-100), 0))
+	if sculpted(model, "world.Stana", hut * CFrame.new(0, 0, 4), "Coliba", 0.7) then
+		return
+	end
 	box(
 		model,
 		"Coliba",
@@ -868,6 +910,9 @@ end
 
 -- Moara de vânt pe deal: turnul, căciula, palele (rotite pe client: atributul Spin)
 builders.moara = function(model, cf)
+	if sculpted(model, "world.Moara", cf) then
+		return
+	end
 	for i = 0, 3 do
 		cyl(
 			model,
@@ -918,6 +963,12 @@ end
 
 -- Biserica de pe deal: naosul alb, turnul cu bulb aurit, crucea, clopotul
 builders.biserica = function(model, cf)
+	if sculpted(model, "world.Biserica", cf) then
+		-- clopotul rămâne ca reper (invizibil), în turla modelului
+		local bell = marker(model, "Clopot", Vector3.new(2, 2, 2), cf * CFrame.new(0, 15, -2))
+		bell:SetAttribute("Bell", true)
+		return
+	end
 	house(model, cf * CFrame.new(0, 0, 6), 14, 22, 10, C.white, Color3.fromRGB(70, 110, 90))
 	box(
 		model,
@@ -986,8 +1037,10 @@ end
 
 -- Gara: clădirea, peronul, linia ferată (est–vest, de-a lungul satului)
 builders.gara = function(model, cf)
-	house(model, cf * CFrame.new(0, 0, -10), 18, 8, 8, Color3.fromRGB(236, 214, 160), C.tin)
-	sign(model, cf * CFrame.new(0, 7.4, -14.2), 6, "site.gara", "GARA")
+	if not sculpted(model, "world.Gara", cf * CFrame.new(0, 0, -11), "Gara") then
+		house(model, cf * CFrame.new(0, 0, -10), 18, 8, 8, Color3.fromRGB(236, 214, 160), C.tin)
+		sign(model, cf * CFrame.new(0, 7.4, -14.2), 6, "site.gara", "GARA")
+	end
 	box(
 		model,
 		"Peron",
@@ -1049,6 +1102,10 @@ builders.bazar = function(model, cf)
 		local m = Instance.new("Model")
 		m.Name = "Taraba" .. i
 		m.Parent = model
+		if sculpted(m, "world.Taraba", stall, "TarabaSculptata") then
+			marker(m, "Vanzator", Vector3.new(3, 5, 3), stall * CFrame.new(0, 2.5, 2.4))
+			continue
+		end
 		box(
 			m,
 			"Masa",
@@ -1111,34 +1168,43 @@ builders.bucatarie = function(model, cf)
 	end
 	gable(model, cf * CFrame.new(0, 6, 0), 10, 8, 3, C.roof)
 	local oven = cf * CFrame.new(9, 0, 1)
-	box(
-		model,
-		"CuptorBaza",
-		Vector3.new(5, 2, 5),
-		oven * CFrame.new(0, 1, 0),
-		C.wall,
-		{ Material = Enum.Material.Plaster }
-	)
-	local dome = ball(
-		model,
-		"Cuptor",
-		Vector3.new(5, 4, 5),
-		oven * CFrame.new(0, 2.6, 0),
-		Color3.fromRGB(226, 204, 170),
-		{ Material = Enum.Material.Plaster }
-	)
-	box(
-		model,
-		"GuraCuptor",
-		Vector3.new(1.6, 1.2, 0.3),
-		oven * CFrame.new(0, 2.8, -2.4),
-		Color3.fromRGB(40, 24, 18),
-		soft()
-	)
-	local fire = Instance.new("PointLight")
-	fire.Color = Color3.fromRGB(255, 150, 60)
-	fire.Range = 10
-	fire.Parent = dome
+	local sculptedOven = sculpted(model, "world.Cuptor", oven, "Cuptor")
+	if sculptedOven then
+		local fire = Instance.new("PointLight")
+		fire.Color = Color3.fromRGB(255, 150, 60)
+		fire.Range = 10
+		fire.Parent = sculptedOven:FindFirstChildWhichIsA("BasePart", true)
+	end
+	if not sculptedOven then
+		box(
+			model,
+			"CuptorBaza",
+			Vector3.new(5, 2, 5),
+			oven * CFrame.new(0, 1, 0),
+			C.wall,
+			{ Material = Enum.Material.Plaster }
+		)
+		local dome = ball(
+			model,
+			"Cuptor",
+			Vector3.new(5, 4, 5),
+			oven * CFrame.new(0, 2.6, 0),
+			Color3.fromRGB(226, 204, 170),
+			{ Material = Enum.Material.Plaster }
+		)
+		box(
+			model,
+			"GuraCuptor",
+			Vector3.new(1.6, 1.2, 0.3),
+			oven * CFrame.new(0, 2.8, -2.4),
+			Color3.fromRGB(40, 24, 18),
+			soft()
+		)
+		local fire = Instance.new("PointLight")
+		fire.Color = Color3.fromRGB(255, 150, 60)
+		fire.Range = 10
+		fire.Parent = dome
+	end
 	box(
 		model,
 		"Masa",
@@ -1157,6 +1223,11 @@ builders.claie = function(model, cf)
 	for i, at in { { 0, 0, 1 }, { -9, 5, 0.75 }, { 8, 6, 0.65 } } do
 		local s = at[3]
 		local p = cf * CFrame.new(at[1], 0, at[2])
+		local art = sculpted(model, "world.Claie", onGround(p), if i == 1 then "Claie" else "Capita", 1.7 * s)
+		if art then
+			art:SetAttribute("HidingSpot", true)
+			continue
+		end
 		local hay = ball(
 			model,
 			if i == 1 then "Claie" else "Capita",

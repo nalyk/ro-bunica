@@ -204,7 +204,11 @@ Omul a cerut tot pachetul C din `docs/RESEARCH_SAT_VIU.md`, „full featured”.
 - **M7, calendarul (`Domain/Seasons`, `SeasonService`, `SeasonController`):** Paștele ortodox după Meeus (2026 = 12 aprilie, 2027 = 2 mai), Mărțișorul (straturi × 1,2), ouăle de Paște prin sat și ou încondeiat la ciocnit, coronița de Drăgaică, știuletele roșu la Cules (și strugurii propuși mai des), hramul satului (o zi pe lună, pe server: nu se fură, decorul dă venit), iarna: colinde la vecinii NPC, Capra și Ursul, masca de Malanca (Bunica nu te recunoaște 30 s), gheața pe iaz. `SeasonService.force` pentru teste.
 - **Verificare:** 293 de teste unitare, e2e 90/90.
 
-**Urmează:** M8 (RU/ES/PT, toate cheile), M9 (modele TRELLIS pentru locuri: concepte Codex, apoi TRELLIS când GPU-ul de pe ai-esempla e liber), M10 (chestionarul de maturitate, Experience Events, review-ul final, publicarea).
+**Gata (sarcinile 34–35):**
+- **M8, limbile:** rusă, spaniolă și portugheză (Brazilia) complete (508 texte fiecare, scrise de mână, cu nume locale pentru creaturi); testul cere fiecare cheie din engleză, cu aceleași argumente. Numele creaturii cu mutația în ordinea limbii (`fmt.creature`: în ES și PT adjectivul vine după nume).
+- **M9, modelele satului:** 32 de concepte Codex (planșa în `art/concepts/world` și `art/concepts/village`), 31 de modele TRELLIS (Rutiera a rămas fără memorie pe GPU; reîncercată separat). Legate în `SiteBuilder` (magazinul, stația, moara, biserica fără cruce, gara, coliba stânii, tarabele, cuptorul, căpițele, pătulul, sperietoarea, butucii, cireșii, oile), în poduri (doar la vedere; podeaua veche, invizibilă, rămâne pentru mers), în figurile întâmplărilor (`Kit.SCULPTED`: negustorul, Mărioara, Muma Pădurii, mirii, lăutarii), în viața satului (gâște, găini, săteni), la lupi, gâștele întâmplării și cocoș (găina, mai mare, cu creastă și coadă: generatorul de imagini refuză cocoșii). Unde lipsește un model, rămâne construcția procedurală. Bugetul satului: 1,19M triunghiuri (≤ 1,2M).
+
+**Urmează:** M10 (chestionarul de maturitate și Experience Events: textele în `docs/PLATFORM.md`, trimiterea o face omul; review-ul final, publicarea).
 
 ## Acoperișul casei (2026-10-18)
 

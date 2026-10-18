@@ -9,6 +9,7 @@ local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
+local ArtLibrary = require(Shared.Visual.ArtLibrary)
 local Net = require(Shared.Net)
 local Config = require(Shared.Config.Rutiera)
 local Rutiera = require(Shared.Domain.Rutiera)
@@ -102,8 +103,40 @@ local function buildVehicle(): Model
 		weld.Part1 = p
 		weld.Parent = p
 	end
+	-- microbuzul sculptat, dacă există: caroseria rămâne ca rădăcină invizibilă, piesele sudate de ea
+	local art = ArtLibrary.get("char.Rutiera")
+	if art then
+		local _, size = art:GetBoundingBox()
+		local turned = size.X > size.Z -- lungimea microbuzului trebuie să fie pe Z
+		art:ScaleTo(s.Z / math.max(size.X, size.Z))
+		art:PivotTo(body.CFrame * (if turned then CFrame.Angles(0, math.pi / 2, 0) else CFrame.identity))
+		local box, scaled = art:GetBoundingBox()
+		art:PivotTo(
+			art:GetPivot()
+				+ (
+					body.Position
+					- Vector3.new(0, s.Y / 2, 0)
+					- Vector3.new(box.X, box.Y - scaled.Y / 2, box.Z)
+				)
+		)
+		for _, p in art:GetDescendants() do
+			if p:IsA("BasePart") then
+				p.Anchored = false
+				p.CanCollide = false
+				p.CanQuery = false
+				p.Massless = true
+				local weld = Instance.new("WeldConstraint")
+				weld.Part0 = body
+				weld.Part1 = p
+				weld.Parent = p
+			end
+		end
+		art.Name = "Sculptat"
+		art.Parent = vehicle
+		body.Transparency = 1
+	end
 	local glass = Color3.fromRGB(70, 90, 110)
-	for _, side in { -1, 1 } do
+	for _, side in (if art then {} else { -1, 1 }) :: { number } do
 		weldTo(
 			part("Geamuri", Vector3.new(0.1, 2.2, s.Z - 4), CFrame.identity, glass, Enum.Material.Glass),
 			CFrame.new(side * (s.X / 2 + 0.05), 1.4, 0.5)
@@ -115,24 +148,31 @@ local function buildVehicle(): Model
 			weldTo(wheel, CFrame.new(side * (s.X / 2 - 0.3), -s.Y / 2 + 0.6, z))
 		end
 	end
-	weldTo(
-		part("Parbriz", Vector3.new(s.X - 0.6, 2.6, 0.1), CFrame.identity, glass, Enum.Material.Glass),
-		CFrame.new(0, 1.3, -s.Z / 2 - 0.05)
-	)
-	weldTo(
-		part("Dunga", Vector3.new(s.X + 0.1, 0.5, s.Z + 0.1), CFrame.identity, Color3.fromRGB(40, 90, 170)),
-		CFrame.new(0, -0.6, 0)
-	)
-	weldTo(
-		part(
-			"Faruri",
-			Vector3.new(s.X - 1.6, 0.6, 0.1),
-			CFrame.identity,
-			Color3.fromRGB(255, 250, 220),
-			Enum.Material.Neon
-		),
-		CFrame.new(0, -1.6, -s.Z / 2 - 0.05)
-	)
+	if not art then
+		weldTo(
+			part("Parbriz", Vector3.new(s.X - 0.6, 2.6, 0.1), CFrame.identity, glass, Enum.Material.Glass),
+			CFrame.new(0, 1.3, -s.Z / 2 - 0.05)
+		)
+		weldTo(
+			part(
+				"Dunga",
+				Vector3.new(s.X + 0.1, 0.5, s.Z + 0.1),
+				CFrame.identity,
+				Color3.fromRGB(40, 90, 170)
+			),
+			CFrame.new(0, -0.6, 0)
+		)
+		weldTo(
+			part(
+				"Faruri",
+				Vector3.new(s.X - 1.6, 0.6, 0.1),
+				CFrame.identity,
+				Color3.fromRGB(255, 250, 220),
+				Enum.Material.Neon
+			),
+			CFrame.new(0, -1.6, -s.Z / 2 - 0.05)
+		)
+	end
 	local prompt = Instance.new("ProximityPrompt")
 	prompt.Name = "UrcaPrompt"
 	prompt.ActionText = "Urcă"

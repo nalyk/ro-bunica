@@ -25,6 +25,30 @@ local function buildRooster(at: Vector3, parent: Instance): Model
 	root.CFrame = CFrame.new(at)
 	root.Parent = model
 	model.PrimaryPart = root
+	-- cocoșul: găina sculptată, mai mare, cu creasta înaltă și coada arcuită (generatorul de imagini nu face cocoși)
+	local art = Kit.sculptInto(model, "char.Gaina", root.CFrame, 2.4)
+	if art then
+		local box, size = art:GetBoundingBox()
+		local top = (root.CFrame:Inverse() * box).Position + Vector3.new(0, size.Y / 2, 0)
+		Kit.piece(
+			model,
+			"Creasta",
+			Enum.PartType.Block,
+			Vector3.new(0.18, 0.6, 0.7),
+			CFrame.new(0, top.Y + 0.15, top.Z - size.Z * 0.25),
+			RED
+		)
+		Kit.piece(
+			model,
+			"Coada",
+			Enum.PartType.Block,
+			Vector3.new(0.3, 1.8, 1.1),
+			CFrame.new(0, top.Y - 0.3, top.Z + size.Z * 0.45) * CFrame.Angles(math.rad(-20), 0, 0),
+			Color3.fromRGB(40, 90, 60)
+		)
+		model.Parent = parent
+		return model
+	end
 	Kit.piece(model, "Corp", Enum.PartType.Ball, Vector3.new(1.4, 1.4, 1.8), CFrame.new(0, 1, 0), GOLD)
 	Kit.piece(
 		model,

@@ -8,6 +8,7 @@ local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
+local ArtLibrary = require(Shared.Visual.ArtLibrary)
 local Ambient = require(Shared.Config.Ambient)
 local GameState = require(Shared.GameState)
 local Sounds = require(Shared.Config.Sounds)
@@ -56,7 +57,36 @@ local function newModel(name: string): Model
 	return model
 end
 
+-- Figura sculptată (TRELLIS) ca piese cu Offset, ca `place` să o miște la fel ca pe cele simple; nil dacă lipsește
+local function sculptedFigure(name: string, key: string): Model?
+	local art = ArtLibrary.get(key)
+	if not art then
+		return nil
+	end
+	art:PivotTo(CFrame.new())
+	local box, size = art:GetBoundingBox()
+	art:PivotTo(CFrame.new(-box.X, -(box.Y - size.Y / 2), -box.Z))
+	local m = newModel(name)
+	for _, part in art:GetDescendants() do
+		if part:IsA("BasePart") then
+			part.Anchored = true
+			part.CanCollide = false
+			part.CanQuery = false
+			part.CanTouch = false
+			part.CastShadow = false
+			part:SetAttribute("Offset", part.CFrame)
+			part.Parent = m
+		end
+	end
+	art:Destroy()
+	return m
+end
+
 local function goose(): Model
+	local art = sculptedFigure("Gasca", "char.Gasca")
+	if art then
+		return art
+	end
 	local m = newModel("Gasca")
 	piece(m, "Corp", BALL, Vector3.new(1.4, 1.2, 2), CFrame.new(0, 0.9, 0), WHITE)
 	piece(
@@ -73,6 +103,10 @@ local function goose(): Model
 end
 
 local function hen(): Model
+	local art = sculptedFigure("Gaina", "char.Gaina")
+	if art then
+		return art
+	end
 	local m = newModel("Gaina")
 	local brown = Color3.fromRGB(176, 110, 60)
 	piece(m, "Corp", BALL, Vector3.new(0.9, 0.9, 1.2), CFrame.new(0, 0.6, 0), brown)
@@ -118,7 +152,13 @@ local function dog(): Model
 	return m
 end
 
+local villagerCount = 0
 local function villager(shirt: Color3): Model
+	villagerCount += 1
+	local art = sculptedFigure("Satean", "char.Satean" .. ((villagerCount - 1) % 3 + 1))
+	if art then
+		return art
+	end
 	local m = newModel("Satean")
 	local skin = Color3.fromRGB(234, 196, 160)
 	piece(m, "Trup", BLOCK, Vector3.new(1.8, 2, 1), CFrame.new(0, 3, 0), shirt)

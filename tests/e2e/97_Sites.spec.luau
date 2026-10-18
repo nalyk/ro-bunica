@@ -42,7 +42,13 @@ return function(Spec: any, services: { [string]: any })
 				} :: { [string]: string }
 			do
 				local holder = site:FindFirstChild(key)
-				expect(holder ~= nil and holder:FindFirstChild(marker, true) ~= nil).toBe(true)
+				-- moara sculptată are palele în model (nu se mai rotesc separat)
+				local found = holder ~= nil
+					and (
+						holder:FindFirstChild(marker, true) ~= nil
+						or (key == "moara" and holder:FindFirstChild("Moara") ~= nil)
+					)
+				expect(found).toBe(true)
 			end
 		end)
 

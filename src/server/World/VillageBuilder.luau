@@ -12,6 +12,7 @@ local Shared = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
 local Village = require(Shared.Config.Village)
 local VillageLayout = require(Shared.Domain.VillageLayout)
 local Scatter = require(Shared.Domain.Scatter)
+local ArtLibrary = require(Shared.Visual.ArtLibrary)
 
 local VillageBuilder = {}
 
@@ -170,6 +171,42 @@ local function buildBridges(layout: VillageLayout.Layout, parent: Instance)
 			rail.Size = Vector3.new(0.4, 1.2, Village.riverWidth + 8)
 			rail.CFrame = deck.CFrame * CFrame.new(side * 3.8, 0.9, 0)
 			rail.Parent = parent
+		end
+		-- podul sculptat (doar la vedere): podeaua și balustradele de mai sus rămân, invizibile, pentru mers
+		local art = ArtLibrary.get("world.Pod")
+		if art then
+			local _, size = art:GetBoundingBox()
+			art:ScaleTo((Village.riverWidth + 8) / math.max(size.X, 1))
+			art.Name = "PodSculptat"
+			art:PivotTo(
+				CFrame.new(cf.Position.X, GROUND_TOP - 0.6, cf.Position.Z) * CFrame.Angles(0, math.pi / 2, 0)
+			)
+			local box, scaled = art:GetBoundingBox()
+			art:PivotTo(
+				art:GetPivot()
+					+ Vector3.new(
+						cf.Position.X - box.X,
+						GROUND_TOP - 0.6 - (box.Y - scaled.Y / 2),
+						cf.Position.Z - box.Z
+					)
+			)
+			for _, piece in art:GetDescendants() do
+				if piece:IsA("BasePart") then
+					piece.CanCollide = false
+				end
+			end
+			art.Parent = parent
+			for _, piece in parent:GetChildren() do
+				if
+					piece:IsA("BasePart")
+					and (
+						piece == deck
+						or (piece.Name == "Balustrada" and (piece.Position - deck.Position).Magnitude < 6)
+					)
+				then
+					piece.Transparency = 1
+				end
+			end
 		end
 		-- poteca de la drumul mare la pod
 		local road = VillageLayout.lower(Village.bridges[i])

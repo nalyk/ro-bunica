@@ -33,6 +33,11 @@ local function goose(at: Vector3, parent: Instance): Model
 	root.CFrame = CFrame.new(at)
 	root.Parent = model
 	model.PrimaryPart = root
+	if Kit.sculptInto(model, "char.Gasca", root.CFrame, 3) then
+		model:SetAttribute("Goose", true)
+		model.Parent = parent
+		return model
+	end
 	Kit.piece(model, "Corp", Enum.PartType.Ball, Vector3.new(1.6, 1.4, 2.3), CFrame.new(0, 1, 0), WHITE)
 	Kit.piece(model, "Gat", Enum.PartType.Block, Vector3.new(0.45, 1.5, 0.45), CFrame.new(0, 2, -0.9), WHITE)
 	Kit.piece(model, "Cap", Enum.PartType.Ball, Vector3.new(0.7, 0.7, 0.8), CFrame.new(0, 2.8, -1), WHITE)

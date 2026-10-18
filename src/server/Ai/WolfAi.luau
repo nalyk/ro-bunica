@@ -59,6 +59,12 @@ function WolfAi.create(at: Vector3, parent: Instance): Wolf
 	root.CFrame = CFrame.new(ground(at) + Vector3.new(0, 1.6, 0))
 	root.Parent = model
 	model.PrimaryPart = root
+	local Kit = require(script.Parent.Parent.Happenings.Kit)
+	if Kit.sculptInto(model, "char.Lupul", root.CFrame * CFrame.new(0, -1.5, 0), 3.2) then
+		model:SetAttribute("Wolf", true)
+		model.Parent = parent
+		return { model = model, hits = 0, state = "Coming", stunnedUntil = 0 }
+	end
 	piece(model, "Corp", Vector3.new(1.6, 1.5, 3.4), CFrame.new(0, 0.4, 0), GREY)
 	piece(model, "Cap", Vector3.new(1.3, 1.2, 1.4), CFrame.new(0, 1.1, -2), GREY)
 	piece(model, "Bot", Vector3.new(0.7, 0.6, 0.9), CFrame.new(0, 0.85, -2.9), DARK)

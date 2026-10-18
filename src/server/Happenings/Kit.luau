@@ -7,6 +7,7 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
 local VillageLayout = require(Shared.Domain.VillageLayout)
+local ArtLibrary = require(Shared.Visual.ArtLibrary)
 local Actors = require(script.Parent.Parent.Actors)
 local RaidService = require(script.Parent.Parent.Services.RaidService)
 
@@ -118,6 +119,43 @@ function Kit.piece(
 end
 
 -- O figură de om simplă (mătușa, mirii, lăutarii, negustorul)
+-- Pune modelul sculptat `key` în `model`, cu baza pe `base` (fața spre −Z), ancorat și fără coliziuni.
+-- Întoarce modelul pus sau nil (atunci apelantul construiește figura simplă).
+function Kit.sculptInto(model: Model, key: string, base: CFrame, height: number?): Model?
+	local art = ArtLibrary.get(key)
+	if not art then
+		return nil
+	end
+	if height then
+		local _, size = art:GetBoundingBox()
+		art:ScaleTo(height / math.max(size.Y, 0.1))
+	end
+	art:PivotTo(base)
+	local box, size = art:GetBoundingBox()
+	art:PivotTo(art:GetPivot() + (base.Position - Vector3.new(box.X, box.Y - size.Y / 2, box.Z)))
+	for _, part in art:GetDescendants() do
+		if part:IsA("BasePart") then
+			part.Anchored = true
+			part.CanCollide = false
+			part.CanQuery = false
+		end
+	end
+	art.Name = "Sculptat"
+	art.Parent = model
+	return art
+end
+
+-- Figurile care au model sculptat (art/models.json); cifra de la final a numelui se ignoră (Lautar1, Lautar2)
+Kit.SCULPTED = {
+	Negustor = "char.Negustorul",
+	NegustorTren = "char.Negustorul",
+	Matusa = "char.Marioara",
+	MumaPadurii = "char.MumaPadurii",
+	Mireasa = "char.Mireasa",
+	Mirele = "char.Mirele",
+	Lautar = "char.Lautar",
+} :: { [string]: string }
+
 function Kit.figure(name: string, at: CFrame, shirt: Color3, parent: Instance, scarf: Color3?): Model
 	local model = Instance.new("Model")
 	model.Name = name
@@ -131,6 +169,25 @@ function Kit.figure(name: string, at: CFrame, shirt: Color3, parent: Instance, s
 	root.CFrame = at
 	root.Parent = model
 	model.PrimaryPart = root
+	-- personajul sculptat (TRELLIS), dacă există: aceeași rădăcină, deci glisarea și scalarea merg la fel
+	local key = Kit.SCULPTED[string.gsub(name, "%d+$", "")]
+	local art = key and ArtLibrary.get(key)
+	if art then
+		art:PivotTo(at)
+		local box, size = art:GetBoundingBox()
+		art:PivotTo(art:GetPivot() + (at.Position - Vector3.new(box.X, box.Y - size.Y / 2, box.Z)))
+		for _, piece in art:GetDescendants() do
+			if piece:IsA("BasePart") then
+				piece.Anchored = true
+				piece.CanCollide = false
+				piece.CanQuery = false
+			end
+		end
+		art.Name = "Sculptat"
+		art.Parent = model
+		model.Parent = parent
+		return model
+	end
 	local skin = Color3.fromRGB(234, 196, 160)
 	Kit.piece(model, "Trup", Enum.PartType.Block, Vector3.new(1.8, 2.2, 1), CFrame.new(0, 3.1, 0), shirt)
 	Kit.piece(

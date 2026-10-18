@@ -167,12 +167,12 @@
  "world.Moara": {
   "remote": "site/Moara_40k.glb",
   "height": 20,
-  "tris": 19000
+  "tris": 12000
  },
  "world.Biserica": {
   "remote": "site/Biserica_40k.glb",
   "height": 22,
-  "tris": 19000
+  "tris": 14000
  },
  "world.Magazin": {
   "remote": "site/Magazin_40k.glb",
@@ -197,7 +197,7 @@
  "world.Taraba": {
   "remote": "site/Taraba_40k.glb",
   "height": 7,
-  "tris": 10000
+  "tris": 4000
  },
  "world.Cuptor": {
   "remote": "site/Cuptor_40k.glb",
@@ -207,12 +207,12 @@
  "world.Stana": {
   "remote": "site/Stana_40k.glb",
   "height": 7,
-  "tris": 14000
+  "tris": 9000
  },
  "world.Claie": {
   "remote": "site/Claie_40k.glb",
   "height": 7,
-  "tris": 6000
+  "tris": 3000
  },
  "world.Patul": {
   "remote": "site/Patul_40k.glb",
@@ -237,17 +237,17 @@
  "world.Pod": {
   "remote": "site/Pod_40k.glb",
   "height": 4,
-  "tris": 8000
+  "tris": 4000
  },
  "world.Cires": {
   "remote": "site/Cires_40k.glb",
   "height": 11,
-  "tris": 8000
+  "tris": 5000
  },
  "world.ButucVie": {
   "remote": "site/ButucVie_40k.glb",
   "height": 5,
-  "tris": 6000
+  "tris": 1500
  },
  "world.Stiulete": {
   "remote": "site/Stiulete_40k.glb",
@@ -272,7 +272,7 @@
  "char.Oaia": {
   "remote": "site/Oaia_40k.glb",
   "height": 2.8,
-  "tris": 6000
+  "tris": 2500
  },
  "char.Lupul": {
   "remote": "site/Lupul_40k.glb",

@@ -54,7 +54,7 @@ Verificarea fiecărui lot: `./tools.sh` (teste Lune pentru tot ce e în `Domain`
   - RSVP la evenimente, în panoul de prieteni.
   - Clipul reluării (CaptureService, doar în afara Studio).
   - Notificările: `Domain/NotifyPlan`, `NotificationService` (sorted map MemoryStore + Open Cloud), cererea de acord (dimineața de după prima lovitură). Șirurile sunt create în Dashboard.
-  - **Blocat:** trimiterea cere o cheie Open Cloud cu `user.user-notification:write` în Secrets-ul experienței (numele „notifications”). Regula omului: nu creez și nu modific chei API. Până atunci serviciul nu trimite nimic.
+  - Cheia Open Cloud e în Secrets („notifications”, pusă de om pe 2026-10-18). Verificat cu `cloud.py run` pe versiunea 152: secretul se citește, iar cererea e autentificată (400 „not opted in” pentru contul creatorului, adică formatul e bun).
 - **Lotul 2 (grafică PBR):**
   - `post3d` coace harta normală din plasa de 40k. Roblox importă singur toate cele 4 hărți (culoare, normală, rugozitate, metal; verificat pe moară cu `cloud.py run`). 85 de modele reconstruite și urcate.
   - Terenul: `tools/terrain_tex.py` (Codex → seamless → normală) → MaterialVariant „SatIarba/SatPamant/SatNoroi” în `default.project.json`, aplicate cu `SetBaseMaterialOverride`.

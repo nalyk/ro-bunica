@@ -1,13 +1,15 @@
 --!strict
 -- Magazinul pe Robux: permisele („Pentru totdeauna”) și produsele („Acum”), din Config/Monetization.
 -- Prețul vine de la Roblox (MarketplaceService), deci e mereu cel real; permisele deținute apar „Al tău”.
--- Cumpărarea se face prin fereastra Roblox; serverul acordă efectul (MonetizationService).
+-- Cumpărarea se face prin fereastra Roblox; serverul acordă efectul (MonetizationService). Unde PolicyService
+-- restricționează cumpărăturile cu rezultate aleatorii, ce duce la ele nu se arată (Domain/Policy).
 
 local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
 
 local Shared = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
 local Config = require(Shared.Config.Monetization)
+local Policy = require(Shared.Domain.Policy)
 local StoreIcons = require(Shared.Config.StoreIcons)
 local ClientState = require(script.Parent.ClientState)
 local Theme = require(script.Parent.Theme)
@@ -127,20 +129,32 @@ local function row(kind: "pass" | "product", key: string, id: number, order: num
 	table.insert(rows, { kind = kind, key = key, id = id, buy = buy })
 end
 
+-- Politica jucătorului, din atributele puse de server (până sosesc: restricționat)
+local function policy(): Policy.Policy
+	local player = Players.LocalPlayer
+	return {
+		randomRestricted = player:GetAttribute("PaidRandomRestricted") ~= false,
+		tradingAllowed = player:GetAttribute("PaidTradingAllowed") == true,
+	}
+end
+
 local function build()
 	UI.clear(scroll)
 	table.clear(rows)
+	local current = policy()
 	local order = 0
 	order += 1
 	header(ClientState.t("ui.passes"), order)
 	for _, pass in Config.passes do
-		order += 1
-		row("pass", pass.key, pass.id, order)
+		if Policy.canBuy(pass, current) then
+			order += 1
+			row("pass", pass.key, pass.id, order)
+		end
 	end
 	order += 1
 	header(ClientState.t("ui.products"), order)
 	for _, product in Config.products do
-		if product.id ~= 0 then
+		if product.id ~= 0 and Policy.canBuy(product, current) then
 			order += 1
 			row("product", product.key, product.id, order)
 		end
@@ -172,6 +186,7 @@ function StorePanel.start()
 		UI.show(panel, false)
 	end)
 	build()
+	Players.LocalPlayer:GetAttributeChangedSignal("PaidRandomRestricted"):Connect(build)
 	ClientState.onChanged(function()
 		if panel.Visible then
 			refresh()

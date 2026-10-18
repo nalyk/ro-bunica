@@ -187,7 +187,7 @@ Designul e în `docs/superpowers/specs/2026-10-17-mobil-hud-design.md`, pornit d
 - **Blocant de platformă:** publicul copiilor cere ID verificat, 2FA și Roblox Plus (de confirmat). Ține de om.
 - **Următorul pas:** omul alege pachetul și ordinea (§8).
 
-## Satul viu, pachetul C complet (în lucru, 2026-10-18)
+## Satul viu, pachetul C complet (2026-10-18)
 
 Omul a cerut tot pachetul C din `docs/RESEARCH_SAT_VIU.md`, „full featured”. Planul: `docs/superpowers/plans/2026-10-18-satul-viu-full.md` (37 de sarcini). Execuția e în ledger-ul local `.superpowers/sdd/2026-10-18-satul-viu-full/progress.md` (ignorat de git), cu toate deciziile („Ruling”).
 
@@ -212,6 +212,13 @@ Omul a cerut tot pachetul C din `docs/RESEARCH_SAT_VIU.md`, „full featured”.
 - Chestionarul de maturitate și Experience Events: răspunsurile și textele sunt în `docs/PLATFORM.md`; trimiterea le schimbă ce vede publicul, deci o face omul din Creator Dashboard.
 - Review-ul final independent al ramurii (dfa57c0..3656e64): o problemă critică (NaN la vânzarea peștilor → lei NaN, cumpărături gratuite) și cinci importante (Secretele la bazar, mini-jocuri fără efort, refresh scump la bazar, tarabele rămase la 12, duplicare la preluarea sesiunii), toate reparate cu teste (commit bfdbe42; unit 299, e2e 91/91). Minorii amânați sunt în ledger: negustorul NPC nu actualizează clasamentul, renașterea lasă oferte moarte, actor recreat la ieșire, titlul „Dansatoarea” farmabil, ouăle de Paște reapar imediat, limitatoarele nu uită jucătorii.
 - Rutiera a rămas procedurală (TRELLIS rămâne fără memorie pe acest concept); Casa de cultură procedurală (interiorul e folosit de Discotecă).
+
+## Politicile Roblox, chestionarul și grafica (2026-10-18, după pachetul C)
+
+- **Politicile pe jucător:** `Domain/Policy` și `RegionPolicyService` (PolicyService, cerut la intrare; fără răspuns înseamnă restricționat). Magazinul ascunde produsele marcate `random` în `Config/Monetization` (lei, reînnoire, vreme, 2× lei) unde `ArePaidRandomItemsRestricted`. Schimburile și bazarul se închid unde `IsPaidItemTradingAllowed` e fals (verificat pe server; butoanele nu apar). Teste: `tests/Policy.spec.luau`, e2e `99_Policy`, playtest 3c (12 rânduri în magazin, 5 când e restricționat).
+- **Chestionarul de maturitate:** răspunsurile în `docs/PLATFORM.md`, cu previzualizarea Mild. Atenție: „teme romantice: da” dă Restricted (18+).
+- **Experience Events:** imaginile sunt gata (`tools/event_art.py` → `art/ui/events/`, 7 evenimente). Omul a cerut ca publicarea să aștepte refacerea graficii.
+- **Grafica (de refăcut, cerința omului: „all the new graphics is horrible”):** modelele TRELLIS arată bine în randări (`build/art/*.png`). În joc însă domină construcțiile procedurale: copacii-bilă și tufele din `VillageBuilder.scatter`, rutiera din blocuri, Casa de cultură. Pe deasupra, tarabele, podul și butucii sunt prea decimați. De făcut: copacii, tufele și rutiera prin fluxul concept → TRELLIS; modelele reconstruite cu mai multe triunghiuri; bugetul de randare refăcut pe mesh-uri instanțiate; capturi de aproape din joc, aprobate de om înainte de publicare.
 
 ## Acoperișul casei (2026-10-18)
 

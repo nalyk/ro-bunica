@@ -215,6 +215,9 @@ end
 
 player = Players:GetPlayers()[1] or Players.PlayerAdded:Wait()
 log("jucător: " .. player.Name)
+-- politica reală a contului din Studio nu încurcă pașii; restricțiile se verifică separat (3c)
+local Policy = require(Shared.Domain.Policy)
+services.RegionPolicyService.set(player.UserId, Policy.OPEN)
 check(
 	waitFor(function()
 		return clientReady and PlotService.getOwner(player) ~= nil
@@ -520,6 +523,15 @@ step("3c. Magazinul pe Robux: permisele și produsele, cu prețurile de la Roblo
 	log("SNAP magazin")
 	task.wait(1)
 	call("closePanel", "StorePanel")
+	-- unde PolicyService restricționează cumpărăturile aleatorii: rămân doar cele fără noroc
+	services.RegionPolicyService.set(player.UserId, { randomRestricted = true, tradingAllowed = false })
+	task.wait(0.5)
+	local restricted = call("openPanel", "StorePanel")
+	log(string.format("magazin restricționat: %d rânduri", restricted.rows))
+	check(restricted.rows == 5, "magazinul restricționat arată lei, reîmprospătări sau vreme")
+	call("closePanel", "StorePanel")
+	services.RegionPolicyService.set(player.UserId, Policy.OPEN)
+	task.wait(0.5)
 end)
 
 step("3d. Darul Bunicii: fereastra seriei de 7 zile", function()
@@ -1515,7 +1527,7 @@ step("15s. Ceasul satului: anunțul, semnul de deasupra locului și întâmplăr
 	check(
 		waitFor(function()
 			return call("debugState", "HappeningController").shop == true
-		end, 4),
+		end, 8), -- drumul pe lângă negustor se poate opri la câțiva pași; oferta apare la 10 studs
 		"oferta negustorului nu apare lângă el"
 	)
 	log("SNAP negustor")

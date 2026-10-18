@@ -8,6 +8,7 @@ local Net = require(Shared.Net)
 local ORDER = {
 	"ArtService", -- întâi: modelele trebuie să existe când se construiește satul
 	"DataService",
+	"RegionPolicyService",
 	"PlotService",
 	"StateService",
 	"CreatureService",

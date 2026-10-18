@@ -148,7 +148,9 @@ function MarketPanel.start()
 	RunService.Heartbeat:Connect(function()
 		local character = Players.LocalPlayer.Character
 		local root = character and character:FindFirstChild("HumanoidRootPart") :: BasePart?
+		-- unde schimbul de lucruri plătite nu e permis (PolicyService), bazarul nu apare
 		local isNear = root ~= nil
+			and Players.LocalPlayer:GetAttribute("PaidTradingAllowed") == true
 			and Vector3.new(root.Position.X - bazaar.X, 0, root.Position.Z - bazaar.Z).Magnitude <= REACH
 		if button.Visible ~= isNear then
 			button.Visible = isNear

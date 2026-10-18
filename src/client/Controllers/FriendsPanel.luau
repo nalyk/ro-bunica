@@ -127,6 +127,10 @@ local function build()
 			Text = player.DisplayName .. (if tag ~= "" then "  ·  " .. tag else ""),
 		}, 20)
 		local userId = player.UserId
+		-- schimburile doar unde PolicyService le permite (serverul verifică și partea celuilalt)
+		if Players.LocalPlayer:GetAttribute("PaidTradingAllowed") ~= true then
+			continue
+		end
 		UI.button({
 			Size = UDim2.new(0.42, -8, 0, 48),
 			Position = UDim2.new(0.57, 0, 0, 7),

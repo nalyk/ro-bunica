@@ -18,6 +18,7 @@ local EconomyService = require(script.Parent.EconomyService)
 local StateService = require(script.Parent.StateService)
 local DataService = require(script.Parent.DataService)
 local Messenger = require(script.Parent.Messenger)
+local RegionPolicyService = require(script.Parent.RegionPolicyService)
 local Analytics = require(script.Parent.Parent.Analytics)
 
 type Owner = PlotService.Owner
@@ -136,6 +137,10 @@ function MarketService.market(): Market.Market
 end
 
 function MarketService.list(owner: Owner, uid: string, price: number): (string?, string?)
+	if not RegionPolicyService.tradingAllowed(owner) then
+		Messenger.notify(owner.player, "market.Policy")
+		return nil, "Policy"
+	end
 	if not near(owner) then
 		return nil, "Far"
 	end
@@ -163,6 +168,10 @@ function MarketService.buy(owner: Owner, id: string): (boolean, string?)
 	local seller = listing and ownerById(listing.seller)
 	if not listing or not seller then
 		return false, "Gone"
+	end
+	if not RegionPolicyService.tradingAllowed(owner) then
+		Messenger.notify(owner.player, "market.Policy")
+		return false, "Policy"
 	end
 	if not near(owner) then
 		return false, "Far"

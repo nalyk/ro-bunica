@@ -16,6 +16,7 @@ local PlotService = require(script.Parent.PlotService)
 local StateService = require(script.Parent.StateService)
 local EconomyService = require(script.Parent.EconomyService)
 local Messenger = require(script.Parent.Messenger)
+local RegionPolicyService = require(script.Parent.RegionPolicyService)
 local Analytics = require(script.Parent.Parent.Analytics)
 
 type Owner = PlotService.Owner
@@ -155,6 +156,15 @@ function TradeService.request(from: Owner, to: Owner): boolean
 	if from == to or not present(from) or not present(to) then
 		return false
 	end
+	-- unde schimbul de lucruri plătite nu e permis (PolicyService), nu se schimbă deloc
+	if not RegionPolicyService.tradingAllowed(from) then
+		Messenger.notify(from.player, "notify.TradePolicy")
+		return false
+	end
+	if not RegionPolicyService.tradingAllowed(to) then
+		Messenger.notify(from.player, "notify.TradePolicyOther", { to.name })
+		return false
+	end
 	if trades[from] or trades[to] then
 		Messenger.notify(from.player, "notify.TradeBusy")
 		return false
@@ -193,6 +203,10 @@ function TradeService.respond(to: Owner, from: Owner, yes: boolean): boolean
 	end
 	if trades[from] or trades[to] or not present(from) or not present(to) then
 		Messenger.notify(to.player, "notify.TradeBusy")
+		return false
+	end
+	if not (RegionPolicyService.tradingAllowed(from) and RegionPolicyService.tradingAllowed(to)) then
+		Messenger.notify(to.player, "notify.TradePolicy")
 		return false
 	end
 	startTrade(from, to)

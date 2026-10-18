@@ -16,7 +16,13 @@ local FOV = 30
 
 export type Record = { id: string, size: string, mutation: string? }
 
-function CreaturePreview.make(record: Record, rarityColor: Color3, side: number, parent: GuiObject): Frame
+function CreaturePreview.make(
+	record: Record,
+	rarityColor: Color3,
+	side: number,
+	parent: GuiObject,
+	silhouette: boolean?
+): Frame
 	local backdrop = UI.frame({
 		Size = UDim2.fromOffset(side, side),
 		Position = UDim2.fromOffset(4, 4),
@@ -43,6 +49,23 @@ function CreaturePreview.make(record: Record, rarityColor: Color3, side: number,
 	end
 	-- doar imagine: fără etichete, respirație sau alte efecte ale creaturilor din lume
 	CollectionService:RemoveTag(model, CreatureBuilder.TAG)
+	if silhouette then
+		-- nedescoperită: doar umbra ei (Caietul), ca să știi ce cauți
+		backdrop.BackgroundColor3 = Theme.paper:Lerp(Theme.ink, 0.15)
+		for _, part in model:GetDescendants() do
+			if part:IsA("MeshPart") then
+				part.TextureID = ""
+			end
+			if part:IsA("BasePart") then
+				part.Color = Color3.fromRGB(30, 26, 24)
+				part.Material = Enum.Material.SmoothPlastic
+			elseif part:IsA("Decal") or part:IsA("SurfaceAppearance") or part:IsA("Texture") then
+				part:Destroy()
+			end
+		end
+		viewport.Ambient = Color3.fromRGB(40, 36, 34)
+		viewport.LightColor = Color3.fromRGB(60, 56, 52)
+	end
 	model.Parent = viewport
 	local camera = Instance.new("Camera")
 	camera.FieldOfView = FOV

@@ -9,6 +9,10 @@ export type CreatureRecord = {
 	size: string,
 	mutation: string?,
 	soul: boolean?, -- creatură de suflet (Domain/Soul): nu se fură, nu se schimbă
+	happiness: number?, -- fericirea (Domain/Care), 60 dacă lipsește
+	lastPet: number?, -- ultima mângâiere (timpul serverului)
+	hybrid: string?, -- hibrid: a doua creatură (Domain/Hybrid)
+	hybridName: string?,
 }
 
 export type PlantRecord = {
@@ -45,6 +49,8 @@ export type Profile = {
 	title: string?, -- titlul ales (Domain/Titles)
 	outfits: { [string]: boolean }, -- ținutele Bunicii cumpărate (Config/Outfits)
 	outfit: string?, -- ținuta purtată
+	food: { [string]: number }, -- hrana pentru creaturi (plăcinte de la Plăcintărie)
+	hybrids: { [string]: boolean }, -- hibrizii descoperiți (Domain/Hybrid.key)
 	uidCounter: number,
 	passes: { [string]: boolean }, -- permisele Robux deja aplicate (efectele permanente, o singură dată)
 	receipts: { string }, -- PurchaseId-urile procesate (anti-dublare la ProcessReceipt)
@@ -101,6 +107,8 @@ function DataTemplate.new(): Profile
 		decor = {},
 		ownedDecor = {},
 		outfits = {},
+		food = {},
+		hybrids = {},
 	}
 end
 

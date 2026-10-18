@@ -9,6 +9,9 @@ local EconomyConfig = require(Config.Economy)
 
 type CreatureRecord = { id: string, size: string, mutation: string? }
 
+local Care = require(script.Parent.Care)
+local Hybrid = require(script.Parent.Hybrid)
+
 local Economy = {}
 
 -- Venitul pe secundă al unei creaturi, cu mutație și mărime.
@@ -21,7 +24,11 @@ function Economy.incomePerSecond(record: CreatureRecord): number
 	local mutation = if record.mutation then Mutations.byId[record.mutation] else nil
 	local sizeMultiplier = if size then size.multiplier else 1
 	local mutationMultiplier = if mutation then mutation.multiplier else 1
-	return creature.income * sizeMultiplier * mutationMultiplier
+	local happiness = (record :: any).happiness :: number?
+	local hybrid = (record :: any).hybrid :: string?
+	local other = hybrid and Creatures.byId[hybrid]
+	local base = if other then Hybrid.income(creature.income, other.income) else creature.income
+	return base * sizeMultiplier * mutationMultiplier * Care.multiplier(happiness or Care.START)
 end
 
 function Economy.sellPrice(record: CreatureRecord): number

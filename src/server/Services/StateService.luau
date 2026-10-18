@@ -52,6 +52,7 @@ local function snapshot(player: Player): { [string]: any }?
 		eggs = profile.eggs, -- ouăle de ciocnit
 		records = profile.records,
 		decor = profile.decor,
+		hybrids = profile.hybrids,
 		ownedDecor = profile.ownedDecor,
 	}
 	for _, provider in providers do

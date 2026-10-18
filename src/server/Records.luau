@@ -4,6 +4,8 @@
 
 local Workspace = game:GetService("Workspace")
 
+local Minigame = require(game:GetService("ReplicatedStorage"):WaitForChild("Shared").Domain.Minigame)
+
 local Records = {}
 
 local best: { [string]: { name: string, score: number } } = {}
@@ -20,12 +22,12 @@ end
 function Records.submit(gameId: string, owner: any, score: number): (boolean, boolean)
 	local personal = false
 	local records = owner.profile.records
-	if records and score > (records[gameId] or 0) then
+	if records and Minigame.isRecord(records[gameId], score) then
 		records[gameId] = score
 		personal = true
 	end
 	local current = best[gameId]
-	if current and score <= current.score then
+	if not Minigame.isRecord(current and current.score, score) then
 		return false, personal
 	end
 	best[gameId] = { name = owner.name, score = score }

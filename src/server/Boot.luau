@@ -35,6 +35,7 @@ local ORDER = {
 	"DecorService",
 	"TitleService",
 	"OutfitService",
+	"CareService",
 	"TradeService",
 	"HoraService",
 	"LiveEventService",

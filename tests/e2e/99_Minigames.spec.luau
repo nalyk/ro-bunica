@@ -325,6 +325,17 @@ return function(Spec: any, services: { [string]: any })
 				expect(match.scores[hiders[2].owner.userId] >= 2).toBe(true)
 				-- prinderea
 				local target = hiders[1]
+				-- momelile de lângă Păcală se scot, ca testul să nu depindă de unde au căzut
+				local around = (Actors.root(target.actor) :: BasePart).Position
+				for _, child in match.folder:GetChildren() do
+					if
+						child.Name == "Momeala"
+						and child:IsA("Model")
+						and (child:GetPivot().Position - around).Magnitude < 10
+					then
+						child:Destroy()
+					end
+				end
 				local deadline = os.clock() + 16
 				while Pacala.isDisguised(match, target.owner) and os.clock() < deadline do
 					local at = (Actors.root(target.actor) :: BasePart).Position;

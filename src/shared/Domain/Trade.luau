@@ -6,8 +6,9 @@ local Config = script.Parent.Parent.Config
 local TradeConfig = require(Config.Trade)
 local Creatures = require(Config.Creatures)
 local Economy = require(script.Parent.Economy)
+local DataTemplate = require(script.Parent.Parent.Config.DataTemplate)
 
-type CreatureRecord = { uid: string, id: string, size: string, mutation: string?, soul: boolean? }
+type CreatureRecord = DataTemplate.CreatureRecord
 type Profile = { lei: number, cellar: { CreatureRecord }, cellarCapacity: number }
 
 export type Offer = { uids: { string }, lei: number }

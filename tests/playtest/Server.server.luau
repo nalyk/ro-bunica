@@ -1598,6 +1598,34 @@ step(
 	end
 )
 
+step("15u. Decorul, garderoba și recordurile (pe calculator și pe telefon)", function()
+	me.profile.lei += 20000
+	services.StateService.markDirty(player)
+	task.wait(0.5)
+	local decor = call("openPanel", "DecorPanel")
+	check(decor.rows >= 20, "catalogul decorului are prea puține rânduri: " .. decor.rows)
+	log("SNAP decor")
+	call("closePanel", "DecorPanel")
+	local wardrobe = call("openPanel", "WardrobePanel")
+	check(wardrobe.rows >= 13, "garderoba: ținutele și titlurile lipsesc")
+	log("SNAP garderoba")
+	call("closePanel", "WardrobePanel")
+	local records = call("notebook", "records")
+	check(records.rows >= 4, "fila Recorduri e goală")
+	log("SNAP caiet-recorduri")
+	call("notebook", "collection")
+	task.wait(0.8)
+	log("SNAP caiet-siluete")
+	call("closePanel", "NotebookPanel")
+	-- pe telefon (iPhone SE): panoul decorului încape și se poate atinge
+	call("phone", 667, 339)
+	call("openPanel", "DecorPanel")
+	task.wait(0.5)
+	log("SNAP telefon-decor")
+	call("closePanel", "DecorPanel")
+	call("phone")
+end)
+
 step("16. Fără erori de script (server și client)", function()
 	local serverErrors = {}
 	for _, entry in LogService:GetLogHistory() do

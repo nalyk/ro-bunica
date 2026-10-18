@@ -257,6 +257,9 @@ function SlipperService.unregisterTarget(model: Model)
 end
 
 local function hitTargets(projectile: Projectile, from: Vector3, to: Vector3): boolean
+	-- dintre țintele atinse pe segment, cea întâlnită prima (cea mai apropiată de început)
+	local best: Target? = nil
+	local bestDistance = math.huge
 	for model, target in targets do
 		if not model.Parent then
 			targets[model] = nil
@@ -264,10 +267,16 @@ local function hitTargets(projectile: Projectile, from: Vector3, to: Vector3): b
 		end
 		local at = model:GetPivot().Position
 		if Slipper.hits(from, to, at, projectile.params.hitRadius, target.radius) then
-			projectile.hits += 1
-			task.spawn(target.onHit, projectile.thrower, projectile.kind)
-			return true
+			local d = (at - from).Magnitude
+			if d < bestDistance then
+				best, bestDistance = target, d
+			end
 		end
+	end
+	if best then
+		projectile.hits += 1
+		task.spawn(best.onHit, projectile.thrower, projectile.kind)
+		return true
 	end
 	return false
 end

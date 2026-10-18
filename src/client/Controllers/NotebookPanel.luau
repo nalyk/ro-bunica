@@ -17,11 +17,12 @@ local Economy = require(Shared.Domain.Economy)
 local ClientState = require(script.Parent.ClientState)
 local Theme = require(script.Parent.Theme)
 local UI = require(script.Parent.UI)
+local CreaturePreview = require(script.Parent.CreaturePreview)
 
 local NotebookPanel = {}
 
-type Tab = string -- "quests" | "collection" | "rebirth"
-local TABS: { Tab } = { "quests", "collection", "rebirth" }
+type Tab = string -- "quests" | "collection" | "records" | "rebirth"
+local TABS: { Tab } = { "quests", "collection", "records", "rebirth" }
 local CONFIRM_SECONDS = 4
 
 local panel: Frame
@@ -198,9 +199,27 @@ local function buildCollection()
 		for _, mutation in Mutations.list do
 			any = any or found[creature.id .. ":" .. mutation.id] == true
 		end
+		-- creatura: sculptată dacă ai descoperit-o, altfel umbra ei cu „?”
+		local preview = CreaturePreview.make(
+			{ id = creature.id, size = "Normal" },
+			Theme.rarity[creature.rarity] or Theme.ink,
+			CELL + 4,
+			line,
+			not any
+		)
+		if not any then
+			local mark = Instance.new("TextLabel")
+			mark.BackgroundTransparency = 1
+			mark.Size = UDim2.fromScale(1, 1)
+			mark.Text = "?"
+			mark.TextScaled = true
+			mark.FontFace = UI.font
+			mark.TextColor3 = Theme.paper
+			mark.Parent = preview
+		end
 		text(line, {
-			Size = UDim2.new(0.4, -12, 1, 0),
-			Position = UDim2.fromOffset(10, 0),
+			Size = UDim2.new(0.4, -12 - CELL, 1, 0),
+			Position = UDim2.fromOffset(14 + CELL, 0),
 			-- numele se văd (știi ce cauți), doar Rețeta Secretă rămâne secretă până o descoperi
 			Text = if any or creature.rarity ~= "Secret"
 				then ClientState.t("creature." .. creature.id)
@@ -247,6 +266,56 @@ local function buildCollection()
 			stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 			stroke.Parent = cell
 		end
+	end
+end
+
+-- Fila „Recorduri”: mini-jocurile (topul de pe server și recordul tău) și hibrizii descoperiți ---------
+
+local function buildRecords()
+	local mine = ClientState.state.records or {}
+	local board: Instance? = nil
+	local village = workspace:FindFirstChild("Village")
+	local sites = village and village:FindFirstChild("Sites")
+	local centre = sites and sites:FindFirstChild("centru")
+	board = centre and centre:FindFirstChild("Avizier", true)
+	local order = 0
+	local function line(value: string, color: Color3?)
+		order += 1
+		text(row(28, order), {
+			Size = UDim2.new(1, -16, 1, 0),
+			Position = UDim2.fromOffset(8, 0),
+			Text = value,
+			TextColor3 = color,
+		}, 17)
+	end
+	line("🏆 " .. ClientState.t("ui.records"))
+	for _, id in { "Sotron", "Moara", "Pescuit" } do
+		local top = board and board:GetAttribute("Record_" .. id)
+		local who, score = if typeof(top) == "string" then string.match(top, "^(.*)|(%d+)$") else nil, nil
+		line(
+			string.format(
+				"%s: %s · %s %s",
+				ClientState.t("minigame." .. id),
+				if who then who .. " " .. score else "—",
+				ClientState.t("ui.yours"),
+				tostring(mine[id] or "—")
+			)
+		)
+	end
+	line("🧬 " .. ClientState.t("ui.hybrids"))
+	local found = 0
+	for key in ClientState.state.hybrids or {} do
+		local a, b = string.match(key, "^(.-)%+(.+)$")
+		if a and b then
+			found += 1
+			line(
+				"   " .. ClientState.t("creature." .. a) .. " + " .. ClientState.t("creature." .. b),
+				Theme.inkSoft
+			)
+		end
+	end
+	if found == 0 then
+		line("   " .. ClientState.t("ui.hybridsHint"), Theme.inkSoft)
 	end
 end
 
@@ -347,6 +416,8 @@ function NotebookPanel.refresh()
 		buildQuests()
 	elseif current == "collection" then
 		buildCollection()
+	elseif current == "records" then
+		buildRecords()
 	else
 		buildRebirth()
 	end

@@ -77,6 +77,7 @@ function CreatureService.renderKey(owner: Owner, key: string)
 	local model = CreatureBuilder.build(record, pivot)
 	model:SetAttribute("PedestalKey", key)
 	model:SetAttribute("OwnerUserId", owner.userId)
+	model:SetAttribute("Happiness", math.floor((record :: any).happiness or 60))
 	model.Parent = owner.plot.geometry.creatureFolder
 	modelsByOwner[owner] = modelsByOwner[owner] or {}
 	modelsByOwner[owner][key] = model

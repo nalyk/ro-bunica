@@ -4,6 +4,7 @@
 -- îl înlocuiește dacă există în ArtLibrary. Reperele numite (Tarc, Culoar, Labirint, Peron…) sunt folosite de
 -- întâmplări și mini-jocuri; textele au atributul TextKey (traduse pe client, SiteController).
 
+local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
@@ -1173,11 +1174,8 @@ end
 function SiteBuilder.build(sites: { [string]: CFrame }, parent: Instance): Folder
 	local folder = Instance.new("Folder")
 	folder.Name = "Sites"
-	for key, cf in sites do
-		local model = Instance.new("Model")
-		model.Name = key
-		model:SetAttribute("Site", key)
-		-- pe deal, locul stă pe un platou drept (altfel panta neregulată îngroapă clădirile)
+	-- întâi platourile: pe deal, locul stă drept (altfel panta neregulată îngroapă clădirile)
+	for _, cf in sites do
 		local center = cf.Position
 		local y = SiteBuilder.groundY(center.X, center.Z)
 		if y > 1 then
@@ -1185,6 +1183,14 @@ function SiteBuilder.build(sites: { [string]: CFrame }, parent: Instance): Folde
 			terrain:FillCylinder(CFrame.new(center.X, y + 30, center.Z), 60, 36, Enum.Material.Air)
 			terrain:FillCylinder(CFrame.new(center.X, y - 6, center.Z), 12, 38, Enum.Material.Grass)
 		end
+	end
+	-- terenul schimbat se vede în raycast abia după un cadru; apoi clădirile se așază pe el
+	RunService.Heartbeat:Wait()
+	RunService.Heartbeat:Wait()
+	for key, cf in sites do
+		local model = Instance.new("Model")
+		model.Name = key
+		model:SetAttribute("Site", key)
 		local base = onGround(CFrame.new(cf.Position.X, 0, cf.Position.Z) * cf.Rotation)
 		local anchor = marker(model, "Ancora", Vector3.new(2, 2, 2), base)
 		model.PrimaryPart = anchor

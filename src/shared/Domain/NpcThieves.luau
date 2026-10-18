@@ -6,8 +6,9 @@ local NpcThievesConfig = require(Config.NpcThieves)
 local Creatures = require(Config.Creatures)
 local Rarities = require(Config.Rarities)
 local Economy = require(script.Parent.Economy)
+local DataTemplate = require(script.Parent.Parent.Config.DataTemplate)
 
-type CreatureRecord = { uid: string, id: string, size: string, mutation: string?, soul: boolean? }
+type CreatureRecord = DataTemplate.CreatureRecord
 
 local NpcThieves = {}
 

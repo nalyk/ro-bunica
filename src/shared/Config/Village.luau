@@ -59,5 +59,5 @@ return table.freeze({
 	bridges = table.freeze({ -120, 140 }), -- podurile peste pârâu (parametrul x pe drumul mare)
 	railwayZ = -243, -- linia ferată, de la vest la est (la sud de peronul gării)
 	-- înălțimea terenului: valea plană între sud și nord, dealuri în afara ei
-	valley = table.freeze({ south = -260, north = 275, hillSlope = 0.22, hillMax = 32 }),
+	valley = table.freeze({ south = -260, north = 275, hillSlope = 0.22, hillMax = 64 }),
 })

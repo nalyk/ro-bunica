@@ -2,6 +2,7 @@
 -- Generează satul din cod: teren, drum și ogrăzile de pe ambele părți ale drumului.
 -- Coordonate locale ale unei ogrăzi: -Z = spre drum (față), +Z = spre casă (spate), X = lateral.
 
+local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 local Lighting = game:GetService("Lighting")
 
@@ -612,6 +613,9 @@ function WorldBuilder.build(): { PlotGeometry }
 	local layout = VillageLayout.build()
 	WorldBuilder.layout = layout
 	VillageBuilder.build(layout, village)
+	-- terenul proaspăt umplut apare în raycast abia după un cadru: locurile se așază pe el după aceea
+	RunService.Heartbeat:Wait()
+	RunService.Heartbeat:Wait()
 	SiteBuilder.build(layout.sites, village)
 	buildHearth(village)
 

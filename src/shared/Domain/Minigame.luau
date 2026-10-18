@@ -65,4 +65,9 @@ function Minigame.cheerMultiplier(cheers: number): number
 	return 1 + math.min(cheers * Minigames.cheerStep, Minigames.cheerMax)
 end
 
+-- E un record? (mai mult decât cel vechi; un scor de zero nu e record)
+function Minigame.isRecord(best: number?, score: number): boolean
+	return score > 0 and score > (best or 0)
+end
+
 return Minigame

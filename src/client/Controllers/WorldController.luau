@@ -47,7 +47,10 @@ local function labelCreature(model: Model)
 	billboard.MaxDistance = 30
 	billboard.Adornee = primary
 	billboard.Parent = model
-	local nameText = ClientState.t("creature." .. creature.id)
+	local hybridName = model:GetAttribute("HybridName")
+	local nameText = if typeof(hybridName) == "string" and hybridName ~= ""
+		then "🧬 " .. hybridName
+		else ClientState.t("creature." .. creature.id)
 	if mutation and mutation ~= "" then
 		nameText = ClientState.t("mutation." .. mutation) .. " " .. nameText
 	end
@@ -77,11 +80,61 @@ local function labelCreature(model: Model)
 	info.Parent = billboard
 end
 
+-- Îngrijirea: pe creaturile tale, un prompt local „Mângâie” (inimioare); 😊 în etichetă când e fericită
+local function careFor(model: Model)
+	local primary = model.PrimaryPart
+	if
+		not primary
+		or model:GetAttribute("OwnerUserId") ~= localPlayer.UserId
+		or model:GetAttribute("Showcase")
+	then
+		return
+	end
+	local prompt = Instance.new("ProximityPrompt")
+	prompt.Name = "PetPrompt"
+	prompt.ActionText = ClientState.t("care.pet")
+	prompt.HoldDuration = 0
+	prompt.MaxActivationDistance = 8
+	prompt.KeyboardKeyCode = Enum.KeyCode.F
+	prompt.RequiresLineOfSight = false
+	prompt.Parent = primary
+	prompt.Triggered:Connect(function()
+		local uid = model:GetAttribute("Uid")
+		if typeof(uid) == "string" then
+			Net.get("Care"):FireServer("pet", uid)
+		end
+		local hearts = Instance.new("ParticleEmitter")
+		hearts.Texture = "rbxasset://textures/particles/sparkles_main.dds"
+		hearts.Color = ColorSequence.new(Color3.fromRGB(255, 90, 140))
+		hearts.Size = NumberSequence.new(0.6)
+		hearts.Lifetime = NumberRange.new(0.8, 1.2)
+		hearts.Speed = NumberRange.new(3, 5)
+		hearts.Rate = 0
+		hearts.Parent = primary
+		hearts:Emit(14)
+		task.delay(2, function()
+			hearts:Destroy()
+		end)
+	end)
+	local function mood()
+		local label = model:FindFirstChild("CreatureLabel", true)
+		local name = label and label:FindFirstChildWhichIsA("TextLabel")
+		local happy = (model:GetAttribute("Happiness") or 0) :: number >= 80
+		if name and name:IsA("TextLabel") then
+			local text = string.gsub(name.Text, "^😊 ", "")
+			name.Text = if happy then "😊 " .. text else text
+		end
+	end
+	model:GetAttributeChangedSignal("Happiness"):Connect(mood)
+	mood()
+end
+
 local function onCreature(instance: Instance)
 	if not instance:IsA("Model") then
 		return
 	end
 	labelCreature(instance)
+	careFor(instance)
 	MutationVisuals.animate(instance, os.clock) -- curcubeul curge prin spectru (local)
 	local primary = instance.PrimaryPart
 	if primary and primary.Anchored then

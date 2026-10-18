@@ -63,6 +63,19 @@ local function row(record: any, order: number, displayed: boolean, pedestalKey: 
 		}),
 		17
 	)
+	-- îngrijirea: fericirea și „Hrănește” (pește, plăcintă sau brânză)
+	local happiness = math.floor(record.happiness or 60)
+	UI.button({
+		Name = "FeedButton",
+		AnchorPoint = Vector2.new(0, 1),
+		Position = UDim2.fromOffset(ROW_HEIGHT + 10, ROW_HEIGHT - 2),
+		Size = UDim2.fromOffset(78, 32),
+		Text = (if happiness >= 80 then "😊 " else "🍽 ") .. tostring(happiness),
+		swatch = if happiness >= 80 then "vine" else "paper",
+		Parent = frame,
+	}, function()
+		Net.get("Care"):FireServer("feed", record.uid)
+	end)
 	-- inima: creatură de suflet (nu se fură, nu se schimbă); cel mult 3
 	local heart = UI.button({
 		Name = "SoulToggle",
@@ -130,7 +143,8 @@ local function signature(list: { { record: any, displayed: boolean, key: string?
 		table.insert(
 			parts,
 			string.format(
-				"%s:%s:%s:%s:%s:%s",
+				"%s:%s:%s:%s:%s:%s:%s",
+				tostring(r.happiness and math.floor(r.happiness)),
 				tostring(r.soul),
 				tostring(r.uid),
 				r.id,

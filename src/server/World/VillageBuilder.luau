@@ -92,8 +92,9 @@ end
 
 local function buildTerrain(layout: VillageLayout.Layout)
 	local terrain = Workspace.Terrain
-	local extentX = Village.extent + 360
-	local north, south = Village.valley.north + 220, Village.valley.south - 160
+	-- departe în toate direcțiile: dealurile închid orizontul (nici de sus nu se vede marginea lumii)
+	local extentX = Village.extent + 700
+	local north, south = Village.valley.north + 520, Village.valley.south - 460
 	-- valea: o placă de iarbă cu fața la GROUND_TOP
 	terrain:FillBlock(
 		CFrame.new(0, GROUND_TOP - 4, (north + south) / 2),
@@ -105,7 +106,23 @@ local function buildTerrain(layout: VillageLayout.Layout)
 		for z = south, north, CELL do
 			local h = VillageBuilder.hillHeight(x, z)
 			if h > 0.5 then
-				terrain:FillBall(Vector3.new(x, GROUND_TOP + h - CELL, z), CELL * 1.25, Enum.Material.Grass)
+				-- aproape de sat celule fine; departe, celule duble (mai puține umpleri, același contur)
+				local far = math.abs(x) > Village.extent + 200
+					or z > Village.valley.north + 160
+					or z < Village.valley.south - 160
+				if not far then
+					terrain:FillBall(
+						Vector3.new(x, GROUND_TOP + h - CELL, z),
+						CELL * 1.25,
+						Enum.Material.Grass
+					)
+				elseif (x // CELL) % 2 == 0 and (z // CELL) % 2 == 0 then
+					terrain:FillBall(
+						Vector3.new(x, GROUND_TOP + h - 2 * CELL, z),
+						CELL * 2.5,
+						Enum.Material.Grass
+					)
+				end
 			end
 		end
 	end

@@ -12,6 +12,7 @@ local Mutations = require(Shared.Config.Mutations)
 local EconomyConfig = require(Shared.Config.Economy)
 local Growth = require(Shared.Domain.Growth)
 local Inventory = require(Shared.Domain.Inventory)
+local Hybrid = require(Shared.Domain.Hybrid)
 local RateLimiter = require(Shared.Domain.RateLimiter)
 local PlotService = require(script.Parent.PlotService)
 local CreatureService = require(script.Parent.CreatureService)
@@ -71,10 +72,49 @@ local function announceHatch(owner: Owner, record: { id: string, size: string, m
 	end
 end
 
+-- Hibrizii (Domain/Hybrid): straturile vecine din grila 5 × 2
+local hybridOverride: number? = nil
+
+-- Pentru teste: șansa de hibrid forțată (nil = cea normală)
+function GardenService.setHybridChance(chance: number?)
+	hybridOverride = chance
+end
+
+local function neighbourSeeds(profile: any, key: string): { string }
+	local index = tonumber(key)
+	local list = {}
+	if not index then
+		return list
+	end
+	local row, col = (index - 1) // 5, (index - 1) % 5
+	for _, d in { { 0, -1 }, { 0, 1 }, { 1, 0 }, { -1, 0 } } do
+		local r, c = row + d[1], col + d[2]
+		if r >= 0 and r <= 1 and c >= 0 and c <= 4 then
+			local plant = profile.beds[tostring(r * 5 + c + 1)]
+			if plant then
+				table.insert(list, plant.seedId)
+			end
+		end
+	end
+	return list
+end
+
 local function hatch(owner: Owner, key: string): boolean
 	local profile = owner.profile
 	local plant = profile.beds[key]
 	local record = Inventory.newRecord(profile, owner.userId, plant.seedId, plant.size, plant.mutation)
+	-- un vecin cel puțin rar poate da un hibrid (corpul acesteia, „pălăria” vecinului)
+	for _, other in neighbourSeeds(profile, key) do
+		local chance = hybridOverride or Hybrid.chance(plant.seedId, other)
+		if other ~= plant.seedId and Hybrid.chance(plant.seedId, other) > 0 and math.random() < chance then
+			record.hybrid = other
+			record.hybridName = Hybrid.name(plant.seedId, other, profile.uidCounter)
+			profile.hybrids = profile.hybrids or {}
+			profile.hybrids[Hybrid.key(plant.seedId, other)] = true
+			Messenger.notify(owner.player, "notify.Hybrid", { record.hybridName })
+			break
+		end
+	end
 	local where, pedestalKey = Inventory.place(profile, record)
 	if where == nil then
 		profile.uidCounter -= 1 -- n-a fost folosit
@@ -120,7 +160,7 @@ end
 local function tick(dt: number)
 	local weather = WeatherService.growthSpeed()
 	for _, owner in PlotService.owners() do
-		if owner.kind ~= "Player" then
+		if owner.kind ~= "Player" and not owner.standIn then
 			continue
 		end
 		local speed = weather * GardenService.boostFactor(owner)

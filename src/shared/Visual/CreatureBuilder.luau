@@ -135,6 +135,30 @@ function CreatureBuilder.build(record: Record, pivot: CFrame): Model
 
 	CreatureBuilder.placeOn(model, pivot)
 
+	-- hibridul: a doua creatură, micșorată, stă pe capul primei („pălăria”), în același model
+	local hybrid = (record :: any).hybrid :: string?
+	if hybrid and Creatures.byId[hybrid] then
+		local hat = ArtLibrary.get("creature." .. hybrid) or buildProcedural(hybrid)
+		hat:ScaleTo(0.45)
+		local box, extent = model:GetBoundingBox()
+		CreatureBuilder.placeOn(
+			hat,
+			CFrame.new(box.Position + Vector3.new(0, extent.Y / 2 - 0.2, 0)) * pivot.Rotation
+		)
+		for _, part in hat:GetDescendants() do
+			if part:IsA("BasePart") then
+				part.Anchored = true
+				part.CanCollide = false
+			end
+		end
+		for _, child in hat:GetChildren() do
+			child.Parent = model
+		end
+		hat:Destroy()
+		model:SetAttribute("Hybrid", hybrid)
+		model:SetAttribute("HybridName", (record :: any).hybridName or "")
+	end
+
 	model:SetAttribute("CreatureId", record.id)
 	model:SetAttribute("Size", record.size)
 	model:SetAttribute("Mutation", record.mutation or "")

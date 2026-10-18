@@ -131,6 +131,9 @@ function Placinte.action(match: any, owner: any, payload: any)
 				for _, member in match.players do
 					match.score(member, 1) -- co-op: punctul e al echipei
 					GardenService.boost(member, Placinte.BOOST_SECONDS, Placinte.BOOST_FACTOR)
+					-- și o plăcintă de luat acasă: hrană pentru creaturi (îngrijirea)
+					member.profile.food = member.profile.food or {}
+					member.profile.food.placinta = (member.profile.food.placinta or 0) + 1
 				end
 				match.data.pies[owner] = Recipe.new()
 				break

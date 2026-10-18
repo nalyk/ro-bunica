@@ -61,7 +61,13 @@ function EconomyService.multiplier(player: Player): number
 	local progress = if owner
 		then Rebirth.multiplier(owner.profile.rebirths) * Collection.multiplier(owner.profile)
 		else 1
-	return Economy.friendMultiplier(friendCounts[player] or 0) * (boosts[player] or 1) * progress
+	local seasonal = if owner then EconomyService.seasonalMultiplier(owner) else 1
+	return Economy.friendMultiplier(friendCounts[player] or 0) * (boosts[player] or 1) * progress * seasonal
+end
+
+-- Sezoanele (SeasonService) pot adăuga un bonus de venit (hramul: decorul contează)
+EconomyService.seasonalMultiplier = function(_owner: Owner): number
+	return 1
 end
 
 function EconomyService.addLei(owner: Owner, amount: number)

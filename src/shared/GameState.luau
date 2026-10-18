@@ -14,6 +14,7 @@ GameState.Attributes = table.freeze({
 	WeatherEndsAt = "WeatherEndsAt",
 	ShopRestockAt = "ShopRestockAt",
 	Season = "Season", -- "Primavara" | "Vara" | "Toamna" | "Iarna" (Domain/Seasons)
+	Holidays = "Holidays", -- sărbătorile de acum, despărțite prin virgulă ("Paste,Hram")
 	Fog = "Fog", -- 0–1: ceața (întâmplarea „Ceața”), densitatea atmosferei pe client
 })
 

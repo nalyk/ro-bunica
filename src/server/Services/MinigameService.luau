@@ -13,6 +13,7 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
 local Net = require(Shared.Net)
+local GameState = require(Shared.GameState)
 local Minigames = require(Shared.Config.Minigames)
 local Minigame = require(Shared.Domain.Minigame)
 local VillageLayout = require(Shared.Domain.VillageLayout)
@@ -365,7 +366,16 @@ function MinigameService.propose(players: number): string?
 	if #options == 0 then
 		return nil
 	end
-	local id = options[math.random(1, #options)]
+	-- la Cules, zdrobitul strugurilor e propus de patru ori mai des
+	local holidays = GameState.get(GameState.Attributes.Holidays)
+	local harvest = typeof(holidays) == "string" and string.find(holidays, "Culesul") ~= nil
+	local weighted = {}
+	for _, id in options do
+		for _ = 1, if harvest and id == "Struguri" then 4 else 1 do
+			table.insert(weighted, id)
+		end
+	end
+	local id = weighted[math.random(1, #weighted)]
 	return if MinigameService.open(id) then id else nil
 end
 

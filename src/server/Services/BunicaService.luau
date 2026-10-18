@@ -230,10 +230,21 @@ local function setState(bunica: Bunica, state: BunicaState)
 	end
 end
 
+-- Masca de Malanca (Iarna): Bunica nu-l recunoaște pe purtător o vreme
+local disguisedUntil: { [Actor]: number } = {}
+
+function BunicaService.disguise(actor: Actor, seconds: number)
+	disguisedUntil[actor] = os.clock() + seconds
+end
+
+function BunicaService.isDisguised(actor: Actor): boolean
+	return (disguisedUntil[actor] or 0) > os.clock()
+end
+
 local function intrudersOf(owner: Owner): { { actor: Actor, root: BasePart } }
 	local list = {}
 	for _, actor in Actors.all() do
-		if RaidService.isIntruder(actor, owner) then
+		if RaidService.isIntruder(actor, owner) and not BunicaService.isDisguised(actor) then
 			local root = Actors.root(actor)
 			if root then
 				table.insert(list, { actor = actor, root = root })

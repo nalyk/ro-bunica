@@ -62,6 +62,12 @@ local function clash(match: any)
 	local w, l, lost =
 		if winner == "A" then a else b, if winner == "A" then b else a, if winner == "A" then eggB else eggA
 	match.score(w, 1)
+	-- de Paște, câștigătorul primește și un ou încondeiat
+	local GameState = require(game:GetService("ReplicatedStorage").Shared.GameState)
+	local holidays = GameState.get(GameState.Attributes.Holidays)
+	if typeof(holidays) == "string" and string.find(holidays, "Paste") then
+		w.profile.eggs.Incondeiat = (w.profile.eggs.Incondeiat or 0) + 1
+	end
 	-- oul crăpat trece la câștigător (colecția)
 	if (l.profile.eggs[lost] or 0) > 0 then
 		l.profile.eggs[lost] -= 1

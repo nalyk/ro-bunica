@@ -30,6 +30,7 @@ local ORDER = {
 	"QuickChatWheel",
 	"MarketPanel",
 	"CodesPanel",
+	"SeasonController",
 	"FriendsPanel",
 	"StorePanel",
 	"DailyPopup",

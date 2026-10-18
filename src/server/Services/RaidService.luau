@@ -98,6 +98,9 @@ local function setSpeedModifier(actor: Actor, name: string, multiplier: number?)
 	end
 end
 
+-- Hramul satului (SeasonService): casă deschisă, furturile sunt oprite
+RaidService.holiday = false
+
 -- Pentru întâmplări (ciupitul gâștei, urzicile): un modificator de viteză cu nume, combinat cu celelalte
 function RaidService.setSpeedModifier(actor: Actor, name: string, multiplier: number?)
 	setSpeedModifier(actor, name, multiplier)
@@ -321,6 +324,7 @@ function RaidService.tryStart(actor: Actor, owner: Owner, key: string)
 		creatureOnPedestal = not carriedUids[record.uid],
 		creatureIsSoul = record.soul == true,
 		inMinigame = Busy.is(actor),
+		holiday = RaidService.holiday,
 	})
 	if not ok then
 		debugLog("furt refuzat " .. actor.name .. ": " .. tostring(reason))
@@ -332,6 +336,7 @@ function RaidService.tryStart(actor: Actor, owner: Owner, key: string)
 			or reason == "NightLimit"
 			or reason == "Soul"
 			or reason == "Busy"
+			or reason == "Hram"
 		then
 			Messenger.notify(actor.player, "notify." .. reason)
 		end

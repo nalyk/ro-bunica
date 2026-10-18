@@ -20,6 +20,7 @@ local NAMES = {
 	"Trade", -- (action: "request" | "respond" | "offer" | "accept" | "cancel", a, b) schimburile
 	"Notebook", -- (action: "claimQuest" | "claimBonus" | "rebirth", arg: number?) Caietul Bunicii
 	"Rutiera", -- C→S ("board" | "alight" | "destination", stop: string?); S→C ({ riding: boolean, destination: string? })
+	"Season", -- (action: "crown" | "colinda" | "mask") acțiunile de sezon
 	"Code", -- (code: string) codul tantii de la magazin
 	"Market", -- C→S ("list" | "unlist" | "buy" | "refresh", a, b); S→C ({ listings, stalls, sunday }) bazarul
 	"QuickChat", -- (id: string) mesaj rapid (Config/QuickChat), fără text liber

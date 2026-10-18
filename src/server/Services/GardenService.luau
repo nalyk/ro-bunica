@@ -141,6 +141,9 @@ local function hatch(owner: Owner, key: string): boolean
 	return true
 end
 
+-- Creștere mai rapidă pentru toți, cât ține o sărbătoare (Mărțișorul: × 1,2)
+GardenService.seasonFactor = 1
+
 -- Creștere mai rapidă pentru o ogradă, o vreme (plăcintele livrate la Plăcintărie: 10 minute × 1,25)
 local boosts: { [Owner]: { untilTime: number, factor: number } } = {}
 
@@ -163,7 +166,7 @@ local function tick(dt: number)
 		if owner.kind ~= "Player" and not owner.standIn then
 			continue
 		end
-		local speed = weather * GardenService.boostFactor(owner)
+		local speed = weather * GardenService.boostFactor(owner) * GardenService.seasonFactor
 		local changed = false
 		for key, plant in owner.profile.beds do
 			if Growth.isReady(plant) or Growth.advance(plant, dt, speed) then

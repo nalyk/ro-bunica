@@ -39,6 +39,7 @@ local ORDER = {
 	"QuickChatService",
 	"MarketService",
 	"CodeService",
+	"SeasonService",
 	"TradeService",
 	"HoraService",
 	"LiveEventService",

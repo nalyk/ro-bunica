@@ -367,6 +367,7 @@ return {
 	["market.Price"] = "Prețul trebuie să fie între 25% și de 10 ori valoarea ei",
 	["market.StallFull"] = "Pe tarabă încap 4 creaturi",
 	["market.NoStall"] = "Toate tarabele sunt ocupate",
+	["market.NotTradable"] = "Comorile Caietului nu se vând",
 	["market.Gone"] = "S-a vândut deja",
 	["market.Own"] = "E creatura ta",
 	["market.NotEnoughLei"] = "Nu ai destui lei",

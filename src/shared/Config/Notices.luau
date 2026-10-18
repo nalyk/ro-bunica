@@ -41,6 +41,7 @@ local byKey: { [string]: Priority } = {
 	["market.StallFull"] = "hint",
 	["market.NoStall"] = "hint",
 	["market.Gone"] = "hint",
+	["market.NotTradable"] = "hint",
 	["market.Own"] = "hint",
 	["market.NotEnoughLei"] = "hint",
 	["market.CellarFull"] = "hint",

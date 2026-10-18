@@ -379,6 +379,7 @@ return table.freeze({
 	["market.Price"] = "Цена — от 25% до 10× стоимости",
 	["market.StallFull"] = "На прилавок помещается 4 существа",
 	["market.NoStall"] = "Все прилавки заняты",
+	["market.NotTradable"] = "Сокровища Тетради не продаются",
 	["market.Gone"] = "Уже продано",
 	["market.Own"] = "Это же твоё существо",
 	["market.NotEnoughLei"] = "Не хватает лей",

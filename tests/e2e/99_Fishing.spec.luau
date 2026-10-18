@@ -62,6 +62,18 @@ return function(Spec: any, services: { [string]: any })
 			Actors.removeBot(actor)
 		end)
 
+		it("vânzarea cu un număr NaN (trimis de un client stricat) nu strică leii", function()
+			local actor = Actors.createBot("NaN", PlotService.plots[7].geometry.spawnCFrame)
+			local owner = PlotService.assignBot(PlotService.plots[7], actor)
+			local before = owner.profile.lei
+			local nan = 0 / 0
+			expect(FishingService.sell(owner, "crapRacheta", nan)).toBe(0)
+			services.EconomyService.addLei(owner, nan)
+			expect(owner.profile.lei == owner.profile.lei).toBe(true) -- NaN ~= NaN
+			expect(owner.profile.lei).toBe(before)
+			Actors.removeBot(actor)
+		end)
+
 		it("o tragere prea rapidă (trimisă imediat) nu e crezută", function()
 			local actor = Actors.createBot("Grabit", PlotService.plots[7].geometry.spawnCFrame)
 			local owner = PlotService.assignBot(PlotService.plots[7], actor);

@@ -358,6 +358,7 @@ return {
 	["market.Price"] = "The price must be between 25% and 10× its value",
 	["market.StallFull"] = "A stall holds 4 creatures",
 	["market.NoStall"] = "All stalls are taken",
+	["market.NotTradable"] = "Notebook treasures can't be sold",
 	["market.Gone"] = "Already sold",
 	["market.Own"] = "That's your own creature",
 	["market.NotEnoughLei"] = "Not enough lei",

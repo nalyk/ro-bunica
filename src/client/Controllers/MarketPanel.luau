@@ -9,6 +9,8 @@ local Shared = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
 local Net = require(Shared.Net)
 local Economy = require(Shared.Domain.Economy)
 local Market = require(Shared.Domain.Market)
+local Creatures = require(Shared.Config.Creatures)
+local TradeConfig = require(Shared.Config.Trade)
 local VillageLayout = require(Shared.Domain.VillageLayout)
 local ClientState = require(script.Parent.ClientState)
 local UI = require(script.Parent.UI)
@@ -80,7 +82,12 @@ local function render()
 		end
 	end
 	for _, record in ClientState.state.cellar or {} do
-		if not record.soul and not record.listed then
+		local def = Creatures.byId[record.id]
+		if
+			not record.soul
+			and not record.listed
+			and not (def and TradeConfig.excludedRarities[def.rarity])
+		then
 			local value = Economy.sellPrice(record)
 			local low, high = Market.priceRange(record)
 			for _, factor in { 1, 2, 4 } do

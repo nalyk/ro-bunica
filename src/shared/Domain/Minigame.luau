@@ -26,13 +26,27 @@ function Minigame.rank(scores: { [number]: number }, reachedAt: { [number]: numb
 end
 
 -- Lei pentru fiecare participant rămas până la final: participarea + podiumul (doar printre cei rămași)
+-- Leii fiecăruia. Fără efort nu se plătește: participarea cere o acțiune (`acted`; nil = toți au jucat), iar
+-- podiumul cere scor peste 0 și cel puțin doi jucători intrați (singur nu ai cu cine concura).
 function Minigame.rewards(
 	def: Minigames.Minigame,
 	ranking: { number },
 	present: { [number]: boolean },
-	scores: { [number]: number }?
+	scores: { [number]: number }?,
+	acted: { [number]: boolean }?
 ): { [number]: number }
 	local result: { [number]: number } = {}
+	local function participation(id: number): number
+		return if acted == nil or acted[id] then def.rewards.participation else 0
+	end
+	-- câți au intrat în rundă (și cei plecați între timp): cine a avut un adversar poate urca pe podium
+	local count = #ranking
+	if scores then
+		count = 0
+		for _ in scores do
+			count += 1
+		end
+	end
 	if def.teams and scores then
 		-- pe echipe: toți cei cu scorul cel mai mare (echipa câștigătoare) iau bonusul de câștig
 		local top = -math.huge
@@ -40,8 +54,8 @@ function Minigame.rewards(
 			top = math.max(top, scores[id] or 0)
 		end
 		for id in present do
-			local won = (scores[id] or 0) == top and top > 0
-			result[id] = def.rewards.participation + (if won then def.rewards.placements[1] or 0 else 0)
+			local won = (scores[id] or 0) == top and top > 0 and count >= 2
+			result[id] = participation(id) + (if won then def.rewards.placements[1] or 0 else 0)
 		end
 		return result
 	end
@@ -49,15 +63,24 @@ function Minigame.rewards(
 	for _, id in ranking do
 		if present[id] then
 			place += 1
-			result[id] = def.rewards.participation + (def.rewards.placements[place] or 0)
+			local earned = scores == nil or (scores[id] or 0) > 0
+			result[id] = participation(id)
+				+ (if earned and count >= 2 then def.rewards.placements[place] or 0 else 0)
 		end
 	end
 	for id in present do
 		if result[id] == nil then
-			result[id] = def.rewards.participation
+			result[id] = participation(id)
 		end
 	end
 	return result
+end
+
+-- Plafonul pe oră al leilor din mini-jocuri (împotriva rundelor jucate doar pentru premiu)
+Minigame.HOURLY_CAP = 600
+
+function Minigame.capped(earnedThisHour: number, lei: number): number
+	return math.max(0, math.min(lei, Minigame.HOURLY_CAP - earnedThisHour))
 end
 
 -- Fantomele (eliminații) încurajează: fiecare încurajare +5% la punctajul echipei, cel mult +25%

@@ -5,6 +5,8 @@
 -- vânzătorului golește taraba.
 
 local Economy = require(script.Parent.Economy)
+local Creatures = require(script.Parent.Parent.Config.Creatures)
+local TradeConfig = require(script.Parent.Parent.Config.Trade)
 
 type Record = { uid: string, id: string, size: string, mutation: string?, soul: boolean?, listed: string? }
 type Profile = { lei: number, cellar: { any }, cellarCapacity: number }
@@ -14,6 +16,7 @@ export type Market = {
 	listings: { [string]: Listing },
 	stallOf: { [number]: number },
 	counter: number,
+	wanted: number, -- câte tarabe se dau acum (8, duminica 12); `stalls` poate fi mai mare cât timp sunt ocupate
 }
 
 local Market = {}
@@ -23,7 +26,7 @@ Market.MIN = 0.25
 Market.MAX = 10
 
 function Market.new(stalls: number): Market
-	return { stalls = stalls, listings = {}, stallOf = {}, counter = 0 }
+	return { stalls = stalls, listings = {}, stallOf = {}, counter = 0, wanted = stalls }
 end
 
 -- Tarabe: 8 în zilele obișnuite, 12 duminica (bazarul mare)
@@ -51,7 +54,7 @@ local function freeStall(market: Market): number?
 	for _, stall in market.stallOf do
 		used[stall] = true
 	end
-	for i = 1, market.stalls do
+	for i = 1, math.min(market.stalls, market.wanted) do
 		if not used[i] then
 			return i
 		end
@@ -83,6 +86,11 @@ function Market.list(
 	if record.listed then
 		return nil, "Listed"
 	end
+	-- ce nu se schimbă nu se vinde nici la bazar (Secretele: trofeul din Caiet)
+	local def = Creatures.byId[record.id]
+	if def and TradeConfig.excludedRarities[def.rarity] then
+		return nil, "NotTradable"
+	end
 	local low, high = Market.priceRange(record)
 	if price < low or price > high or price ~= math.floor(price) then
 		return nil, "Price"
@@ -104,6 +112,16 @@ function Market.list(
 	market.listings[id] =
 		{ id = id, seller = seller, record = record, price = price, stall = stall :: number }
 	return id, nil
+end
+
+-- Câte tarabe se dau acum. Cele ocupate peste `wanted` rămân până se eliberează; apoi bazarul se strânge.
+function Market.setWanted(market: Market, wanted: number)
+	market.wanted = wanted
+	local highest = 0
+	for _, stall in market.stallOf do
+		highest = math.max(highest, stall)
+	end
+	market.stalls = math.max(wanted, highest)
 end
 
 -- Retrage o ofertă: creatura se întoarce în beci (dacă e loc)

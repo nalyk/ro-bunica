@@ -147,8 +147,11 @@ end
 function FishingService.sell(owner: Owner, fishId: string, count: number): number
 	local fish = Fish.byId[fishId]
 	local have = owner.profile.fish[fishId] or 0
+	if count ~= count or count == math.huge then -- NaN sau infinit de la un client stricat
+		return 0
+	end
 	local n = math.clamp(math.floor(count), 0, have)
-	if not fish or n == 0 then
+	if not fish or n <= 0 then
 		return 0
 	end
 	owner.profile.fish[fishId] = have - n
@@ -179,7 +182,7 @@ function FishingService.start()
 				inputs[i] = v == true
 			end
 			FishingService.reel(owner, inputs)
-		elseif action == "sell" and typeof(a) == "string" and typeof(b) == "number" then
+		elseif action == "sell" and typeof(a) == "string" and typeof(b) == "number" and b == b and b >= 1 then
 			FishingService.sell(owner, a, b)
 		end
 	end)

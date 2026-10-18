@@ -33,6 +33,7 @@ export type Match = {
 	players: { Owner },
 	scores: { [number]: number },
 	reachedAt: { [number]: number },
+	acted: { [number]: boolean }, -- cine a făcut ceva în rundă (participarea se plătește doar lor)
 	arena: CFrame,
 	startedAt: number,
 	endsAt: number,
@@ -106,6 +107,25 @@ local function nearSite(owner: Owner, site: string): boolean
 		<= Minigames.enrollDistance
 end
 
+-- Leii din mini-jocuri pe ultima oră, pe jucător (plafonul Minigame.HOURLY_CAP)
+local earned: { [number]: { { at: number, lei: number } } } = {}
+
+local function earnedThisHour(owner: Owner): number
+	local list = earned[owner.userId]
+	if not list then
+		return 0
+	end
+	local total, cutoff = 0, os.clock() - 3600
+	for index = #list, 1, -1 do
+		if list[index].at < cutoff then
+			table.remove(list, index)
+		else
+			total += list[index].lei
+		end
+	end
+	return total
+end
+
 local function finishMatch(site: string)
 	local entry = matches[site]
 	if not entry or entry.done then
@@ -135,7 +155,7 @@ local function finishMatch(site: string)
 		end
 	end
 	local ranking = Minigame.rank(scores, match.reachedAt)
-	local rewards = Minigame.rewards(match.def, ranking, present, scores)
+	local rewards = Minigame.rewards(match.def, ranking, present, scores, match.acted)
 	local podium = {}
 	for place, id in ranking do
 		if present[id] and #podium < 3 then
@@ -144,6 +164,11 @@ local function finishMatch(site: string)
 	end
 	for id, lei in rewards do
 		local owner = byId[id]
+		if owner then
+			lei = Minigame.capped(earnedThisHour(owner), lei)
+			earned[owner.userId] = earned[owner.userId] or {}
+			table.insert(earned[owner.userId], { at = os.clock(), lei = lei })
+		end
 		if owner and lei > 0 then
 			EconomyService.addLei(owner, lei)
 			Analytics.source(owner.player, owner.profile, lei, "Minigame")
@@ -213,7 +238,9 @@ local function startMatch(lobby: Lobby)
 		data = {},
 		ghosts = {},
 		cheers = {},
+		acted = {},
 		score = function(owner: Owner, delta: number)
+			match.acted[owner.userId] = true
 			match.scores[owner.userId] = (match.scores[owner.userId] or 0) + delta
 			match.reachedAt[owner.userId] = os.clock()
 		end,
@@ -338,6 +365,7 @@ function MinigameService.act(owner: Owner, payload: any)
 		return
 	end
 	if entry.module.action and now() >= entry.match.startedAt then
+		entry.match.acted[owner.userId] = true -- a jucat (participarea se plătește doar celor care au făcut ceva)
 		local ok, err = pcall(entry.module.action :: any, entry.match, owner, payload)
 		if not ok then
 			print("⚠ [Minigame] action a eșuat:", err)

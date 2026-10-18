@@ -359,6 +359,7 @@ return table.freeze({
 	["market.Price"] = "O preço tem que ficar entre 25% e 10× o valor",
 	["market.StallFull"] = "Uma barraca cabe 4 criaturas",
 	["market.NoStall"] = "Todas as barracas estão ocupadas",
+	["market.NotTradable"] = "Os tesouros do Caderno não se vendem",
 	["market.Gone"] = "Já foi vendida",
 	["market.Own"] = "Essa criatura é sua",
 	["market.NotEnoughLei"] = "Lei insuficientes",

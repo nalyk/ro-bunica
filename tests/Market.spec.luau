@@ -96,4 +96,33 @@ describe("Market", function()
 		expect(Market.stallsFor(true)).toBe(12)
 		expect(Market.stallsFor(false)).toBe(8)
 	end)
+	it("creaturile Secrete (Rețeta Secretă) nu se vând la bazar, ca la schimb", function()
+		local market = Market.new(8)
+		local secret = { uid = "x", id = "RetetaSecreta", size = "Normal" }
+		local seller = profile(0, { secret })
+		local id, reason = Market.list(market, 1, seller, "x", Economy.sellPrice(secret))
+		expect(id).toBeNil()
+		expect(reason).toBe("NotTradable")
+	end)
+	it(
+		"după duminică tarabele scad la 8 când nu e nimic pe tarabele 9–12; altfel nu se mai dau tarabe noi peste 8",
+		function()
+			local market = Market.new(Market.stallsFor(true))
+			local sellers = {}
+			for i = 1, 10 do
+				sellers[i] = profile(0, { creature("c" .. i) })
+				Market.list(market, i, sellers[i], "c" .. i, Economy.sellPrice(creature("c" .. i)))
+			end
+			Market.setWanted(market, Market.stallsFor(false))
+			expect(market.stalls).toBe(10) -- tarabele 9 și 10 sunt încă ocupate
+			local newcomer = profile(0, { creature("n") })
+			Market.unlist(market, 3, sellers[3], sellers[3].cellar[1].listed)
+			local id = Market.list(market, 99, newcomer, "n", Economy.sellPrice(creature("n")))
+			expect(market.listings[id :: string].stall <= 8).toBe(true)
+			Market.close(market, 9, sellers[9])
+			Market.close(market, 10, sellers[10])
+			Market.setWanted(market, Market.stallsFor(false))
+			expect(market.stalls).toBe(8)
+		end
+	)
 end)

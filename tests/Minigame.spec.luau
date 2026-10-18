@@ -77,4 +77,42 @@ describe("Minigame", function()
 		expect(Minigame.isRecord(5, 0)).toBe(false)
 		expect(Minigame.isRecord(nil, 0)).toBe(false)
 	end)
+	it(
+		"fără efort nu se plătește: participarea cere o acțiune, podiumul cere scor peste 0 și cel puțin doi jucători",
+		function()
+			local def = Minigames.byId.Sotron
+			-- singur, cu scor 0, fără nicio acțiune: nimic
+			local solo = Minigame.rewards(def, { 1 }, { [1] = true }, { [1] = 0 }, {})
+			expect(solo[1] or 0).toBe(0)
+			-- singur, a jucat: doar participarea (fără podium, nu are cu cine concura)
+			local played = Minigame.rewards(def, { 1 }, { [1] = true }, { [1] = 3 }, { [1] = true })
+			expect(played[1]).toBe(def.rewards.participation)
+			-- doi: câștigătorul cu scor ia podiumul; cel cu scor 0 doar participarea, dacă a jucat
+			local two = Minigame.rewards(
+				def,
+				{ 1, 2 },
+				{ [1] = true, [2] = true },
+				{ [1] = 5, [2] = 0 },
+				{ [1] = true, [2] = true }
+			)
+			expect(two[1]).toBe(def.rewards.participation + def.rewards.placements[1])
+			expect(two[2]).toBe(def.rewards.participation)
+		end
+	)
+	it("plafonul pe oră: leii din mini-jocuri nu trec de Minigame.HOURLY_CAP", function()
+		expect(Minigame.capped(0, 80)).toBe(80)
+		expect(Minigame.capped(Minigame.HOURLY_CAP - 30, 80)).toBe(30)
+		expect(Minigame.capped(Minigame.HOURLY_CAP, 80)).toBe(0)
+	end)
+	it("doi au intrat, unul a plecat: cel rămas a avut adversar, deci ia podiumul", function()
+		local def = Minigames.byId.Sotron
+		local rewards = Minigame.rewards(
+			def,
+			{ 1, 2 },
+			{ [1] = true },
+			{ [1] = 4, [2] = 1 },
+			{ [1] = true, [2] = true }
+		)
+		expect(rewards[1]).toBe(def.rewards.participation + def.rewards.placements[1])
+	end)
 end)

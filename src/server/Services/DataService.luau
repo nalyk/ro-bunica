@@ -42,6 +42,11 @@ local function load(player: Player)
 	profile:AddUserId(player.UserId)
 	Migrations.reconcile(profile.Data)
 	profile.OnSessionEnd:Connect(function()
+		-- sesiunea preluată de alt server: ograda și bazarul se închid acum (nu doar la PlayerRemoving, când
+		-- profilul nu mai e al nostru), altfel ofertele ar rămâne cumpărabile și creatura s-ar dubla
+		if profiles[player] == profile then
+			runCallbacks(releasingCallbacks, player, profile.Data)
+		end
 		profiles[player] = nil
 		player:Kick("Sesiunea s-a încheiat. Intră din nou.")
 	end)

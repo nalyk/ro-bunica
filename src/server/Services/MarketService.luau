@@ -16,6 +16,7 @@ local Actors = require(script.Parent.Parent.Actors)
 local PlotService = require(script.Parent.PlotService)
 local EconomyService = require(script.Parent.EconomyService)
 local StateService = require(script.Parent.StateService)
+local DataService = require(script.Parent.DataService)
 local Messenger = require(script.Parent.Messenger)
 local Analytics = require(script.Parent.Parent.Analytics)
 
@@ -60,6 +61,25 @@ local function stallCFrame(i: number): CFrame
 end
 
 -- Ce se vede pe tarabe și ce află clienții
+local function snapshot(): { [string]: any }
+	local list = {}
+	for id, listing in market.listings do
+		local seller = ownerById(listing.seller)
+		table.insert(list, {
+			id = id,
+			seller = listing.seller,
+			sellerName = seller and seller.name or "",
+			creature = listing.record.id,
+			size = listing.record.size,
+			mutation = listing.record.mutation,
+			price = listing.price,
+			stall = listing.stall,
+		})
+	end
+	return { listings = list, stalls = market.stalls, sunday = sunday() }
+end
+
+-- Doar când se schimbă ceva: tarabele se refac și toți clienții primesc lista
 local function publish()
 	display:ClearAllChildren()
 	local list = {}
@@ -147,6 +167,10 @@ function MarketService.buy(owner: Owner, id: string): (boolean, string?)
 	if not near(owner) then
 		return false, "Far"
 	end
+	-- vânzătorul trebuie să aibă încă sesiunea pe acest server (altfel profilul lui nu se mai salvează aici)
+	if seller.player and DataService.get(seller.player) == nil then
+		return false, "Gone"
+	end
 	local ok, reason = Market.buy(market, seller.profile :: any, owner.profile :: any, owner.userId, id)
 	if ok then
 		Analytics.sink(owner.player, owner.profile, listing.price, "Market", listing.record.id)
@@ -219,7 +243,7 @@ function MarketService.start()
 		elseif action == "buy" and typeof(a) == "string" then
 			MarketService.buy(owner, a)
 		elseif action == "refresh" then
-			publish()
+			Net.get("Market"):FireClient(player, snapshot()) -- doar lista, fără să refacă tarabele
 		end
 	end)
 	PlotService.onOwnerAdded(function(owner)
@@ -235,9 +259,9 @@ function MarketService.start()
 	task.spawn(function()
 		while true do
 			task.wait(NPC_EVERY)
-			local wanted = Market.stallsFor(sunday())
-			if market.stalls ~= wanted then
-				market.stalls = math.max(wanted, market.stalls) -- tarabele ocupate rămân
+			local stalls = market.stalls
+			Market.setWanted(market, Market.stallsFor(sunday())) -- tarabele ocupate rămân până se eliberează
+			if market.stalls ~= stalls then
 				publish()
 			end
 			if sunday() then

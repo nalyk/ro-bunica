@@ -71,6 +71,11 @@ EconomyService.seasonalMultiplier = function(_owner: Owner): number
 end
 
 function EconomyService.addLei(owner: Owner, amount: number)
+	if amount ~= amount or math.abs(amount) == math.huge then
+		-- plasa de siguranță: un NaN ar face leii NaN pentru totdeauna (orice „lei < preț” ar deveni fals)
+		print("⚠ [Economy] addLei a primit o valoare invalidă:", amount, debug.traceback())
+		return
+	end
 	owner.profile.lei = math.max(owner.profile.lei + amount, 0)
 	local player = owner.player
 	if player then

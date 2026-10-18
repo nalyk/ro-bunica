@@ -359,6 +359,7 @@ return table.freeze({
 	["market.Price"] = "El precio debe estar entre el 25% y 10× su valor",
 	["market.StallFull"] = "En un puesto caben 4 criaturas",
 	["market.NoStall"] = "Todos los puestos están ocupados",
+	["market.NotTradable"] = "Los tesoros del Cuaderno no se venden",
 	["market.Gone"] = "Ya se vendió",
 	["market.Own"] = "Esa criatura es tuya",
 	["market.NotEnoughLei"] = "No tienes suficientes lei",

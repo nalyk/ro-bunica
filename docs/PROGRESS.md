@@ -218,7 +218,13 @@ Omul a cerut tot pachetul C din `docs/RESEARCH_SAT_VIU.md`, „full featured”.
 - **Politicile pe jucător:** `Domain/Policy` și `RegionPolicyService` (PolicyService, cerut la intrare; fără răspuns înseamnă restricționat). Magazinul ascunde produsele marcate `random` în `Config/Monetization` (lei, reînnoire, vreme, 2× lei) unde `ArePaidRandomItemsRestricted`. Schimburile și bazarul se închid unde `IsPaidItemTradingAllowed` e fals (verificat pe server; butoanele nu apar). Teste: `tests/Policy.spec.luau`, e2e `99_Policy`, playtest 3c (12 rânduri în magazin, 5 când e restricționat).
 - **Chestionarul de maturitate:** răspunsurile în `docs/PLATFORM.md`, cu previzualizarea Mild. Atenție: „teme romantice: da” dă Restricted (18+).
 - **Experience Events:** imaginile sunt gata (`tools/event_art.py` → `art/ui/events/`, 7 evenimente). Omul a cerut ca publicarea să aștepte refacerea graficii.
-- **Grafica (de refăcut, cerința omului: „all the new graphics is horrible”):** modelele TRELLIS arată bine în randări (`build/art/*.png`). În joc însă domină construcțiile procedurale: copacii-bilă și tufele din `VillageBuilder.scatter`, rutiera din blocuri, Casa de cultură. Pe deasupra, tarabele, podul și butucii sunt prea decimați. De făcut: copacii, tufele și rutiera prin fluxul concept → TRELLIS; modelele reconstruite cu mai multe triunghiuri; bugetul de randare refăcut pe mesh-uri instanțiate; capturi de aproape din joc, aprobate de om înainte de publicare.
+- **Grafica refăcută pe fluxul complet** (concept Codex → decupare → TRELLIS → `art.py`; detalii și decizii în `docs/superpowers/plans/2026-10-18-grafica-satului.md`):
+  - 21 de modele noi: salcâm, plop, măr, prun, stejar (coroane pline din `tools/tree_crown.py`), tufă, liliac, flori, stuf, stâlpul cu barză, școala, porumbul, ulucile, pontonul, lăița, căruța, sacii, lemnele, bucătăria de vară, rutiera nouă (RutieraV2); pietrele sunt procedurale (textura TRELLIS ieșea neagră).
+  - `Domain/Vegetation`: aleea de salcâmi, plopii lângă calea ferată, livezile, pâlcurile, codrul, stuful, florile (698 de bucăți, 418 copaci, determinist).
+  - Locurile îmbrăcate: Casa de cultură sculptată cu ringul afară, școala, iazul cu ponton, via cu butuci, lanul din segmente de porumb, moara/biserica/stâna mai mari, cu copaci, gard, lăițe, căruțe; gardul ogrăzilor din uluci.
+  - Drumurile se văd în sfârșit (stăteau sub iarba netezită); amurgul și noaptea mai luminoase.
+  - Bugetul: decorul unei ogrăzi ≤ 120k, densitatea locală ≤ 1M pe 200 studs (993k).
+  - Verificare: galeria 1g (fiecare loc de aproape), e2e 92/92, playtest 48/48.
 
 ## Acoperișul casei (2026-10-18)
 

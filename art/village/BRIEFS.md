@@ -9,6 +9,7 @@ framing-ul în `tools/concepts.py village`. Înălțimea e în studuri (casa are
 | Cheie | Tip | Înălțime | Descriere |
 |---|---|---|---|
 | village.Rutiera | vehicul | 7 | Yellow maxi-taxi minibus (rounded van like a toy), big friendly headlights, slightly squashed cute proportions, a small roof rack with a tied suitcase, side sliding door, chunky tires. Blank license plates, no text, no logos, no route numbers. |
+| village.RutieraV2 | vehicul | 7 | Yellow maxi-taxi minibus as a chunky toy: rounded boxy van body, OPAQUE dark blue tinted windows (no interior visible through them), big friendly round headlights, a smiling front grille, side sliding door, chunky black tires with grey hubcaps, NO roof rack and nothing on the roof. Blank license plates, no text, no logos, no route numbers. Solid simple shapes. |
 | village.Gasca | animal | 2,5 | White domestic goose with an orange beak and orange webbed feet, long curved neck, chest puffed out, a bossy funny expression. |
 | village.Gaina | animal | 1,5 | Plump brown hen with a small red comb and wattles, round body, tiny yellow legs, curious cheerful look. |
 | village.Cocos | animal | 2 | Cute cartoon farmyard chicken, the colorful male kind that crows at sunrise: tall bright red crest, golden-orange feathers on the neck and back, a big arched tail of glossy dark green feathers, yellow legs, plump round body, cheerful smiling eyes, a funny proud pose with wings folded. Friendly mascot style for a children's game. |

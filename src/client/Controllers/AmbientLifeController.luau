@@ -288,7 +288,7 @@ local flock: Flock? = nil
 local hens: { Hen } = {}
 local dogs: { Dog } = {}
 local walkers: { Walker } = {}
-local storks: { { model: Model, cf: CFrame, phase: number } } = {}
+local storks: { { model: Model?, cf: CFrame, phase: number } } = {}
 local flyer: Model? = nil
 local cloths: { Cloth } = {}
 
@@ -446,14 +446,21 @@ local function build(village: Instance)
 	local scatter = village:WaitForChild("Scatter", 30)
 	local nested: { [Vector3]: boolean } = {}
 	local function addStork(item: Instance)
+		-- doar stâlpii (Scatter are și sute de copaci sculptați: niciun WaitForChild pe ei)
+		if item.Name ~= "StalpBarza" and item.Name ~= "Stalp" then
+			return
+		end
 		local pole = if item:IsA("Model") then item:WaitForChild("Stalp", 10) or item else item
 		if pole:IsA("BasePart") and pole:GetAttribute("Stork") and not nested[pole.Position] then
 			nested[pole.Position] = true
 			local phase = #storks + 1
 			local cf = CFrame.new(pole.Position + Vector3.new(0, pole.Size.Y / 2 + 0.6, 0))
 				* CFrame.Angles(0, phase, 0)
-			local s = stork()
-			place(s, cf)
+			-- pe stâlpul sculptat barza e deja în model (cu cuibul): doar o numărăm
+			local s = if pole:GetAttribute("Sculpted") then nil else stork()
+			if s then
+				place(s, cf)
+			end
 			table.insert(storks, { model = s, cf = cf, phase = phase })
 		end
 	end
@@ -628,12 +635,12 @@ local function step(dt: number)
 	end
 
 	for _, s in storks do
+		local model = s.model
+		if not model then
+			continue
+		end
 		local clatter = if math.sin(now * 0.5 + s.phase) > 0.9 then math.sin(now * 30) * 0.2 else 0
-		place(
-			s.model,
-			s.cf,
-			{ Cioc = CFrame.Angles(clatter, 0, 0), Gat = CFrame.Angles(clatter * 0.5, 0, 0) }
-		)
+		place(model, s.cf, { Cioc = CFrame.Angles(clatter, 0, 0), Gat = CFrame.Angles(clatter * 0.5, 0, 0) })
 	end
 	local fly = flyer
 	if fly then

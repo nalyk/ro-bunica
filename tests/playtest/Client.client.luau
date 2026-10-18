@@ -227,6 +227,28 @@ function ops.bunicaVisuals(plotIndex: number): { [string]: any }
 end
 
 -- Cadru fix de cameră spre un punct, pentru capturi (revine singur)
+-- Ascunde sau arată interfața jocului (capturile de galerie se fac fără HUD)
+function ops.hud(visible: boolean): boolean
+	pcall(function()
+		game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.PlayerList, visible)
+	end)
+	for _, gui in Players.LocalPlayer:WaitForChild("PlayerGui"):GetChildren() do
+		if gui:IsA("ScreenGui") then
+			if visible then
+				local was = gui:GetAttribute("GalleryHidden")
+				if was then
+					gui.Enabled = true
+					gui:SetAttribute("GalleryHidden", nil)
+				end
+			elseif gui.Enabled then
+				gui.Enabled = false
+				gui:SetAttribute("GalleryHidden", true)
+			end
+		end
+	end
+	return true
+end
+
 function ops.lookAt(target: Vector3, from: Vector3, seconds: number): boolean
 	local camera = Workspace.CurrentCamera
 	camera.CameraType = Enum.CameraType.Scriptable
@@ -457,6 +479,12 @@ function ops.query(): { [string]: any }
 		seeds = state.seeds,
 		hud = hudTexts(),
 		clock = Lighting.ClockTime,
+		grass = select(
+			2,
+			pcall(function()
+				return (Workspace.Terrain :: any).Decoration -- nu se poate citi din scripturi (rămâne nil)
+			end)
+		),
 		plants = plants,
 		counters = table.clone(counters),
 		notifications = table.clone(notifications),

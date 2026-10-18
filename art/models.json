@@ -87,11 +87,13 @@
     250
    ],
    "minSat": 0.28
-  }
+  },
+  "tris": 12000
  },
  "world.Fantana": {
   "remote": "world/Fantana_20k.glb",
-  "height": 10
+  "height": 10,
+  "tris": 12000
  },
  "world.Strat": {
   "remote": "world/v2_Strat_40k.glb",
@@ -106,12 +108,14 @@
  "world.Nuc": {
   "remote": "world/Nuc_40k.glb",
   "height": 18,
-  "tris": 8000
+  "tris": 8000,
+  "crown": true
  },
  "world.Visin": {
   "remote": "world/Visin_40k.glb",
   "height": 11,
-  "tris": 8000
+  "tris": 6000,
+  "crown": true
  },
  "world.FloareaSoarelui": {
   "remote": "world/FloareaSoarelui_40k.glb",
@@ -167,12 +171,12 @@
  "world.Moara": {
   "remote": "site/Moara_40k.glb",
   "height": 20,
-  "tris": 12000
+  "tris": 20000
  },
  "world.Biserica": {
   "remote": "site/Biserica_40k.glb",
   "height": 22,
-  "tris": 14000
+  "tris": 20000
  },
  "world.Magazin": {
   "remote": "site/Magazin_40k.glb",
@@ -197,7 +201,7 @@
  "world.Taraba": {
   "remote": "site/Taraba_40k.glb",
   "height": 7,
-  "tris": 4000
+  "tris": 9000
  },
  "world.Cuptor": {
   "remote": "site/Cuptor_40k.glb",
@@ -207,12 +211,17 @@
  "world.Stana": {
   "remote": "site/Stana_40k.glb",
   "height": 7,
-  "tris": 9000
+  "tris": 14000
  },
  "world.Claie": {
   "remote": "site/Claie_40k.glb",
   "height": 7,
-  "tris": 3000
+  "tris": 5000,
+  "colorGain": [
+   0.86,
+   0.9,
+   1.0
+  ]
  },
  "world.Patul": {
   "remote": "site/Patul_40k.glb",
@@ -237,17 +246,18 @@
  "world.Pod": {
   "remote": "site/Pod_40k.glb",
   "height": 4,
-  "tris": 4000
+  "tris": 8000
  },
  "world.Cires": {
   "remote": "site/Cires_40k.glb",
   "height": 11,
-  "tris": 5000
+  "tris": 6000,
+  "crown": true
  },
  "world.ButucVie": {
   "remote": "site/ButucVie_40k.glb",
   "height": 5,
-  "tris": 1500
+  "tris": 3000
  },
  "world.Stiulete": {
   "remote": "site/Stiulete_40k.glb",
@@ -255,7 +265,7 @@
   "tris": 2000
  },
  "char.Rutiera": {
-  "remote": "site/Rutiera_40k.glb",
+  "remote": "site/RutieraV2_40k.glb",
   "height": 7,
   "tris": 14000
  },
@@ -272,7 +282,7 @@
  "char.Oaia": {
   "remote": "site/Oaia_40k.glb",
   "height": 2.8,
-  "tris": 2500
+  "tris": 4000
  },
  "char.Lupul": {
   "remote": "site/Lupul_40k.glb",
@@ -323,5 +333,112 @@
   "remote": "site/Lautar_40k.glb",
   "height": 5.9,
   "tris": 12000
+ },
+ "world.Salcam": {
+  "remote": "site/Salcam_40k.glb",
+  "height": 15,
+  "tris": 8000,
+  "crown": true
+ },
+ "world.Plop": {
+  "remote": "site/Plop_40k.glb",
+  "height": 22,
+  "tris": 6000,
+  "crown": true
+ },
+ "world.Mar": {
+  "remote": "site/Mar_40k.glb",
+  "height": 11,
+  "tris": 7000,
+  "crown": true
+ },
+ "world.Prun": {
+  "remote": "site/Prun_40k.glb",
+  "height": 10,
+  "tris": 7000,
+  "crown": true
+ },
+ "world.Stejar": {
+  "remote": "site/Stejar_40k.glb",
+  "height": 20,
+  "tris": 8000,
+  "crown": true
+ },
+ "world.Tufa": {
+  "remote": "site/Tufa_40k.glb",
+  "height": 3.5,
+  "tris": 1800
+ },
+ "world.Liliac": {
+  "remote": "site/Liliac_40k.glb",
+  "height": 5,
+  "tris": 2000
+ },
+ "world.Flori": {
+  "remote": "site/Flori_40k.glb",
+  "height": 1.5,
+  "tris": 1000
+ },
+ "world.Stuf": {
+  "remote": "site/Stuf_40k.glb",
+  "height": 5,
+  "tris": 1200
+ },
+ "world.StalpBarza": {
+  "remote": "site/StalpBarza_40k.glb",
+  "height": 18,
+  "tris": 2500
+ },
+ "world.Scoala": {
+  "remote": "site/Scoala_40k.glb",
+  "height": 12,
+  "tris": 16000
+ },
+ "world.Porumb": {
+  "remote": "site/Porumb_40k.glb",
+  "height": 8,
+  "tris": 3000
+ },
+ "world.Uluci": {
+  "remote": "site/Uluci_40k.glb",
+  "height": 4,
+  "tris": 900,
+  "paint": {
+   "hue": [
+    185,
+    250
+   ],
+   "minSat": 0.28
+  }
+ },
+ "world.Ponton": {
+  "remote": "site/Ponton_40k.glb",
+  "height": 1.5,
+  "tris": 2500
+ },
+ "world.Banca": {
+  "remote": "site/Banca_40k.glb",
+  "height": 2.5,
+  "tris": 1500
+ },
+ "world.Caruta": {
+  "remote": "site/Caruta_40k.glb",
+  "height": 4,
+  "tris": 4000
+ },
+ "world.Saci": {
+  "remote": "site/Saci_40k.glb",
+  "height": 2,
+  "tris": 3000
+ },
+ "world.Lemne": {
+  "remote": "site/Lemne_40k.glb",
+  "height": 3,
+  "tris": 2000
+ },
+ "world.Bucatarie": {
+  "remote": "site/Bucatarie_40k.glb",
+  "height": 7,
+  "tris": 14000
  }
 }

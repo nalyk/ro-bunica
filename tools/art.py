@@ -106,6 +106,7 @@ def build_textured(filter_):
                                 + open(os.path.join(ROOT, "tools", "post3d.py"), "rb").read()
                                 + open(os.path.join(ROOT, "tools", "split_character.py"), "rb").read()
                                 + open(os.path.join(ROOT, "tools", "house_roof.py"), "rb").read()
+                                + open(os.path.join(ROOT, "tools", "tree_crown.py"), "rb").read()
                                 + open(os.path.join(ROOT, "tools", "paint_mask.py"), "rb").read()).hexdigest()[:16]
         stamp = os.path.join(OUT, key + ".stamp")
         if os.path.exists(stamp) and open(stamp).read() == digest:
@@ -146,6 +147,25 @@ def build_textured(filter_):
                     post = eval(line[5:])
                     post["tris"] = sum(parts.values())
                     line = "POST " + repr(post)
+        if line and spec.get("crown"):
+            # frunzișul TRELLIS (coajă rară de frunze rupte) e înlocuit cu smocuri pline (tools/tree_crown.py)
+            crowned = glb + ".crown.glb"
+            options = spec["crown"] if isinstance(spec["crown"], dict) else {}
+            crown = subprocess.run(["blender", "-b", "-P", os.path.join(ROOT, "tools", "tree_crown.py"), "--",
+                                    glb, crowned, "--trunk-tris", "100000", "--preview", png]
+                                   + [x for key, value in options.items() for x in ("--" + key, str(value))],
+                                   capture_output=True, text=True, timeout=600)
+            done = next((l for l in crown.stdout.splitlines() if l.startswith("CROWN_OK ")), None)
+            if not done:
+                line = None
+                result = crown
+            else:
+                os.replace(crowned, glb)
+                parts = eval(done[9:])
+                post = eval(line[5:])
+                post["tris"] = sum(parts.values())
+                line = "POST " + repr(post)
+                print(f"[art] {key:34} coroană refăcută: {parts}")
         if line and spec.get("paint"):
             # vopseaua schimbabilă (porțile): pixelii vopsiți devin transparenți, cu umbra în alfa
             paint = spec["paint"]

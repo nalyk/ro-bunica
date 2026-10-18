@@ -430,6 +430,158 @@ step("1c. Efectele sonore se încarcă", function()
 	check(#failed == 0, "sunete care nu se încarcă: " .. table.concat(failed, ", "))
 end)
 
+step("1g. Galeria satului: fiecare loc de aproape, copacii, drumurile, rutiera", function()
+	local VillageLayout = require(Shared.Domain.VillageLayout)
+	local layout = VillageLayout.build()
+	local character = player.Character :: Model
+	local home = character:GetPivot()
+	services.DayNightService.forcePhase("Day")
+	-- sfârșitul fazei „acum”: clientul arată mijlocul zilei (amiaza) cât ține galeria, nu amurgul
+	GameState.set(GameState.Attributes.PhaseEndsAt, workspace:GetServerTimeNow())
+	local view = call("query")
+	log(string.format("galerie: ora %.1f, iarba animată %s", view.clock, tostring(view.grass)))
+	call("hud", false)
+	local village = workspace:FindFirstChild("Village") :: Instance
+	local scatterFolder = village:FindFirstChild("Scatter")
+	-- vegetația dintre cameră și țintă se ascunde cât ține captura (camera nu stă într-o coroană)
+	local function clearView(target: Vector3, eye: Vector3): { [BasePart]: number }
+		local hidden = {}
+		local line = target - eye
+		local items: { Instance } = if scatterFolder then scatterFolder:GetChildren() else {}
+		for _, d in village:GetDescendants() do -- pomii din ogrăzi (sculptați)
+			local key = d:GetAttribute("ArtKey")
+			if d:IsA("Model") and (key == "world.Nuc" or key == "world.Visin" or key == "world.Cires") then
+				table.insert(items, d)
+			end
+		end
+		for _, item in items do
+			local at = if item:IsA("Model")
+				then item:GetPivot().Position
+				elseif item:IsA("BasePart") then item.Position
+				else nil
+			if at then
+				local t = math.clamp((at - eye):Dot(line) / line.Magnitude ^ 2, 0, 1)
+				if t < 0.8 and (eye + line * t - at).Magnitude < 16 then
+					for _, part in
+						(if item:IsA("BasePart") then { item } else item:GetDescendants()) :: { Instance }
+					do
+						if part:IsA("BasePart") then
+							hidden[part] = part.Transparency
+							part.Transparency = 1
+						end
+					end
+				end
+			end
+		end
+		return hidden
+	end
+	local function visit(name: string, target: Vector3, eye: Vector3)
+		character:PivotTo(CFrame.new(eye.X, target.Y + 4, eye.Z))
+		task.wait(2.5) -- streaming-ul aduce locul în jurul personajului
+		local hidden = clearView(target, eye)
+		photograph(name, target, eye)
+		for part, transparency in hidden do
+			part.Transparency = transparency
+		end
+	end
+	-- prima direcție din care nu stă nimic (o casă, un acoperiș) între cameră și loc
+	local function eyeFor(cf: CFrame, center: Vector3): Vector3
+		local params = RaycastParams.new()
+		params.FilterType = Enum.RaycastFilterType.Exclude
+		params.FilterDescendantsInstances = { character, scatterFolder :: Instance }
+		local options = {
+			cf * CFrame.new(0, 16, -42),
+			cf * CFrame.new(0, 16, 42),
+			cf * CFrame.new(42, 16, 0),
+			cf * CFrame.new(-42, 16, 0),
+			cf * CFrame.new(0, 30, -64),
+		}
+		for _, option in options do
+			local eye = option.Position
+			local hit = workspace:Raycast(eye, (center - eye) * 0.85, params)
+			local blocked = hit ~= nil and hit.Instance.Size.Magnitude > 16
+			for t = 0, 0.7, 0.05 do -- casele sculptate nu răspund la raycast: ogrăzile se ocolesc
+				for _, plot in layout.plots do
+					if VillageLayout.contains(plot, eye:Lerp(center, t), 2) then
+						blocked = true
+					end
+				end
+			end
+			if not blocked then
+				return eye
+			end
+		end
+		return options[1].Position
+	end
+	local keys = {}
+	for key in layout.sites do
+		table.insert(keys, key)
+	end
+	table.sort(keys)
+	for _, key in keys do
+		local cf = layout.sites[key]
+		local center = cf.Position + Vector3.new(0, 6, 0)
+		visit("loc-" .. key, center, eyeFor(cf, center))
+	end
+	-- copacii și tufele dintre ogrăzi, drumul mare, rutiera
+	local seen = 0
+	if scatterFolder then
+		for _, part in scatterFolder:GetChildren() do
+			if part.Name == "Coroana" and part:IsA("BasePart") and seen < 2 then
+				seen += 1
+				local p = part.Position
+				visit("copaci-" .. seen, p, p + Vector3.new(30, 6, 30))
+			end
+		end
+	end
+	local road = VillageLayout.lower(0)
+	do -- drumul trebuie să iasă deasupra terenului netezit (altfel iarba îl acoperă)
+		local params = RaycastParams.new()
+		params.FilterType = Enum.RaycastFilterType.Include
+		params.FilterDescendantsInstances = { workspace.Terrain }
+		local hit = workspace:Raycast(road + Vector3.new(0, 60, 0), Vector3.new(0, -120, 0), params)
+		local strip = nil
+		for _, part in
+			((workspace:FindFirstChild("Village") :: Instance):FindFirstChild("Roads") :: Instance):GetChildren()
+		do
+			if
+				part:IsA("BasePart")
+				and (Vector3.new(part.Position.X, 0, part.Position.Z) - road).Magnitude < 12
+			then
+				strip = part
+				break
+			end
+		end
+		log(
+			string.format(
+				"drum: teren %.2f (%s), fâșie %s",
+				if hit then hit.Position.Y else -999,
+				if hit then hit.Material.Name else "-",
+				if strip then string.format("%.2f", strip.Position.Y + strip.Size.Y / 2) else "lipsă"
+			)
+		)
+	end
+	visit("drum", road + Vector3.new(0, 4, 0), road + Vector3.new(-60, 14, 10))
+	local bridge = VillageLayout.lower(require(Shared.Config.Village).bridges[1])
+	visit("pod", bridge + Vector3.new(0, 2, 0), bridge + Vector3.new(-34, 14, -26))
+	local bus = services.RutieraService.vehicle()
+	if bus then
+		-- rutiera e prinsă în stație (ceasul ei sare până la sosire; stă acolo câteva secunde)
+		local stop = services.RutieraService.stops()[2]
+		services.RutieraService.warp(services.RutieraService.secondsTo(stop.name) + 0.5)
+		task.wait(0.3)
+		local p = bus:GetPivot().Position
+		character:PivotTo(CFrame.new(p + Vector3.new(20, 4, 20)))
+		task.wait(2.5)
+		local cf = bus:GetPivot()
+		photograph("rutiera", cf.Position + Vector3.new(0, 3, 0), (cf * CFrame.new(20, 9, -34)).Position)
+	end
+	character:PivotTo(home)
+	call("hud", true)
+	services.DayNightService.forcePhase(nil)
+	task.wait(1)
+end)
+
 step("2. Leii cresc din venitul creaturilor", function()
 	local before = me.profile.lei
 	task.wait(3)
@@ -1455,7 +1607,10 @@ step(
 	function()
 		local counts = call("ambient")
 		check(counts.geese >= 6 and counts.hens >= 16 and counts.dogs == 8, "animalele lipsesc")
-		check(counts.villagers == 3 and counts.storks >= 3, "sătenii sau berzele lipsesc")
+		check(
+			counts.villagers == 3 and counts.storks >= 3,
+			string.format("sătenii (%d) sau berzele (%d) lipsesc", counts.villagers, counts.storks)
+		)
 		DayNightService.forcePhase("Night")
 		local npc = victimPlot
 		local stranger =

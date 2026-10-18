@@ -106,7 +106,16 @@ local function buildFence(model: Model, cf: CFrame, look: VillageLayout.Variant)
 		{ Vector3.new(-(halfX + gateHalf) / 2, h / 2, -halfZ), Vector3.new(halfX - gateHalf, h, 1) },
 		{ Vector3.new((halfX + gateHalf) / 2, h / 2, -halfZ), Vector3.new(halfX - gateHalf, h, 1) },
 	}
-	local sculpted = ArtLibrary.has("world.GardLow")
+	-- gardul de uluci (vopsit în culoarea porții); de rezervă, cel vechi de nuiele
+	local fenceKey = if ArtLibrary.has("world.Uluci") then "world.Uluci" else "world.GardLow"
+	local sculpted = ArtLibrary.has(fenceKey)
+	local span = 12.6
+	local probe = if sculpted then ArtLibrary.get(fenceKey) else nil
+	if probe then
+		local extents = probe:GetExtentsSize()
+		span = math.max(extents.X, extents.Z) * 0.97 -- segmentele se ating, fără goluri
+		probe:Destroy()
+	end
 	for _, segment in segments do
 		local fence = part({
 			Name = "Fence",
@@ -117,10 +126,10 @@ local function buildFence(model: Model, cf: CFrame, look: VillageLayout.Variant)
 			Parent = model,
 		})
 		if sculpted then
-			-- gard de nuiele: segmente de 13 studs de-a lungul laturii, peste coliziunea invizibilă
+			-- segmente de-a lungul laturii, peste coliziunea invizibilă
 			local alongX = segment[2].X > segment[2].Z
 			local length = if alongX then segment[2].X else segment[2].Z
-			local count = math.max(1, math.ceil(length / 12.6))
+			local count = math.max(1, math.ceil(length / span))
 			for i = 1, count do
 				local t = (i - 0.5) / count - 0.5
 				local offset = if alongX then Vector3.new(t * length, 0, 0) else Vector3.new(0, 0, t * length)
@@ -128,7 +137,14 @@ local function buildFence(model: Model, cf: CFrame, look: VillageLayout.Variant)
 				if not alongX then
 					base *= CFrame.Angles(0, math.pi / 2, 0)
 				end
-				placeArt("world.GardLow", base, model)
+				local piece = placeArt(fenceKey, base, model)
+				if piece and fenceKey == "world.Uluci" then
+					for _, mesh in piece:GetDescendants() do
+						if mesh:IsA("MeshPart") then
+							mesh.Color = look.gateColor
+						end
+					end
+				end
 			end
 			hide({ fence })
 		end
@@ -191,6 +207,17 @@ local function buildPergola(model: Model, cf: CFrame, look: VillageLayout.Varian
 		Transparency = 0.35,
 		Parent = model,
 	})
+	if ArtLibrary.has("world.ButucVie") then
+		-- butucii de vie sculptați urcă pe stâlpii bolții
+		for k, z in { 2, 10, 18, 26 } do
+			placeArt(
+				"world.ButucVie",
+				cf * CFrame.new(-34.6 * side, 0, z + 0.8) * CFrame.Angles(0, math.rad(k * 83), 0),
+				model
+			)
+		end
+		return
+	end
 	for i = 0, 6 do
 		local leaf = decor({
 			Name = "Vita",
@@ -244,7 +271,17 @@ local function buildHives(model: Model, cf: CFrame, look: VillageLayout.Variant,
 end
 
 local function buildWoodpile(model: Model, cf: CFrame, side: number)
-	-- stiva de lemne lângă gardul din spate și căpița de fân
+	-- stiva de lemne lângă gardul din spate și căpița de fân (sculptate, dacă există)
+	if ArtLibrary.has("world.Lemne") and ArtLibrary.has("world.Claie") then
+		placeArt("world.Lemne", cf * CFrame.new(-23 * side, 0, 31) * CFrame.Angles(0, math.pi, 0), model)
+		local hay = placeArt("world.Claie", cf * CFrame.new(33 * side, 0, 26), model)
+		if hay then
+			hay:ScaleTo(1.1)
+			local box, size = hay:GetBoundingBox()
+			hay:PivotTo(hay:GetPivot() + Vector3.new(0, cf.Position.Y - (box.Position.Y - size.Y / 2), 0))
+		end
+		return
+	end
 	for row = 0, 2 do
 		for i = 0, 6 - row do
 			local log = decor({
@@ -283,6 +320,10 @@ local function buildDecor(model: Model, cf: CFrame, index: number, look: Village
 	local function at(x: number, z: number, turn: number): CFrame
 		return cf * CFrame.new(x * side, 0, z) * CFrame.Angles(0, math.rad(turn), 0)
 	end
+	-- liliacul de lângă casă și florile de la gard, în toate ogrăzile
+	placeArt("world.Liliac", at(-18, 31, index * 53), model)
+	placeArt("world.Flori", at(18, 31, index * 31), model)
+	placeArt("world.Flori", at(-37, -3, index * 17), model)
 	local set = look.treeSet
 	if set == 1 then
 		placeArt("world.Nuc", at(-30, 24, index * 47), model)

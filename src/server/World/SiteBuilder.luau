@@ -290,6 +290,28 @@ local function sculpted(parent: Instance, key: string, cf: CFrame, name: string?
 	return art
 end
 
+-- Întinde un model sculptat pe axe (în spațiul pivotului): piesele importate au rotația pivotului
+local function stretch(model: Model, scale: Vector3)
+	local pivot = model:GetPivot()
+	for _, part in model:GetDescendants() do
+		if part:IsA("BasePart") then
+			local rel = pivot:ToObjectSpace(part.CFrame)
+			part.Size *= scale
+			part.CFrame = pivot * (CFrame.new(rel.Position * scale) * rel.Rotation)
+		end
+	end
+end
+
+-- Un obiect de context (lăiță, saci, căruță, lemne...) pus pe teren, fără coliziuni; nimic dacă lipsește modelul
+local function prop(parent: Instance, key: string, cf: CFrame, scale: number?): Model?
+	return sculpted(parent, key, onGround(cf), nil, scale)
+end
+
+-- Coliziunea invizibilă a unei clădiri sculptate (modelele de artă nu au coliziuni)
+local function collider(model: Instance, name: string, size: Vector3, cf: CFrame)
+	box(model, name, size, cf, C.white, { Transparency = 1, CastShadow = false, CanQuery = false })
+end
+
 local builders: { [string]: (Model, CFrame) -> () } = {}
 
 -- Centrul: avizierul, băncile, țarcul de gâște, zona fără bătaie (fântâna și hora: WorldBuilder.buildHearth)
@@ -408,7 +430,8 @@ end
 
 -- Stația de autobuz cu mozaic (ca cele sovietice, colorate)
 builders.statie = function(model, cf)
-	if sculpted(model, "world.Statie", cf) then
+	-- modelul stației are fața (banca, mozaicul) spre +Z: întors spre drum
+	if sculpted(model, "world.Statie", cf * CFrame.Angles(0, math.pi, 0)) then
 		marker(model, "Oprire", Vector3.new(6, 4, 6), cf * CFrame.new(0, 2, -5))
 		return
 	end
@@ -475,6 +498,112 @@ end
 
 -- Casa de cultură (Discoteca): coloane, firmă, interior cu ring de dans luminat
 builders.discoteca = function(model, cf)
+	-- Casa de cultură sculptată în spate; ringul de dans în aer liber, în fața ei (vara, ca în sate), cu ghirlande
+	-- de becuri și globul pe o arcadă. Jucătorii Discotecii stau pe ring (centrul locului).
+	if sculpted(model, "world.CasaCultura", cf * CFrame.new(0, 0, 21), "CasaCultura", 1.25) then
+		collider(model, "ZiduriCasa", Vector3.new(26, 16, 15), cf * CFrame.new(0, 8, 22))
+		local colors = {
+			Color3.fromRGB(255, 70, 160),
+			Color3.fromRGB(70, 200, 255),
+			Color3.fromRGB(255, 210, 60),
+			Color3.fromRGB(120, 255, 120),
+		}
+		local floor = Instance.new("Model")
+		floor.Name = "RingDans"
+		floor.Parent = model
+		box(
+			floor,
+			"Rama",
+			Vector3.new(23, 0.4, 20),
+			cf * CFrame.new(0, 0.2, 0),
+			C.darkWood,
+			{ Material = Enum.Material.WoodPlanks }
+		)
+		for x = -3, 3 do
+			for z = -3, 2 do
+				box(
+					floor,
+					"Placa",
+					Vector3.new(2.9, 0.2, 2.9),
+					cf * CFrame.new(x * 3, 0.45, z * 3 + 1.5),
+					colors[(x + z) % 4 + 1],
+					{ Material = Enum.Material.Neon }
+				)
+			end
+		end
+		-- stâlpii cu ghirlande de becuri, de jur împrejurul ringului
+		local corners = {
+			Vector3.new(-12, 0, -10),
+			Vector3.new(12, 0, -10),
+			Vector3.new(12, 0, 11),
+			Vector3.new(-12, 0, 11),
+		}
+		for i, corner in corners do
+			local base = cf * CFrame.new(corner)
+			cyl(
+				model,
+				"StalpLumini",
+				8,
+				0.5,
+				base * CFrame.new(0, 4, 0),
+				C.darkWood,
+				{ Material = Enum.Material.Wood }
+			)
+			local nextCorner = corners[i % #corners + 1]
+			local a = (base * CFrame.new(0, 7.6, 0)).Position
+			local b = (cf * CFrame.new(nextCorner) * CFrame.new(0, 7.6, 0)).Position
+			for k = 1, 9 do
+				local t = k / 10
+				local sag = math.sin(t * math.pi) * 1.2
+				ball(
+					model,
+					"Bec",
+					Vector3.new(0.6, 0.6, 0.6),
+					CFrame.new(a:Lerp(b, t) - Vector3.new(0, sag, 0)),
+					colors[(i + k) % 4 + 1],
+					soft({ Material = Enum.Material.Neon })
+				)
+			end
+		end
+		-- arcada cu globul de discotecă deasupra ringului
+		for _, side in { -1, 1 } do
+			cyl(
+				model,
+				"Arcada",
+				9,
+				0.6,
+				cf * CFrame.new(side * 11, 4.5, 1),
+				C.tin,
+				{ Material = Enum.Material.Metal }
+			)
+		end
+		box(
+			model,
+			"ArcadaSus",
+			Vector3.new(22.6, 0.6, 0.6),
+			cf * CFrame.new(0, 9, 1),
+			C.tin,
+			soft({ Material = Enum.Material.Metal })
+		)
+		local glob = ball(
+			model,
+			"Glob",
+			Vector3.new(2.4, 2.4, 2.4),
+			cf * CFrame.new(0, 7.4, 1),
+			C.tin,
+			soft({ Material = Enum.Material.Foil, Reflectance = 0.6 })
+		)
+		local light = Instance.new("PointLight")
+		light.Range = 26
+		light.Brightness = 2
+		light.Color = Color3.fromRGB(255, 120, 220)
+		light.Parent = glob
+		prop(model, "world.Banca", cf * CFrame.new(-16, 0, -2) * CFrame.Angles(0, math.rad(90), 0))
+		prop(model, "world.Banca", cf * CFrame.new(16, 0, -2) * CFrame.Angles(0, math.rad(-90), 0))
+		prop(model, "world.Liliac", cf * CFrame.new(-16, 0, 14))
+		prop(model, "world.Liliac", cf * CFrame.new(16, 0, 14))
+		return
+	end
 	local w, d, h = 28, 20, 11
 	box(
 		model,
@@ -620,6 +749,20 @@ builders.terenScoala = function(model, cf)
 	lane:SetAttribute("Start", Vector3.new(-27, 0, 15))
 	lane:SetAttribute("End", Vector3.new(27, 0, 15))
 	marker(model, "Bataie", Vector3.new(6, 4, 6), cf * CFrame.new(-27, 2, 15))
+	-- școala sculptată, cu fața spre teren; bănci de-a lungul terenului
+	if
+		sculpted(model, "world.Scoala", cf * CFrame.new(0, 0, -27) * CFrame.Angles(0, math.pi, 0), "Scoala")
+	then
+		collider(model, "ZiduriScoala", Vector3.new(30, 12, 12), cf * CFrame.new(0, 6, -27))
+		for _, x in { -18, 0, 18 } do
+			prop(model, "world.Banca", cf * CFrame.new(x, 0, 21) * CFrame.Angles(0, math.pi, 0))
+		end
+		prop(model, "world.Liliac", cf * CFrame.new(-19, 0, -15))
+		prop(model, "world.Liliac", cf * CFrame.new(19, 0, -15))
+		prop(model, "world.Flori", cf * CFrame.new(-10, 0, -16))
+		prop(model, "world.Flori", cf * CFrame.new(10, 0, -16))
+		return
+	end
 	house(
 		model,
 		cf * CFrame.new(0, 0, -22) * CFrame.Angles(0, math.pi, 0),
@@ -634,7 +777,8 @@ end
 
 -- Iazul: stuf pe mal, debarcaderul de lemn, o barcă (apa e în teren, VillageBuilder)
 builders.iaz = function(model, cf)
-	for i = 1, 36 do
+	local reeds = ArtLibrary.has("world.Stuf") -- stuful sculptat e pus de vegetație (Domain/Vegetation)
+	for i = 1, if reeds then 0 else 36 do
 		local a = i * 0.5236 + (i % 3) * 0.2
 		local r = 30 + (i % 4) * 1.6
 		local base = cf * CFrame.new(math.cos(a) * r, 0, math.sin(a) * r)
@@ -678,6 +822,27 @@ builders.iaz = function(model, cf)
 		end
 	end
 	marker(pier, "Capat", Vector3.new(4, 4, 4), start * CFrame.new(0, 2, 17))
+	-- pontonul sculptat peste scândurile pe care se merge (rămân, invizibile, pentru pescuit)
+	local ponton = ArtLibrary.get("world.Ponton")
+	if ponton then
+		ponton.Name = "Ponton"
+		local size = ponton:GetExtentsSize()
+		ponton:ScaleTo(18 / math.max(size.X, size.Z))
+		ponton:PivotTo(
+			start * CFrame.new(0, 0, 9) * CFrame.Angles(0, if size.X > size.Z then math.pi / 2 else 0, 0)
+		)
+		local bounds, extent = ponton:GetBoundingBox()
+		ponton:PivotTo(ponton:GetPivot() + Vector3.new(0, 0.7 - (bounds.Y + extent.Y / 2), 0))
+		ponton.Parent = pier
+		for _, child in pier:GetChildren() do
+			if child:IsA("BasePart") and child.Name ~= "Capat" then
+				child.Transparency = 1
+			end
+		end
+		prop(model, "world.Banca", cf * CFrame.new(-6, 0, 40) * CFrame.Angles(0, math.pi, 0))
+		prop(model, "world.Flori", cf * CFrame.new(8, 0, 41))
+		return
+	end
 	local boat = start * CFrame.new(4.5, 0.1, 13)
 	box(model, "Barca", Vector3.new(2.6, 1, 7), boat, C.wood, soft({ Material = Enum.Material.WoodPlanks }))
 	wedge(
@@ -734,11 +899,12 @@ builders.lanPorumb = function(model, cf)
 	walls.Name = "Labirint"
 	walls.Parent = model
 	local origin = cf * CFrame.new(-N * CELL / 2, 0, -N * CELL / 2)
+	local corn = ArtLibrary.has("world.Porumb")
 	local function wall(a: Vector3, b: Vector3)
 		local mid = (a + b) / 2
 		local length = (b - a).Magnitude + 1.4
 		local alongX = math.abs(b.X - a.X) > 0.1
-		box(
+		local block = box(
 			walls,
 			"Porumb",
 			if alongX then Vector3.new(length, 7, 1.4) else Vector3.new(1.4, 7, length),
@@ -746,6 +912,25 @@ builders.lanPorumb = function(model, cf)
 			C.corn,
 			{ Material = Enum.Material.Grass }
 		)
+		if corn then
+			-- zidul rămâne coliziunea (invizibilă); peste el, segmentul de lan sculptat
+			block.Transparency = 1
+			local turn = if alongX then 0 else math.pi / 2
+			local flip = if (mid.X * 7 + mid.Z * 3) % 2 < 1 then 0 else math.pi
+			local art = sculpted(
+				walls,
+				"world.Porumb",
+				origin * CFrame.new(mid.X, 0, mid.Z) * CFrame.Angles(0, turn + flip, 0),
+				"Lan"
+			)
+			if art then
+				-- petecul de lan e aproape pătrat: lung cât zidul, subțiat la grosimea lui (coridoarele rămân libere)
+				local size = art:GetExtentsSize()
+				art:PivotTo(CFrame.new(art:GetPivot().Position))
+				stretch(art, Vector3.new(length / size.X, 1, 2.6 / size.Z))
+				placeOnBase(art, origin * CFrame.new(mid.X, 0, mid.Z) * CFrame.Angles(0, turn + flip, 0))
+			end
+		end
 	end
 	for y = 1, N do
 		for x = 1, N do
@@ -764,8 +949,8 @@ builders.lanPorumb = function(model, cf)
 			end
 		end
 	end
-	-- moțurile porumbului
-	for i = 1, 40 do
+	-- moțurile porumbului (doar la zidurile simple)
+	for i = 1, if corn then 0 else 40 do
 		local x, z = (i * 37) % (N * CELL), (i * 53) % (N * CELL)
 		cyl(walls, "Mot", 1.2, 0.3, origin * CFrame.new(x, 7.6, z), C.gold, soft())
 	end
@@ -800,9 +985,13 @@ builders.via = function(model, cf)
 				C.darkWood,
 				{ Material = Enum.Material.Wood }
 			)
-			-- butucul sculptat la fiecare al doilea arac (restul: frunzișul simplu, pentru bugetul de triunghiuri)
-			local vine = k % 2 == 0
-				and sculpted(rowModel, "world.ButucVie", post * CFrame.new(2.5, 0, 0), "Butuc")
+			-- butucul sculptat la fiecare arac (frunzișul simplu doar dacă lipsește modelul)
+			local vine = sculpted(
+				rowModel,
+				"world.ButucVie",
+				post * CFrame.new(2.5, 0, 0) * CFrame.Angles(0, math.rad((row * 9 + k) * 37), 0),
+				"Butuc"
+			)
 			if not vine then
 				ball(
 					rowModel,
@@ -910,7 +1099,7 @@ end
 
 -- Moara de vânt pe deal: turnul, căciula, palele (rotite pe client: atributul Spin)
 builders.moara = function(model, cf)
-	if sculpted(model, "world.Moara", cf) then
+	if sculpted(model, "world.Moara", cf, nil, 1.3) then
 		return
 	end
 	for i = 0, 3 do
@@ -963,7 +1152,7 @@ end
 
 -- Biserica de pe deal: naosul alb, turnul cu bulb aurit, crucea, clopotul
 builders.biserica = function(model, cf)
-	if sculpted(model, "world.Biserica", cf) then
+	if sculpted(model, "world.Biserica", cf, nil, 1.2) then
 		-- clopotul rămâne ca reper (invizibil), în turla modelului
 		local bell = marker(model, "Clopot", Vector3.new(2, 2, 2), cf * CFrame.new(0, 15, -2))
 		bell:SetAttribute("Bell", true)
@@ -1024,13 +1213,18 @@ builders.codru = function(model, cf)
 		local x = ((i * 47) % 70) - 35
 		local z = ((i * 29) % 30) - 2 + (i % 3) * 4
 		local h = 16 + (i % 5) * 3
-		tree(
-			model,
-			onGround(cf * CFrame.new(x, 0, z)),
-			h,
-			if i % 2 == 0 then C.darkLeaf else Color3.fromRGB(48, 96, 50),
-			nil
-		)
+		local place = onGround(cf * CFrame.new(x, 0, z) * CFrame.Angles(0, math.rad(i * 67), 0))
+		if
+			not sculpted(
+				model,
+				if i % 3 == 0 then "world.Nuc" else "world.Stejar",
+				place * CFrame.new(0, -0.5, 0),
+				"Copac",
+				0.9 + (i % 4) * 0.12
+			)
+		then
+			tree(model, place, h, if i % 2 == 0 then C.darkLeaf else Color3.fromRGB(48, 96, 50), nil)
+		end
 	end
 	marker(model, "Iesire", Vector3.new(8, 6, 8), cf * CFrame.new(0, 3, -8))
 end
@@ -1148,13 +1342,15 @@ end
 
 -- Bucătăria de vară: o căsuță deschisă în față, cuptorul de lut, masa
 builders.bucatarie = function(model, cf)
+	-- bucătăria sculptată (deschisă în față, cu plita și cuptorul înăuntru); pereții rămân coliziuni
+	local kitchen = sculpted(model, "world.Bucatarie", cf, "Bucatarie", 1.25)
 	box(
 		model,
 		"PereteSpate",
 		Vector3.new(10, 6, 0.6),
 		cf * CFrame.new(0, 3, 4),
 		C.wall,
-		{ Material = Enum.Material.Plaster }
+		{ Material = Enum.Material.Plaster, Transparency = if kitchen then 1 else 0 }
 	)
 	for _, side in { -1, 1 } do
 		box(
@@ -1163,10 +1359,12 @@ builders.bucatarie = function(model, cf)
 			Vector3.new(0.6, 6, 8),
 			cf * CFrame.new(side * 5, 3, 0),
 			C.wall,
-			{ Material = Enum.Material.Plaster }
+			{ Material = Enum.Material.Plaster, Transparency = if kitchen then 1 else 0 }
 		)
 	end
-	gable(model, cf * CFrame.new(0, 6, 0), 10, 8, 3, C.roof)
+	if not kitchen then
+		gable(model, cf * CFrame.new(0, 6, 0), 10, 8, 3, C.roof)
+	end
 	local oven = cf * CFrame.new(9, 0, 1)
 	local sculptedOven = sculpted(model, "world.Cuptor", oven, "Cuptor")
 	if sculptedOven then
@@ -1241,6 +1439,46 @@ builders.claie = function(model, cf)
 	end
 end
 
+-- Obiectele de context ale locurilor (cheie, x, z, rotire în grade, scară), relativ la loc (fața spre −Z): satul
+-- trăit din jurul reperelor, departe de marcajele jocurilor. Fără model, nimic.
+local DRESSING: { [string]: { { any } } } = {
+	moara = { -- treptele obby-ului urcă în spirală pe raza 13: obiectele stau dincolo de 18
+		{ "world.Saci", -18, 8, 20 },
+		{ "world.Caruta", 19, 8, 35 },
+		{ "world.Banca", -19, -6, 90 },
+		{ "world.Lemne", 14, 18, 180 },
+		{ "world.Salcam", -27, 16, 30 },
+		{ "world.Tufa", 23, -12, 0 },
+		{ "world.Flori", -21, -14, 0 },
+	},
+	biserica = { -- plopii în spate, nucul în lateral, gardul de uluci în față (cu poarta liberă)
+		{ "world.Liliac", -12, -7, 0 },
+		{ "world.Liliac", 12, -7, 40 },
+		{ "world.Banca", -8, -13, 180 },
+		{ "world.Flori", 6, -13, 0 },
+		{ "world.Plop", -15, 11, 0 },
+		{ "world.Plop", 15, 11, 50 },
+		{ "world.Nuc", -27, -2, 60 },
+		{ "world.Uluci", -11, -20, 0 },
+		{ "world.Uluci", -21, -20, 0 },
+		{ "world.Uluci", 11, -20, 0 },
+		{ "world.Uluci", 21, -20, 0 },
+	},
+	stana = {
+		{ "world.Lemne", 25, -3, 80 },
+		{ "world.Banca", 13, -7, 180 },
+		{ "world.Tufa", -14, -11, 0 },
+		{ "world.Salcam", -27, 9, 120 },
+	},
+	gara = { { "world.Saci", 16, -15, 0 }, { "world.Caruta", -17, -14, -25 }, { "world.Liliac", 19, -6, 0 } },
+	magazin = { { "world.Banca", -7, -13, 180 }, { "world.Saci", 7, -13, 10 }, { "world.Lemne", 11, 5, 90 } },
+	bucatarie = { { "world.Lemne", -10, 5, 0 }, { "world.Saci", 8, -3, 60 } },
+	claie = { { "world.Caruta", 2, -12, 70 } },
+	statie = { { "world.Flori", 9, -5, 0 }, { "world.Liliac", -9, 3, 0 } },
+	bazar = { { "world.Caruta", -21, 9, 20 }, { "world.Saci", 19, 7, 0 } },
+	livada = { { "world.Banca", 8, 14, 180 }, { "world.Lemne", -12, 20, 90 } },
+}
+
 -- Construiește toate locurile în Workspace.Village.Sites
 function SiteBuilder.build(sites: { [string]: CFrame }, parent: Instance): Folder
 	local folder = Instance.new("Folder")
@@ -1271,6 +1509,15 @@ function SiteBuilder.build(sites: { [string]: CFrame }, parent: Instance): Folde
 			art.Parent = model
 		elseif builders[key] then
 			builders[key](model, base)
+		end
+		local dressing: { { any } } = DRESSING[key] or {}
+		for _, item in dressing do
+			prop(
+				model,
+				item[1],
+				base * CFrame.new(item[2], 0, item[3]) * CFrame.Angles(0, math.rad(item[4]), 0),
+				item[5]
+			)
 		end
 		-- reperele se văd de oriunde (streaming), dar cu plasa simplificată de departe
 		model.ModelStreamingMode = Enum.ModelStreamingMode.Persistent

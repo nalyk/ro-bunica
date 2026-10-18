@@ -6,13 +6,14 @@
 -- - podurile de lemn peste pârâu.
 -- Gameplay-ul nu depinde de teren: ogrăzile, drumurile și locurile stau pe valea plană.
 
+local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
 local Shared = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
 local Village = require(Shared.Config.Village)
 local VillageLayout = require(Shared.Domain.VillageLayout)
-local Scatter = require(Shared.Domain.Scatter)
 local ArtLibrary = require(Shared.Visual.ArtLibrary)
+local Vegetation = require(Shared.Domain.Vegetation)
 
 local VillageBuilder = {}
 
@@ -47,6 +48,16 @@ function VillageBuilder.hillHeight(x: number, z: number): number
 	return math.clamp(rise + wave * math.min(rise / 8, 1), 0, v.hillMax)
 end
 
+-- Unde e solul la (x, z): terenul (dealurile, malurile), fără apă; în vale, fața ierbii
+local groundParams = RaycastParams.new()
+groundParams.FilterType = Enum.RaycastFilterType.Include
+groundParams.IgnoreWater = true
+local function groundAt(x: number, z: number): number
+	groundParams.FilterDescendantsInstances = { Workspace.Terrain }
+	local hit = Workspace:Raycast(Vector3.new(x, 300, z), Vector3.new(0, -600, 0), groundParams)
+	return if hit then hit.Position.Y else GROUND_TOP
+end
+
 local function strip(
 	name: string,
 	a: Vector3,
@@ -56,8 +67,25 @@ local function strip(
 	material: Enum.Material,
 	parent: Instance
 )
-	local flatA = Vector3.new(a.X, GROUND_TOP + 0.08, a.Z)
-	local flatB = Vector3.new(b.X, GROUND_TOP + 0.08, b.Z)
+	-- pe suprafața terenului netezit (iarba iese peste fața plăcii cu până la 2 studs); peste albia
+	-- pârâului rămâne la nivelul văii, sub poduri
+	local function surface(x: number, z: number): number
+		return math.max(groundAt(x, z), GROUND_TOP) + 0.1
+	end
+	-- nimic peste apă (iazul, pârâul): acolo sunt podurile și pontonul
+	local waterParams = RaycastParams.new()
+	waterParams.FilterType = Enum.RaycastFilterType.Include
+	waterParams.FilterDescendantsInstances = { Workspace.Terrain }
+	for _, q in { a, (a + b) / 2, b } do
+		local hit = Workspace:Raycast(Vector3.new(q.X, 300, q.Z), Vector3.new(0, -600, 0), waterParams)
+		if hit and hit.Material == Enum.Material.Water then
+			return
+		end
+	end
+	local ya, yb = surface(a.X, a.Z), surface(b.X, b.Z)
+	local lift = math.max(0, surface((a.X + b.X) / 2, (a.Z + b.Z) / 2) - (ya + yb) / 2)
+	local flatA = Vector3.new(a.X, ya + lift, a.Z)
+	local flatB = Vector3.new(b.X, yb + lift, b.Z)
 	local length = (flatB - flatA).Magnitude
 	if length < 0.1 then
 		return
@@ -76,6 +104,39 @@ local function strip(
 	p.Size = Vector3.new(width, 0.16, length + width * 0.6)
 	p.CFrame = CFrame.lookAt((flatA + flatB) / 2, flatB)
 	p.Parent = parent
+end
+
+-- Pământul bătătorit de sub drumuri: doar materialul ierbii se schimbă (ReplaceMaterial nu mișcă
+-- suprafața), în pătrate de voxeli de-a lungul drumului; marginile se topesc în iarbă
+local function paintRoad(
+	layout: VillageLayout.Layout,
+	points: { Vector3 },
+	width: number,
+	material: Enum.Material
+)
+	local terrain = Workspace.Terrain
+	local half = math.max(4, math.floor(width / 2 / 4 + 0.5) * 4)
+	local done: { [string]: boolean } = {}
+	for i = 1, #points - 1 do
+		local a, b = points[i], points[i + 1]
+		local steps = math.max(1, math.ceil((b - a).Magnitude / 4))
+		for k = 0, steps do
+			local p = a:Lerp(b, k / steps)
+			local gx, gz = math.floor(p.X / 4 + 0.5) * 4, math.floor(p.Z / 4 + 0.5) * 4
+			local id = gx .. ":" .. gz
+			if
+				not done[id]
+				and VillageLayout.distanceToRiver(layout, p) > Village.riverWidth / 2 + width / 2 + 2
+			then
+				done[id] = true
+				local region = Region3.new(
+					Vector3.new(gx - half, GROUND_TOP - 8, gz - half),
+					Vector3.new(gx + half, GROUND_TOP + 12, gz + half)
+				):ExpandToGrid(4)
+				terrain:ReplaceMaterial(region, 4, Enum.Material.Grass, material)
+			end
+		end
+	end
 end
 
 local function polyline(
@@ -214,37 +275,6 @@ local function buildBridges(layout: VillageLayout.Layout, parent: Instance)
 	end
 end
 
--- Decorul împrăștiat (Poisson): copaci și tufe în vale, nu pe drumuri, ogrăzi, locuri sau în pârâu.
--- Piese simple, fără coliziuni și fără umbre (bugetul de randare: Task 10).
-local function free(layout: VillageLayout.Layout, p: Vector3, margin: number): boolean
-	if VillageLayout.distanceToRoad(layout, p) < Village.roadWidth / 2 + margin then
-		return false
-	end
-	for _, trail in layout.trails do
-		for k = 1, #trail.points - 1 do
-			local a, b = trail.points[k], trail.points[k + 1]
-			local ab = Vector3.new(b.X - a.X, 0, b.Z - a.Z)
-			local t = math.clamp((Vector3.new(p.X - a.X, 0, p.Z - a.Z)):Dot(ab) / ab:Dot(ab), 0, 1)
-			if (Vector3.new(p.X, 0, p.Z) - Vector3.new(a.X, 0, a.Z) - ab * t).Magnitude < 4 + margin then
-				return false
-			end
-		end
-	end
-	for _, plot in layout.plots do
-		if VillageLayout.contains(plot, p, margin + 4) then
-			return false
-		end
-	end
-	for _, site in layout.sites do
-		if (Vector3.new(site.X, 0, site.Z) - Vector3.new(p.X, 0, p.Z)).Magnitude < 34 + margin then
-			return false
-		end
-	end
-	return VillageLayout.distanceToRiver(layout, p) > Village.riverWidth / 2 + margin
-		and (Vector3.new(p.X, 0, p.Z) - Vector3.new(layout.sites.iaz.X, 0, layout.sites.iaz.Z)).Magnitude
-			> 44
-end
-
 local SOFT = { CanCollide = false, CanQuery = false, CanTouch = false, CastShadow = false }
 
 local function softPart(
@@ -270,75 +300,99 @@ local function softPart(
 	p.Parent = parent
 end
 
+-- Copacul procedural de rezervă (doar când modelul sculptat lipsește)
+local function fallbackTree(i: number, base: CFrame, folder: Instance)
+	local h = 12 + (i * 7) % 9
+	local leaf = if i % 3 == 0 then Color3.fromRGB(62, 118, 52) else Color3.fromRGB(84, 140, 60)
+	softPart(
+		"Trunchi",
+		Enum.PartType.Cylinder,
+		Vector3.new(h * 0.5, h * 0.09, h * 0.09),
+		base * CFrame.new(0, h * 0.25, 0) * CFrame.Angles(0, 0, math.pi / 2),
+		Color3.fromRGB(96, 70, 48),
+		Enum.Material.Wood,
+		folder
+	)
+	softPart(
+		"Coroana",
+		Enum.PartType.Ball,
+		Vector3.new(h * 0.75, h * 0.6, h * 0.75),
+		base * CFrame.new(0, h * 0.68, 0),
+		leaf,
+		Enum.Material.Grass,
+		folder
+	)
+end
+
+-- Pietrele de câmp: trei bolovani rotunjiți din piatră (modelul TRELLIS ieșea pătat de negru)
+local function stones(i: number, base: CFrame, scale: number, folder: Instance)
+	local group = Instance.new("Model")
+	group.Name = "Pietre"
+	local shades =
+		{ Color3.fromRGB(150, 146, 136), Color3.fromRGB(128, 126, 118), Color3.fromRGB(166, 158, 140) }
+	local layout = { { 0, 0, 2.4 }, { 1.9, 0.6, 1.6 }, { -1.2, 1.5, 1.2 } }
+	for k, spec in layout do
+		local d = spec[3] * scale
+		softPart(
+			"Piatra",
+			Enum.PartType.Ball,
+			Vector3.new(d * 1.25, d * 0.8, d),
+			base
+				* CFrame.new(spec[1] * scale, d * 0.22, spec[2] * scale)
+				* CFrame.Angles(0, (i + k) * 1.7, 0.12 * k),
+			shades[(i + k) % #shades + 1],
+			Enum.Material.Slate,
+			group
+		)
+	end
+	group.Parent = folder
+end
+
+-- Vegetația (Domain/Vegetation): modelele sculptate, fără coliziuni; umbre doar de la copaci
 local function scatter(layout: VillageLayout.Layout, parent: Instance)
 	local folder = Instance.new("Folder")
 	folder.Name = "Scatter"
-	local area = {
-		min = Vector2.new(-Village.extent - 40, Village.valley.south + 10),
-		max = Vector2.new(Village.extent + 40, Village.valley.north - 10),
-	}
-	local rng = Scatter.rng(Village.variantSeed * 101)
-	local trees = Scatter.poisson(area, 34, function(p: Vector2)
-		return free(layout, Vector3.new(p.X, 0, p.Y), 6)
-	end, rng)
-	for i, p in trees do
-		local h = 12 + (i * 7) % 9
-		local base = CFrame.new(p.X, GROUND_TOP, p.Y)
-		local leaf = if i % 3 == 0 then Color3.fromRGB(62, 118, 52) else Color3.fromRGB(84, 140, 60)
-		softPart(
-			"Trunchi",
-			Enum.PartType.Cylinder,
-			Vector3.new(h * 0.5, h * 0.09, h * 0.09),
-			base * CFrame.new(0, h * 0.25, 0) * CFrame.Angles(0, 0, math.pi / 2),
-			Color3.fromRGB(96, 70, 48),
-			Enum.Material.Wood,
-			folder
-		)
-		softPart(
-			"Coroana",
-			Enum.PartType.Ball,
-			Vector3.new(h * 0.75, h * 0.6, h * 0.75),
-			base * CFrame.new(0, h * 0.68, 0),
-			leaf,
-			Enum.Material.Grass,
-			folder
-		)
-		if i % 2 == 0 then
-			softPart(
-				"Coroana",
-				Enum.PartType.Ball,
-				Vector3.new(h * 0.5, h * 0.45, h * 0.5),
-				base * CFrame.new(h * 0.18, h * 0.88, -h * 0.1),
-				leaf,
-				Enum.Material.Grass,
-				folder
-			)
+	-- terenul scris în acest cadru apare în raycast abia în cadrul următor
+	RunService.Heartbeat:Wait()
+	RunService.Heartbeat:Wait()
+	local plan = Vegetation.plan(layout, Village.variantSeed)
+	local trees, small = 0, 0
+	for i, item in plan do
+		local isTree = Vegetation.TREES[item.key] == true
+		local y = groundAt(item.x, item.z)
+		local base = CFrame.new(item.x, y, item.z) * CFrame.Angles(0, math.rad(item.yaw), 0)
+		local art = ArtLibrary.get(item.key)
+		if art then
+			art.Name = string.match(item.key, "%.(.+)$") or item.key
+			if item.scale ~= 1 then
+				art:ScaleTo(item.scale)
+			end
+			art:PivotTo(base)
+			local bounds, size = art:GetBoundingBox()
+			-- baza puțin în pământ: pe pantă rădăcinile nu plutesc
+			local sink = if isTree then 0.5 * item.scale else 0.15
+			art:PivotTo(art:GetPivot() + Vector3.new(0, y - (bounds.Y - size.Y / 2) - sink, 0))
+			for _, d in art:GetDescendants() do
+				if d:IsA("BasePart") then
+					d.Anchored = true
+					d.CanCollide = false
+					d.CanQuery = false
+					d.CanTouch = false
+					d.CastShadow = isTree
+				end
+			end
+			art.Parent = folder
+		elseif isTree then
+			fallbackTree(i, base, folder)
+		elseif item.key == "world.Pietre" then
+			stones(i, base, item.scale, folder)
+		else
+			continue
 		end
-	end
-	local bushes = Scatter.poisson(area, 22, function(p: Vector2)
-		return free(layout, Vector3.new(p.X, 0, p.Y), 3)
-	end, rng)
-	for i, p in bushes do
-		local size = 3 + (i * 5) % 3
-		softPart(
-			"Tufa",
-			Enum.PartType.Ball,
-			Vector3.new(size * 1.4, size, size * 1.4),
-			CFrame.new(p.X, GROUND_TOP + size * 0.3, p.Y),
-			Color3.fromRGB(78 + (i % 4) * 6, 132, 58),
-			Enum.Material.Grass,
-			folder
-		)
-		if i % 3 == 0 then
-			softPart(
-				"Floare",
-				Enum.PartType.Ball,
-				Vector3.new(0.8, 0.8, 0.8),
-				CFrame.new(p.X + 1.2, GROUND_TOP + size * 0.75, p.Y),
-				if i % 2 == 0 then Color3.fromRGB(240, 220, 80) else Color3.fromRGB(230, 90, 120),
-				Enum.Material.SmoothPlastic,
-				folder
-			)
+		if isTree then
+			trees += 1
+		else
+			small += 1
 		end
 	end
 	-- stâlpii de curent de-a lungul drumului mare, cu cuiburi de barză (berzele: AmbientLifeController)
@@ -370,11 +424,26 @@ local function scatter(layout: VillageLayout.Layout, parent: Instance)
 				nest
 			)
 			p:SetAttribute("Stork", true)
+			-- stâlpul sculptat, cu cuibul și barza lui; stâlpul simplu rămâne invizibil (reperul berzei)
+			local art = ArtLibrary.get("world.StalpBarza")
+			if art then
+				art.Name = "Sculptat"
+				art:PivotTo(pole * CFrame.Angles(0, math.rad(k * 47), 0))
+				local bounds, size = art:GetBoundingBox()
+				art:PivotTo(art:GetPivot() + Vector3.new(0, pole.Y - (bounds.Y - size.Y / 2), 0))
+				art.Parent = nest
+				for _, piece in nest:GetChildren() do
+					if piece:IsA("BasePart") then
+						piece.Transparency = 1
+					end
+				end
+				p:SetAttribute("Sculpted", true)
+			end
 			nest.Parent = folder
 		end
 	end
 	folder.Parent = parent
-	return #trees, #bushes
+	return trees, small
 end
 
 -- Construiește peisajul; drumurile intră în `parent` (Folder-ul satului).
@@ -383,13 +452,30 @@ function VillageBuilder.build(layout: VillageLayout.Layout, parent: Instance)
 	local roads = Instance.new("Folder")
 	roads.Name = "Roads"
 	for _, road in layout.roads do
+		paintRoad(
+			layout,
+			road.points,
+			road.width,
+			if road.name == "drumulMare" then Enum.Material.Ground else Enum.Material.Mud
+		)
+	end
+	for _, path in layout.shortcuts do
+		paintRoad(layout, path.points, path.width, Enum.Material.Mud)
+	end
+	for _, trail in layout.trails do
+		paintRoad(layout, trail.points, trail.width, Enum.Material.Mud)
+	end
+	-- fâșiile se așază pe teren: terenul scris acum apare în raycast abia după un cadru
+	RunService.Heartbeat:Wait()
+	RunService.Heartbeat:Wait()
+	for _, road in layout.roads do
 		local main = road.name == "drumulMare"
 		polyline(
 			road.name,
 			road.points,
 			road.width,
 			if main then PALETTE.road else PALETTE.lane,
-			if main then Enum.Material.Sand else Enum.Material.Ground,
+			Enum.Material.Ground,
 			roads
 		)
 	end

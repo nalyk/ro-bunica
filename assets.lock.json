@@ -91,10 +91,17 @@
     "moderation": "Approved"
   },
   "char.Oaia": {
-    "id": "139648973495323",
+    "id": "127104864557602",
     "type": "Model",
-    "sha": "ab0b672347d03034",
+    "sha": "554d5db46f9d7877",
     "file": "build/art/char.Oaia.glb",
+    "moderation": "Approved"
+  },
+  "char.Rutiera": {
+    "id": "117960504051028",
+    "type": "Model",
+    "sha": "6c8c2e7ad0aa1cfb",
+    "file": "build/art/char.Rutiera.glb",
     "moderation": "Approved"
   },
   "char.Satean1": {
@@ -671,6 +678,13 @@
     "file": "art/voice/ro/bunica.welcome.2.ogg",
     "moderation": "Reviewing"
   },
+  "world.Banca": {
+    "id": "71325399856814",
+    "type": "Model",
+    "sha": "a72c2c8f3ad3d0f7",
+    "file": "build/art/world.Banca.glb",
+    "moderation": "Approved"
+  },
   "world.Beci": {
     "id": "88582491830104",
     "type": "Model",
@@ -679,17 +693,31 @@
     "moderation": "Approved"
   },
   "world.Biserica": {
-    "id": "101037041519752",
+    "id": "85641580835282",
     "type": "Model",
-    "sha": "727bffaccfc2a2ad",
+    "sha": "3528a3df1717ab7f",
     "file": "build/art/world.Biserica.glb",
     "moderation": "Approved"
   },
-  "world.ButucVie": {
-    "id": "133007474109642",
+  "world.Bucatarie": {
+    "id": "95509086007115",
     "type": "Model",
-    "sha": "dcad4af870a83538",
+    "sha": "5eeb47f752badc0e",
+    "file": "build/art/world.Bucatarie.glb",
+    "moderation": "Approved"
+  },
+  "world.ButucVie": {
+    "id": "111511491158112",
+    "type": "Model",
+    "sha": "3168b405a2b86bc6",
     "file": "build/art/world.ButucVie.glb",
+    "moderation": "Approved"
+  },
+  "world.Caruta": {
+    "id": "116274059524848",
+    "type": "Model",
+    "sha": "8dac0821d8644222",
+    "file": "build/art/world.Caruta.glb",
     "moderation": "Approved"
   },
   "world.Casa": {
@@ -707,16 +735,16 @@
     "moderation": "Approved"
   },
   "world.Cires": {
-    "id": "114876294585887",
+    "id": "114575588922453",
     "type": "Model",
-    "sha": "b8e5c189a46b0abc",
+    "sha": "f869684275af669f",
     "file": "build/art/world.Cires.glb",
     "moderation": "Approved"
   },
   "world.Claie": {
-    "id": "100647760202106",
+    "id": "87522802125353",
     "type": "Model",
-    "sha": "2660e982c76158a7",
+    "sha": "aac4a52d609fa795",
     "file": "build/art/world.Claie.glb",
     "moderation": "Approved"
   },
@@ -728,9 +756,9 @@
     "moderation": "Approved"
   },
   "world.Fantana": {
-    "id": "88631495273280",
+    "id": "100366595488338",
     "type": "Model",
-    "sha": "f7d41d82aefb8773",
+    "sha": "025eddbe6c0604d0",
     "file": "build/art/world.Fantana.glb",
     "moderation": "Approved"
   },
@@ -739,6 +767,13 @@
     "type": "Model",
     "sha": "77e0e806ca1f2567",
     "file": "build/art/world.FloareaSoarelui.glb",
+    "moderation": "Approved"
+  },
+  "world.Flori": {
+    "id": "71293047214338",
+    "type": "Model",
+    "sha": "102a39e7d210661b",
+    "file": "build/art/world.Flori.glb",
     "moderation": "Approved"
   },
   "world.Gara": {
@@ -762,6 +797,20 @@
     "file": "build/art/world.GardLow.glb",
     "moderation": "Approved"
   },
+  "world.Lemne": {
+    "id": "126044142006769",
+    "type": "Model",
+    "sha": "c79309b70939b66c",
+    "file": "build/art/world.Lemne.glb",
+    "moderation": "Approved"
+  },
+  "world.Liliac": {
+    "id": "135200498304597",
+    "type": "Model",
+    "sha": "c82a5cad96069a9d",
+    "file": "build/art/world.Liliac.glb",
+    "moderation": "Approved"
+  },
   "world.Magazin": {
     "id": "86660011845157",
     "type": "Model",
@@ -769,17 +818,24 @@
     "file": "build/art/world.Magazin.glb",
     "moderation": "Approved"
   },
-  "world.Moara": {
-    "id": "91243912340027",
+  "world.Mar": {
+    "id": "109767739795129",
     "type": "Model",
-    "sha": "0adf72bca20dd746",
+    "sha": "3d34f94253a4813f",
+    "file": "build/art/world.Mar.glb",
+    "moderation": "Approved"
+  },
+  "world.Moara": {
+    "id": "98394452193556",
+    "type": "Model",
+    "sha": "3d405a993837ade7",
     "file": "build/art/world.Moara.glb",
     "moderation": "Approved"
   },
   "world.Nuc": {
-    "id": "71966698833815",
+    "id": "126743760652396",
     "type": "Model",
-    "sha": "938a4dc2f092222c",
+    "sha": "f71d3da9daaa9d41",
     "file": "build/art/world.Nuc.glb",
     "moderation": "Approved"
   },
@@ -804,18 +860,46 @@
     "file": "build/art/world.PedestalLow.glb",
     "moderation": "Approved"
   },
-  "world.Poarta": {
-    "id": "137781647362057",
+  "world.Plop": {
+    "id": "122674319727336",
     "type": "Model",
-    "sha": "2fe035b07c92a3da",
+    "sha": "d5336e8478bb13bb",
+    "file": "build/art/world.Plop.glb",
+    "moderation": "Approved"
+  },
+  "world.Poarta": {
+    "id": "102671002844678",
+    "type": "Model",
+    "sha": "991b7c2a0caf12b8",
     "file": "build/art/world.Poarta.glb",
     "moderation": "Approved"
   },
   "world.Pod": {
-    "id": "102274126998658",
+    "id": "109332477595439",
     "type": "Model",
-    "sha": "1a17fde9708e7d96",
+    "sha": "7701d4dd28a28756",
     "file": "build/art/world.Pod.glb",
+    "moderation": "Approved"
+  },
+  "world.Ponton": {
+    "id": "92501019806068",
+    "type": "Model",
+    "sha": "bf1750349de0b8e0",
+    "file": "build/art/world.Ponton.glb",
+    "moderation": "Approved"
+  },
+  "world.Porumb": {
+    "id": "113268748102816",
+    "type": "Model",
+    "sha": "f3009a37c4359051",
+    "file": "build/art/world.Porumb.glb",
+    "moderation": "Approved"
+  },
+  "world.Prun": {
+    "id": "105998693506090",
+    "type": "Model",
+    "sha": "4e2e7c17466b6309",
+    "file": "build/art/world.Prun.glb",
     "moderation": "Approved"
   },
   "world.Puntea": {
@@ -846,6 +930,27 @@
     "file": "build/art/world.Roaba.glb",
     "moderation": "Approved"
   },
+  "world.Saci": {
+    "id": "140268764166109",
+    "type": "Model",
+    "sha": "598d38d41b433f8e",
+    "file": "build/art/world.Saci.glb",
+    "moderation": "Approved"
+  },
+  "world.Salcam": {
+    "id": "111884564176456",
+    "type": "Model",
+    "sha": "95e19f5c2bdaa048",
+    "file": "build/art/world.Salcam.glb",
+    "moderation": "Approved"
+  },
+  "world.Scoala": {
+    "id": "76971628688656",
+    "type": "Model",
+    "sha": "9e36d97040aed047",
+    "file": "build/art/world.Scoala.glb",
+    "moderation": "Approved"
+  },
   "world.Sperietoare": {
     "id": "104400656281631",
     "type": "Model",
@@ -853,10 +958,17 @@
     "file": "build/art/world.Sperietoare.glb",
     "moderation": "Approved"
   },
-  "world.Stana": {
-    "id": "106720960204915",
+  "world.StalpBarza": {
+    "id": "103735321337860",
     "type": "Model",
-    "sha": "0f916792d30b76a4",
+    "sha": "79635d9d1d9cd63a",
+    "file": "build/art/world.StalpBarza.glb",
+    "moderation": "Approved"
+  },
+  "world.Stana": {
+    "id": "111349667828288",
+    "type": "Model",
+    "sha": "8c470090884af727",
     "file": "build/art/world.Stana.glb",
     "moderation": "Approved"
   },
@@ -865,6 +977,13 @@
     "type": "Model",
     "sha": "620dc06ee0b5cf53",
     "file": "build/art/world.Statie.glb",
+    "moderation": "Approved"
+  },
+  "world.Stejar": {
+    "id": "84874277675071",
+    "type": "Model",
+    "sha": "14d273b563995dcd",
+    "file": "build/art/world.Stejar.glb",
     "moderation": "Approved"
   },
   "world.Stiulete": {
@@ -881,6 +1000,13 @@
     "file": "build/art/world.Strat.glb",
     "moderation": "Approved"
   },
+  "world.Stuf": {
+    "id": "107683915489019",
+    "type": "Model",
+    "sha": "08427d44e6fba652",
+    "file": "build/art/world.Stuf.glb",
+    "moderation": "Approved"
+  },
   "world.Tabla": {
     "id": "113880549730245",
     "type": "Model",
@@ -889,16 +1015,30 @@
     "moderation": "Approved"
   },
   "world.Taraba": {
-    "id": "115774905885868",
+    "id": "115966608931833",
     "type": "Model",
-    "sha": "89c82620fde3f5a0",
+    "sha": "d88f12adf51743d8",
     "file": "build/art/world.Taraba.glb",
     "moderation": "Approved"
   },
-  "world.Visin": {
-    "id": "140396994005487",
+  "world.Tufa": {
+    "id": "96210928363505",
     "type": "Model",
-    "sha": "0beebe217623a7a8",
+    "sha": "d308f605841df5ff",
+    "file": "build/art/world.Tufa.glb",
+    "moderation": "Approved"
+  },
+  "world.Uluci": {
+    "id": "121069257140062",
+    "type": "Model",
+    "sha": "5b436bb51b6fe9aa",
+    "file": "build/art/world.Uluci.glb",
+    "moderation": "Approved"
+  },
+  "world.Visin": {
+    "id": "95420317810334",
+    "type": "Model",
+    "sha": "e2890bd3f682fc57",
     "file": "build/art/world.Visin.glb",
     "moderation": "Approved"
   }

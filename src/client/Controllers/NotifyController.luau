@@ -288,7 +288,7 @@ local function applyLayout()
 		capsule.maxWidth = rect.w
 	else
 		top.container.AnchorPoint = Vector2.new(0.5, 0)
-		top.container.Position = UDim2.new(0.5, 0, 0, 182)
+		top.container.Position = UDim2.new(0.5, 0, 0, 230)
 		top.container.Size = UDim2.fromOffset(560, 140)
 		bottom.container.AnchorPoint = Vector2.new(0.5, 1)
 		bottom.container.Position = UDim2.new(0.5, 0, 1, -70)

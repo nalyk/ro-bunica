@@ -155,7 +155,7 @@ local function applyLayout()
 		board.TextSize = if layout.compact then 14 else 17
 	else
 		board.AnchorPoint = Vector2.new(0.5, 0)
-		board.Position = UDim2.new(0.5, 0, 0, 140)
+		board.Position = UDim2.new(0.5, 0, 0, 188)
 		board.Size = UDim2.fromOffset(520, 34)
 		board.TextSize = 18
 	end
@@ -340,7 +340,7 @@ function MinigameController.start()
 	joinButton = UI.button({
 		Name = "MinigameJoin",
 		AnchorPoint = Vector2.new(0.5, 0),
-		Position = UDim2.new(0.5, 0, 0, 180),
+		Position = UDim2.new(0.5, 0, 0, 228),
 		Size = UDim2.fromOffset(220, 50),
 		Text = ClientState.t("minigame.join"),
 		swatch = "sky",

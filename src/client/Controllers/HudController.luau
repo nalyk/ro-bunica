@@ -20,6 +20,7 @@ local Motion = require(script.Parent.Motion)
 local Music = require(script.Parent.Music)
 local Theme = require(script.Parent.Theme)
 local Typography = require(Shared.Visual.Typography)
+local CompassBar = require(script.Parent.CompassBar)
 local UI = require(script.Parent.UI)
 local ShopPanel = require(script.Parent.ShopPanel)
 local CellarPanel = require(script.Parent.CellarPanel)
@@ -818,17 +819,21 @@ local function applyLayout()
 		place(touchDefense:FindFirstChild("TouchPin") :: GuiObject, layout.pin)
 		place(touchDefense:FindFirstChild("Ammo") :: GuiObject, layout.ammo)
 		place(seedBar, layout.seeds)
+		CompassBar.place(layout.compass)
 	else
 		HudController.layout = nil
+		-- busola sus, la centru; banii și ziua dedesubt
+		local compassW = math.min(480, size.X * 0.42)
+		CompassBar.place({ x = (size.X - compassW) / 2, y = 8, w = compassW, h = 44 })
 		topGroup.AnchorPoint = Vector2.new(0.5, 0)
-		topGroup.Position = UDim2.new(0.5, 0, 0, 10)
+		topGroup.Position = UDim2.new(0.5, 0, 0, 58)
 		topScale.Scale = 1
 		weatherLabel.AnchorPoint = Vector2.new(0.5, 0)
-		weatherLabel.Position = UDim2.new(0.5, 0, 0, 78)
+		weatherLabel.Position = UDim2.new(0.5, 0, 0, 126)
 		weatherLabel.Size = UDim2.fromOffset(280, 26)
 		weatherLabel.TextXAlignment = Enum.TextXAlignment.Center
 		livePill.AnchorPoint = Vector2.new(0.5, 0)
-		livePill.Position = UDim2.new(0.5, 0, 0, 144)
+		livePill.Position = UDim2.new(0.5, 0, 0, 192)
 		livePill.Size = UDim2.fromOffset(320, 34)
 		storePlus.Visible = true
 		leiLabel.Size = UDim2.new(1, -72, 0.64, 0)

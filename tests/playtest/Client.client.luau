@@ -447,6 +447,25 @@ function ops.closePanel(controller: string): boolean
 	return true
 end
 
+-- Harta satului: deschisă sau închisă; întoarce starea ei
+function ops.map(open: boolean): { [string]: any }
+	local VillageMap = (require :: any)(controllers:WaitForChild("VillageMap"))
+	if VillageMap.isOpen() ~= open then
+		VillageMap.toggle()
+	end
+	task.wait(0.5)
+	return VillageMap.debugState()
+end
+
+-- Ținta de pe hartă (nil o șterge); întoarce câte puncte are poteca după recalculare
+function ops.waypoint(position: Vector3?): number
+	local MapMarkers = (require :: any)(controllers:WaitForChild("MapMarkers"))
+	MapMarkers.setWaypoint(position, "test")
+	task.wait(3)
+	local folder = workspace.CurrentCamera:FindFirstChild("PotecaTintei")
+	return if folder then #folder:GetChildren() else 0
+end
+
 -- Starea de depanare a unui controller (debugState)
 function ops.debugState(controller: string): { [string]: any }
 	local module = (require :: any)(controllers:WaitForChild(controller))

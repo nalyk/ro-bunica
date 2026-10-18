@@ -1218,7 +1218,7 @@ builders.biserica = function(model, cf)
 		{ CanCollide = false }
 	)
 	pcall(function()
-		(model :: any).LevelOfDetail = Enum.ModelLevelOfDetail.StreamingMesh
+		(model :: any).LevelOfDetail = (Enum.ModelLevelOfDetail :: any).SLIM
 	end)
 end
 
@@ -1534,10 +1534,10 @@ function SiteBuilder.build(sites: { [string]: CFrame }, parent: Instance): Folde
 				item[5]
 			)
 		end
-		-- reperele se văd de oriunde (streaming), dar cu plasa simplificată de departe
+		-- reperele se văd de oriunde (streaming); de departe, SLIM (înlocuitorul ușor generat de Roblox)
 		model.ModelStreamingMode = Enum.ModelStreamingMode.Persistent
 		pcall(function()
-			(model :: any).LevelOfDetail = Enum.ModelLevelOfDetail.StreamingMesh
+			(model :: any).LevelOfDetail = (Enum.ModelLevelOfDetail :: any).SLIM
 		end)
 		model.Parent = folder
 	end

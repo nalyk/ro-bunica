@@ -228,6 +228,10 @@ Auditul e în `docs/RESEARCH_PLATFORMA.md`, planul și progresul în `docs/super
   - analytics segmentat și funnel social; topul săptămânal din toate satele pe avizier;
   - anunțuri rare pe toate serverele; `cloud.py announce|live|ban|unban`.
 - **Senzație:** textul crește după setarea jucătorului; Bunica își urmărește cu privirea vizitatorii.
+- **Busola și harta satului:**
+  - Busola-bandă sus (tactil: între butoane și bani; desktop: la centru, deasupra banilor), cu ograda, prietenii, întâmplarea, mini-jocul, rutiera și ținta, plus distanța sau numărătoarea.
+  - Atinsă (sau tasta M) deschide harta brodată a satului. Atingi un loc și apare o potecă de puncte cusute pe pământ până acolo.
+- **Grafică, ultimele piese:** SLIM pe locurile satului; texturile de teren aprobate.
 - **Monetizare:** abonamentul „Grandma's Friends” (99 Robux pe lună, doar cosmetice; în review la Roblox).
 - **Managed Pricing:** pornit pe permise. Pentru produse, verificările anti-arbitraj sunt în joc: nivelul de preț (`GetUsersPriceLevelsAsync`, citit la intrare de RegionPolicyService). Schimburile cer niveluri apropiate (toleranță 25/1000). La bazar leii nu urcă spre o regiune mai scumpă. Necunoscut = închis. Nivelul real măsurat: Moldova 400, global 1000.
 - **Ce ține de om:**

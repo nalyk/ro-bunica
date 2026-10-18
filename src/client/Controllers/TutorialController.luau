@@ -10,6 +10,7 @@ local Shared = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
 local Net = require(Shared.Net)
 local Sounds = require(Shared.Config.Sounds)
 local ClientState = require(script.Parent.ClientState)
+local Layout = require(script.Parent.Layout)
 local UI = require(script.Parent.UI)
 local Sfx = require(script.Parent.Sfx)
 
@@ -152,7 +153,8 @@ end
 function TutorialController.start()
 	hint = UI.frame({
 		AnchorPoint = Vector2.new(0.5, 0),
-		Position = UDim2.new(0.5, 0, 0, 150),
+		-- pe desktop sub busolă și sub bani; pe ecran tactil sub rândul de sus
+		Position = UDim2.new(0.5, 0, 0, if Layout.isTouch() then 150 else 198),
 		Size = UDim2.fromOffset(560, 70),
 		Visible = false,
 		Parent = UI.screen(),

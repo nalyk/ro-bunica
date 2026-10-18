@@ -59,7 +59,9 @@ Verificarea fiecărui lot: `./tools.sh` (teste Lune pentru tot ce e în `Domain`
   - `post3d` coace harta normală din plasa de 40k. Roblox importă singur toate cele 4 hărți (culoare, normală, rugozitate, metal; verificat pe moară cu `cloud.py run`). 85 de modele reconstruite și urcate.
   - Terenul: `tools/terrain_tex.py` (Codex → seamless → normală) → MaterialVariant „SatIarba/SatPamant/SatNoroi” în `default.project.json`, aplicate cu `SetBaseMaterialOverride`.
   - Nori dinamici și vânt după vreme (LightingDirector).
-  - Emissive și SLIM: neîncepute (proprietățile nu sunt confirmate în motorul curent).
+  - SLIM: confirmat în motor (`ModelLevelOfDetail.SLIM`), pus pe locurile satului în locul StreamingMesh.
+  - Ruling: emissive există (`SurfaceAppearance.EmissiveMaskContent/Strength/Tint`), dar nu-l pun pe casă. Atlasul TRELLIS are geamurile în bucăți mici, cu aceeași nuanță ca lemnul închis, deci o mască după culoare ar aprinde pete greșite noaptea. Ar cere măști pictate de mână.
+  - Texturile de teren: aprobate de moderare.
 - **Lotul 3 (live ops):**
   - `Domain/Tuning` + `TuningService` + `TuningClient`: 12 valori, server și jucător; papucul pe jucător pentru A/B. Config-urile reglabile nu mai sunt înghețate. Reîncărcarea are un minim de 0,6 s.
   - Analytics: 3 câmpuri custom, funnel-ul „Social”.
@@ -75,6 +77,11 @@ Verificarea fiecărui lot: `./tools.sh` (teste Lune pentru tot ce e în `Domain`
   - Abonamentul „Grandma's Friends” (99 Robux pe lună, EXP-4024965016297013811, în review), cu beneficii doar cosmetice: coronița de aur a Bunicii și titlul „Prietenul Bunicii”.
   - Managed Pricing (omul a aprobat, 2026-10-18): pornit pe cele 5 permise. Produsele (lei, îngrășământ, vreme, reînnoire) au rămas pe preț fix: Roblox avertizează că schimburile permit arbitrajul între regiuni, iar la noi leii și creaturile se schimbă. Ar cere Price Levels API și verificări în schimburi. **Făcut (omul: „cu verificări în schimburi”):** `Domain/Policy.canTrade/canGive` + RegionPolicyService, e2e 102/102, playtest 48/48; urmează pornirea produselor în Dashboard („My experience implements the appropriate checks”).
   - Reclamele cu recompensă: neeligibil încă (2.000 de vizitatori unici pe lună).
+- **Busola și harta satului (cererea omului: „map hud indicator ultramodern”):**
+  - Busola-bandă între butoane și bani (`HudLayout.compass`), cu semne vii (`MapMarkers`): ograda (alarmă), prietenii, întâmplarea, mini-jocul, rutiera, ținta.
+  - Harta brodată din planul real (`VillageMap`).
+  - Ținta cu potecă pe pământ (`WaypointController`, Pathfinding).
+  - Logica pură în `Domain/Compass`, `MapView`, `Waypoint`, cu teste.
 - **Lecții:**
   - Fereastra Roblox de acord pentru notificări acoperă jocul. În playtest a blocat mersul scriptat și a făcut să pice 3 pași.
   - Filmarea CaptureService încetinește Studio sub Vinegar. Ambele sunt oprite în Studio.

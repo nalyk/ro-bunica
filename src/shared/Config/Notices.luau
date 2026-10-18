@@ -20,6 +20,11 @@ local byKey: { [string]: Priority } = {
 	["announce.Night"] = "urgent",
 	-- indicii (după o acțiune care n-a mers)
 	["notify.NotNight"] = "hint",
+	["notify.TradePriceLevel"] = "hint",
+	["market.PriceLevel"] = "hint",
+	["notify.HostUnreachable"] = "hint",
+	["notify.GoingToHost"] = "hint",
+	["map.arrived"] = "hint",
 	["notify.Shielded"] = "hint",
 	["notify.NewPlayer"] = "hint",
 	["notify.Family"] = "hint",

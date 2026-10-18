@@ -71,6 +71,29 @@ describe("HudLayout.touch", function()
 
 	for _, screen in SCREENS do
 		it(
+			screen.name
+				.. ": busola sus, între butoane și bani: lată de citit, de atins, fără suprapuneri",
+			function()
+				local layout = HudLayout.touch(screen.w, screen.h, nil, 5, 4)
+				local compass = layout.compass
+				expect(compass.w >= HudLayout.COMPASS_MIN_W).toBe(true)
+				expect(compass.h >= HudLayout.MIN_TOUCH).toBe(true)
+				expect(HudLayout.inside(compass, screen.w, screen.h)).toBe(true)
+				local others =
+					{ layout.status, layout.info, layout.notice, layout.jump, layout.thumb, layout.ammo }
+				for _, rect in layout.actions do
+					table.insert(others, rect)
+				end
+				for _, rect in others do
+					expect(HudLayout.overlaps(compass, rect)).toBe(false)
+				end
+				expect(layout.statusScale >= 0.5).toBe(true)
+			end
+		)
+	end
+
+	for _, screen in SCREENS do
+		it(
 			screen.name .. ": tabela de scor a mini-jocurilor, sub mesaje, fără să acopere HUD-ul",
 			function()
 				local layout = HudLayout.touch(screen.w, screen.h, nil, 5, 4)

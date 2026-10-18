@@ -1924,6 +1924,42 @@ step(
 	end
 )
 
+step("15z. Busola și harta satului: semnele vii, ținta aleasă, poteca de pe pământ, sosirea", function()
+	local VillageLayout = require(Shared.Domain.VillageLayout)
+	local sites = VillageLayout.build().sites
+	local character = player.Character :: Model
+	local home = character:GetPivot()
+	-- busola: vizibilă, cu ograda ta printre semne
+	local compass = call("debugState", "CompassBar")
+	check(compass.visible == true, "busola nu se vede")
+	check(table.find(compass.markers, "home") ~= nil, "ograda ta lipsește de pe busolă")
+	log("SNAP busola")
+	-- harta deschisă: desenată, cu semnele vii
+	local map = call("map", true)
+	check(map.open == true and map.canvas[1] > 200 and map.sites > 30, "harta nu s-a desenat")
+	task.wait(0.6)
+	log("SNAP harta")
+	call("map", false)
+	-- ținta: moara; poteca apare pe pământ, apoi dispare la sosire
+	local target = sites.moara.Position
+	local dots = call("waypoint", target)
+	check(dots >= 6, "poteca spre țintă are prea puține puncte: " .. tostring(dots))
+	local look = home.Position + (target - home.Position).Unit * 20
+	call("lookAt", look, home.Position + Vector3.new(0, 14, 0) - (target - home.Position).Unit * 14, 2)
+	task.wait(1)
+	log("SNAP poteca")
+	compass = call("debugState", "CompassBar")
+	check(table.find(compass.markers, "waypoint") ~= nil, "ținta lipsește de pe busolă")
+	character:PivotTo(CFrame.new(target + Vector3.new(6, 4, 0)))
+	check(
+		waitFor(function()
+			return call("debugState", "VillageMap").waypoint == nil
+		end, 6),
+		"ținta nu s-a șters la sosire"
+	)
+	character:PivotTo(home)
+end)
+
 step("16. Fără erori de script (server și client)", function()
 	local serverErrors = {}
 	for _, entry in LogService:GetLogHistory() do

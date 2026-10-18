@@ -22,6 +22,7 @@ export type TouchLayout = {
 	menu: Rect, -- meniul „Mai mult”, sub butonul lui
 	scoreboard: Rect, -- tabela de scor a mini-jocurilor: o bandă sub capsula mesajelor
 	quick: Rect, -- butonul mesajelor rapide: pe dreapta, deasupra muniției
+	compass: Rect, -- busola-bandă (atinsă: harta satului), sus, între rândul de butoane și bani
 }
 
 local HudLayout = {}
@@ -30,6 +31,7 @@ HudLayout.MIN_TOUCH = 44
 HudLayout.TOUCH_ACTIONS = 5 -- Semințe, Beci, Ograda, Caietul, Mai mult
 HudLayout.MENU_ITEMS = 4 -- Mini-jocuri, Horă, Prieteni, Magazin
 HudLayout.STATUS_SIZE = { w = 436, h = 64 } -- grupul banilor și al zilei la scara 1 (desktop)
+HudLayout.COMPASS_MIN_W = 120 -- busola: sub atât nu se mai citesc semnele
 local MARGIN = 8
 
 -- Ecran mic, ca în PlayerModule: latura mică ≤ 500
@@ -77,13 +79,22 @@ function HudLayout.touch(
 	end
 	local actionsRight = MARGIN + actionCount * (button + gap) - gap
 
-	-- starea: scara dorită, micșorată dacă n-ar încăpea lângă rând
+	-- starea: scara dorită, micșorată dacă n-ar încăpea lângă rând și busolă
 	local scale = if compact then 0.62 else 0.8
-	local available = w - MARGIN - actionsRight - 2 * gap
+	local available = w - MARGIN - actionsRight - 3 * gap - HudLayout.COMPASS_MIN_W
 	scale = math.min(scale, available / HudLayout.STATUS_SIZE.w)
 	local statusW = HudLayout.STATUS_SIZE.w * scale
 	local statusH = HudLayout.STATUS_SIZE.h * scale
 	local status = { x = w - MARGIN - statusW, y = 6, w = statusW, h = statusH }
+	-- busola: tot spațiul dintre rând și stare, cel mult 420 px, centrată în el
+	local spaceLeft, spaceRight = actionsRight + gap, status.x - gap
+	local compassW = math.min(spaceRight - spaceLeft, 420)
+	local compass = {
+		x = spaceLeft + (spaceRight - spaceLeft - compassW) / 2,
+		y = 6,
+		w = compassW,
+		h = math.max(button, HudLayout.MIN_TOUCH),
+	}
 	local info = { x = status.x, y = status.y + statusH + 4, w = statusW, h = if compact then 20 else 26 }
 
 	local jumpRect = jump or HudLayout.defaultJump(w, h)
@@ -135,6 +146,7 @@ function HudLayout.touch(
 		menu = menu,
 		scoreboard = scoreboard,
 		quick = quick,
+		compass = compass,
 	}
 end
 

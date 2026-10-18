@@ -335,7 +335,7 @@ local function buildRequest(screen: Frame)
 	requestBox = UI.frame({
 		Name = "TradeRequest",
 		AnchorPoint = Vector2.new(0.5, 0),
-		Position = UDim2.new(0.5, 0, 0, 120),
+		Position = UDim2.new(0.5, 0, 0, 168),
 		Size = UDim2.fromOffset(420, 120),
 		BackgroundColor3 = Theme.paper,
 		Visible = false,

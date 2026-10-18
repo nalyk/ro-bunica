@@ -39,6 +39,16 @@ function ClientState.t(key: string, args: { any }?): string
 	return Strings.get(language, key, translated)
 end
 
+-- Numele afișat al unei creaturi, cu mutația și mărimea în ordinea limbii (`fmt.creature`)
+function ClientState.creatureName(id: string, size: string?, mutation: string?, name: string?): string
+	local text = ClientState.t("fmt.creature", {
+		if mutation and mutation ~= "" then ClientState.t("mutation." .. mutation) else "",
+		if size then ClientState.t("size." .. size) else "",
+		name or ClientState.t("creature." .. id),
+	})
+	return (string.gsub(string.gsub(text, "%s+", " "), "^%s*(.-)%s*$", "%1"))
+end
+
 function ClientState.onChanged(callback: () -> ())
 	table.insert(listeners, callback)
 end

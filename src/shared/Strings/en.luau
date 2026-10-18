@@ -1,6 +1,7 @@
 --!strict
 -- English texts. Keys match every other language.
 return {
+	["fmt.creature"] = "{1} {2} {3}", -- {1} mutația, {2} mărimea, {3} numele creaturii
 	["creature.CartofelAgent"] = "Agent Potato",
 	["creature.ArdeiasIute"] = "Speedy Pepper",
 	["creature.CovrigSkater"] = "Pretzel Skater",

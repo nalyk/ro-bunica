@@ -1,6 +1,7 @@
 --!strict
 -- Textele în română. Cheile sunt aceleași în toate limbile.
 return {
+	["fmt.creature"] = "{1} {2} {3}", -- {1} mutația, {2} mărimea, {3} numele creaturii
 	-- Creaturi
 	["creature.CartofelAgent"] = "Cartofel Agent",
 	["creature.ArdeiasIute"] = "Ardeiaș Iute",

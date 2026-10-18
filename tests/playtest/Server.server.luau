@@ -1664,6 +1664,99 @@ step(
 	end
 )
 
+step(
+	"15w. Bazarul (vecinul vinde, jucătorul cumpără din panou) și codurile tantii de la magazin",
+	function()
+		local MarketService = services.MarketService
+		local VillageLayout = require(Shared.Domain.VillageLayout)
+		local bazaar = VillageLayout.build().sites.bazar.Position
+		local seller = Actors.createBot("Negustoras", PlotService.plots[7].geometry.spawnCFrame)
+		local sellerOwner = PlotService.assignBot(PlotService.plots[7], seller);
+		(Actors.characterOf(seller) :: Model):PivotTo(CFrame.new(bazaar + Vector3.new(4, 3, 4)))
+		local record = Inventory.newRecord(sellerOwner.profile, seller.id, "DovleacDJ", "Normal", nil)
+		table.insert(sellerOwner.profile.cellar, record)
+		local id = MarketService.list(sellerOwner, record.uid, Economy.sellPrice(record) * 2)
+		check(id ~= nil, "vecinul nu a putut pune creatura la vânzare");
+		(player.Character :: Model):PivotTo(CFrame.new(bazaar + Vector3.new(0, 3, 12)))
+		check(
+			waitFor(function()
+				return call("debugState", "MarketPanel").button
+			end, 4),
+			"butonul bazarului nu apare lângă bazar"
+		)
+		me.profile.lei += Economy.sellPrice(record) * 2 + 100
+		services.StateService.markDirty(player)
+		call("openPanel", "MarketPanel")
+		check(
+			waitFor(function()
+				return call("debugState", "MarketPanel").listings >= 1
+			end, 4),
+			"panoul bazarului nu arată oferta vecinului"
+		)
+		log("SNAP bazar")
+		call("fire", "Market", "buy", id)
+		check(
+			waitFor(function()
+				return Inventory.findCellar(me.profile, record.uid) ~= nil
+			end, 4),
+			"cumpărarea din panou nu a mutat creatura în beci"
+		)
+		call("closePanel", "MarketPanel")
+		Actors.removeBot(seller)
+		-- codul tantii
+		local lei = me.profile.lei
+		call("openPanel", "ShopPanel")
+		call("openPanel", "CodesPanel")
+		log("SNAP coduri")
+		call("fire", "Code", "papucul")
+		check(
+			waitFor(function()
+				return me.profile.lei - lei >= 750
+			end, 4),
+			"codul PAPUCUL nu a dat leii"
+		)
+		call("closePanel", "CodesPanel")
+		call("closePanel", "ShopPanel")
+	end
+)
+
+step(
+	"15x. Sărbătorile impuse: ouăle de Paște, iarna (gheața pe iaz, butoanele, masca de Malanca)",
+	function()
+		local SeasonService = services.SeasonService
+		SeasonService.force({ "Paste" })
+		check(
+			waitFor(function()
+				return #SeasonService.eggs() >= SeasonService.EGGS
+			end, 4),
+			"ouăle de Paște nu apar"
+		)
+		local egg = SeasonService.eggs()[1]
+		call("lookAt", egg.Position, egg.Position + Vector3.new(6, 5, 6), 2)
+		task.wait(1)
+		log("SNAP oua-paste")
+		SeasonService.force({ "Iarna" })
+		check(
+			waitFor(function()
+				local state = call("debugState", "SeasonController")
+				return state.ice and state.buttons.mask
+			end, 4),
+			"iarna: gheața pe iaz sau butonul măștii lipsesc"
+		)
+		log("SNAP iarna-butoane")
+		call("fire", "Season", "mask")
+		check(
+			waitFor(function()
+				return services.BunicaService.isDisguised(myActor)
+			end, 3),
+			"masca de Malanca nu ascunde jucătorul"
+		)
+		task.wait(0.5)
+		log("SNAP malanca")
+		SeasonService.force(nil)
+	end
+)
+
 step("16. Fără erori de script (server și client)", function()
 	local serverErrors = {}
 	for _, entry in LogService:GetLogHistory() do

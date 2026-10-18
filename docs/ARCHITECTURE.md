@@ -34,13 +34,26 @@ src/shared/   -> ReplicatedStorage.Shared
   Net.luau    numele remote-urilor și accesul la ele
 src/server/   -> ServerScriptService.Server
   init.server.luau            bootstrap: init() apoi start() pe fiecare serviciu
-  Services/                   adaptoare Roblox (date, ogrăzi, furt, papuc, vreme…)
+  Services/                   adaptoare Roblox (date, ogrăzi, furt, papuc, vreme, bazar, sezoane…)
+  World/                      construcția lumii (VillageBuilder, SiteBuilder, Zones, DecorModels)
+  Happenings/                 întâmplările ceasului satului (Kit + câte un modul pe întâmplare)
+  Minigames/                  mini-jocurile (Props, RaceKit + câte un modul pe joc)
+  Ai/                         mersul NPC-urilor (Walker), lupii
+  Actors.luau, Busy.luau      Owner/Actor (jucători și boți), registrul celor ocupați într-un mini-joc
   Packages/                   biblioteci incluse (ProfileStore)
 src/client/   -> StarterPlayer.StarterPlayerScripts.Client
   init.client.luau            bootstrap pentru controllere
   Controllers/                input, UI, efecte, randare locală
 tests/        teste Lune (*.spec.luau) și harness-ul de rulare
 ```
+
+## Satul viu (ceasul, mini-jocurile, piața, calendarul)
+
+- **Ceasul satului** (`VillageClockService`): alege o întâmplare la 6–8 minute (`Domain/VillageClock.next`, cu istoric și filtru pe fază), o anunță cu 30 s înainte, apoi apelează `begin(ctx)` din modulul ei din `Happenings/`. Un modul primește trusa comună (`Happenings/Kit`: cel mai apropiat jucător, încetinire, puncte libere pe teren, figuri) și se termină singur sau la `stop`.
+- **Mini-jocurile** (`MinigameService`): `register(def, module)`, apoi un ciclu fix: înscrierea la loc → numărătoarea → `module.run(match)` → podiumul. `match.score`, `match.finish` și `Domain/Minigame.rewards` decid premiile; jucătorii înscriși sunt marcați în `Busy`, deci nu pot fura și nu pot fi loviți de Bunica.
+- **Bazarul** (`Domain/Market`, `MarketService`): oferta ține creatura în beciul vânzătorului, marcată `listed`; cumpărarea e atomică (leii și înregistrarea se mută în același apel). Orice cale care mută o creatură (vânzare, piedestal, schimb) refuză înregistrările marcate.
+- **Calendarul** (`Domain/Seasons`, `SeasonService`): sărbătorile active ajung în `GameState.Holidays` (și anotimpul în `GameState.Season`); serviciile citesc steaguri simple (`GardenService.seasonFactor`, `RaidService.holiday`, `EconomyService.seasonalMultiplier`), deci nu depind de `SeasonService`. `SeasonService.force(list)` impune sărbători în teste.
+- Toate trec prin abstracția Owner/Actor, deci se testează cu boți (`Actors.createBot`, `PlotService.assignBot`, `standIn = true`).
 
 ## Convenții de cod
 

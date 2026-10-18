@@ -48,12 +48,12 @@ local function labelCreature(model: Model)
 	billboard.Adornee = primary
 	billboard.Parent = model
 	local hybridName = model:GetAttribute("HybridName")
-	local nameText = if typeof(hybridName) == "string" and hybridName ~= ""
-		then "🧬 " .. hybridName
-		else ClientState.t("creature." .. creature.id)
-	if mutation and mutation ~= "" then
-		nameText = ClientState.t("mutation." .. mutation) .. " " .. nameText
-	end
+	local nameText = ClientState.creatureName(
+		creature.id,
+		nil,
+		mutation,
+		if typeof(hybridName) == "string" and hybridName ~= "" then "🧬 " .. hybridName else nil
+	)
 	local name = Instance.new("TextLabel")
 	name.BackgroundTransparency = 1
 	name.Size = UDim2.fromScale(1, 0.5)

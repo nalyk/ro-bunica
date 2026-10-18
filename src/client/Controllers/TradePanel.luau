@@ -59,16 +59,7 @@ local function signature(): string
 end
 
 local function describe(record: { id: string, size: string, mutation: string? }): string
-	local parts = {}
-	if record.mutation then
-		table.insert(parts, ClientState.t("mutation." .. record.mutation))
-	end
-	local size = ClientState.t("size." .. record.size)
-	if size ~= "" then
-		table.insert(parts, size)
-	end
-	table.insert(parts, ClientState.t("creature." .. record.id))
-	return table.concat(parts, " ")
+	return ClientState.creatureName(record.id, record.size, record.mutation)
 end
 
 local function sendOffer(uids: { string })

@@ -198,7 +198,13 @@ Omul a cerut tot pachetul C din `docs/RESEARCH_SAT_VIU.md`, „full featured”.
 - **M4, mini-jocurile (`MinigameService`):** înscriere la loc, numărătoare, tabela de scor (bandă sub mesaje), podium, fantome care încurajează. Jocurile: prinde cocoșul, șotronul, ciocnitul ouălor, oina cu papuci, ascunselea în porumb, Păcală se ascunde, cursa cu roaba, obby-ul morii, zdrobitul strugurilor, Discoteca (dans sau „Cea mai tare Bunică”, cu vot), plăcintăria (co-op, cu creștere mai rapidă), „Țară, țară, vrem ostași”. Plus hora pe ritm („cercul perfect” cheamă Curcubeul), pescuitul la iaz și recordurile pe avizierul din centru.
 - **Verificare:** 250 de teste unitare, e2e 77/77 (în loturi paralele: o sarcină Open Cloud are cel mult 5 minute), playtest complet de peste 40 de pași (`PLAYTEST_UNTIL=<pas>` rulează doar până la un pas).
 
-**Urmează:** M5 (decorul ogrăzii, ținutele și titlurile, îngrijirea, hibrizii, siluetele), M6 (QuickChat, bazarul, codurile), M7 (anotimpurile, cu Paștele ortodox), M8 (RU/ES/PT), M9 (modele TRELLIS pentru locuri), M10 (chestionarul de maturitate, Experience Events, review-ul final).
+**Gata (sarcinile 25–33, commit-urile 519380e, 3b20012, c6c6c3b, dda2977):**
+- **M5, statutul și grija:** decorul ogrăzii pe lei (22 de obiecte, 12 sloturi, așezare cu previzualizare); garderoba Bunicii (6 ținute) și titlurile (7, din statistici); îngrijirea creaturilor (fericire, hrană, mângâiere, +10% venit); hibrizii (nume pronunțabile, pălăria, (A + B) × 0,75, colecția lor); siluetele din Caiet și fila Recorduri.
+- **M6, comunicarea și piața:** mesajele rapide (12, în 5 limbi, bula deasupra capului); bazarul (`Domain/Market`, `MarketService`, `MarketPanel`): tarabe, prețuri 25%–10× din valoare, creatura rămâne în beci marcată cât e la vânzare (nu se vinde, nu se mută, nu se schimbă), cumpărarea mută leii și creatura deodată, plecarea vânzătorului golește taraba, duminica 12 tarabe și negustori NPC; codurile tantii de la magazin (`Config/Codes`, o folosire pe profil, căsuța din magazin); alarma în lanț (câinii vecinilor latră la hoțul care cară, proprietarul află discret).
+- **M7, calendarul (`Domain/Seasons`, `SeasonService`, `SeasonController`):** Paștele ortodox după Meeus (2026 = 12 aprilie, 2027 = 2 mai), Mărțișorul (straturi × 1,2), ouăle de Paște prin sat și ou încondeiat la ciocnit, coronița de Drăgaică, știuletele roșu la Cules (și strugurii propuși mai des), hramul satului (o zi pe lună, pe server: nu se fură, decorul dă venit), iarna: colinde la vecinii NPC, Capra și Ursul, masca de Malanca (Bunica nu te recunoaște 30 s), gheața pe iaz. `SeasonService.force` pentru teste.
+- **Verificare:** 293 de teste unitare, e2e 90/90.
+
+**Urmează:** M8 (RU/ES/PT, toate cheile), M9 (modele TRELLIS pentru locuri: concepte Codex, apoi TRELLIS când GPU-ul de pe ai-esempla e liber), M10 (chestionarul de maturitate, Experience Events, review-ul final, publicarea).
 
 ## Acoperișul casei (2026-10-18)
 

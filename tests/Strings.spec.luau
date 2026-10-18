@@ -55,3 +55,33 @@ describe("Strings", function()
 		end
 	end)
 end)
+
+describe("Strings în RU, ES, PT", function()
+	it(
+		"fiecare cheie din engleză există în rusă, spaniolă și portugheză, cu aceleași argumente {N}",
+		function()
+			local en = require(Shared.Strings.en)
+			local function args(text: string): string
+				local list = {}
+				for n in string.gmatch(text, "{(%d+)}") do
+					table.insert(list, n)
+				end
+				table.sort(list)
+				return table.concat(list, ",")
+			end
+			for _, language in { "ru", "es", "pt" } do
+				local strings = require(Shared.Strings[language])
+				local missing = {}
+				for key, text in en do
+					local translated = strings[key]
+					if translated == nil then
+						table.insert(missing, key)
+					else
+						expect(args(translated)).toBe(args(text))
+					end
+				end
+				expect(language .. ": " .. #missing .. " lipsă").toBe(language .. ": 0 lipsă")
+			end
+		end
+	)
+end)

@@ -15,6 +15,7 @@ return function(only: { string }?): Spec.Results
 	-- Rezultatele nu depind de ora rulării: evenimentul de sâmbătă pornește doar din teste (forceStart)
 	services.LiveEventService.setScheduled(false)
 	services.VillageClockService.setEnabled(false) -- întâmplările pornesc doar din teste
+	services.SeasonService.force({}) -- nici sărbătorile din calendar (hramul oprește furtul): doar din teste
 	local specs = {}
 	for _, child in script.Parent:GetChildren() do
 		if

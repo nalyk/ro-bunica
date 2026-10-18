@@ -234,7 +234,8 @@ function HappeningController.start()
 			and typeof(extra.merchant) == "Vector3"
 			and (extra.left or 3) > 0
 		then
-			local near = (root.Position - extra.merchant).Magnitude <= 10
+			local offset = root.Position - extra.merchant
+			local near = Vector3.new(offset.X, 0, offset.Z).Magnitude <= 10
 			if near ~= shopPanel.Visible then
 				UI.show(shopPanel, near)
 			end

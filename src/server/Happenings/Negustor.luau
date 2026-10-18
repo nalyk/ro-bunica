@@ -40,7 +40,8 @@ function Negustor.start(ctx: any)
 	ctx.data.offers = offers
 	ctx.data.buyers = {}
 	ctx.data.order = {}
-	ctx.publish({ offers = offers, merchant = position })
+	-- poziția reală a figurii (pe teren), nu cea a locului: clientul arată oferta după ea
+	ctx.publish({ offers = offers, merchant = ctx.data.merchant:GetPivot().Position })
 end
 
 -- Pentru teste: oferta curentă
@@ -57,7 +58,8 @@ function Negustor.action(ctx: any, owner: any, payload: any)
 	end
 	local root = Kit.root(owner)
 	local merchant: Model = ctx.data.merchant
-	if not root or (root.Position - merchant:GetPivot().Position).Magnitude > Negustor.REACH then
+	local offset = root and root.Position - merchant:GetPivot().Position
+	if not offset or Vector3.new(offset.X, 0, offset.Z).Magnitude > Negustor.REACH then
 		return
 	end
 	for _, offer in ctx.data.offers do

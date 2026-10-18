@@ -21,6 +21,7 @@ local serverFolder = ServerScriptService:WaitForChild("Server")
 local services = (require :: any)(serverFolder:WaitForChild("Boot")).start()
 -- ceasul satului nu pornește întâmplări singur în timpul scenariului (pasul 15s le pornește direct)
 services.VillageClockService.setEnabled(false)
+services.SeasonService.force({}) -- sărbătorile din calendar nu încurcă pașii (hramul oprește furtul)
 local Actors = (require :: any)(serverFolder:WaitForChild("Actors"))
 local PlotService = services.PlotService
 local RaidService = services.RaidService
@@ -1753,7 +1754,7 @@ step(
 		)
 		task.wait(0.5)
 		log("SNAP malanca")
-		SeasonService.force(nil)
+		SeasonService.force({})
 	end
 )
 

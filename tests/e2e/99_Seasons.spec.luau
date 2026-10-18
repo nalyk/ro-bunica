@@ -108,7 +108,7 @@ return function(Spec: any, services: { [string]: any })
 				expect(BunicaService.isDisguised(actor)).toBe(true)
 				expect(SeasonService.act(owner, "mask")).toBe(false) -- o dată la 5 minute
 				Actors.removeBot(actor)
-				SeasonService.force(nil)
+				SeasonService.force({})
 			end
 		)
 	end)

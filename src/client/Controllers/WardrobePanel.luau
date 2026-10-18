@@ -71,6 +71,17 @@ function WardrobePanel.toggle()
 	end
 end
 
+-- Pentru playtest
+function WardrobePanel.debugState(): { [string]: any }
+	local rows = 0
+	for _, child in scroll:GetChildren() do
+		if child:IsA("GuiButton") then
+			rows += 1
+		end
+	end
+	return { visible = panel.Visible, rows = rows }
+end
+
 function WardrobePanel.start()
 	panel, scroll = UI.panel(ClientState.t("outfit.title"), function()
 		UI.show(panel, false)

@@ -60,8 +60,9 @@ function Walker.pathTo(
 		if shouldStop() or not humanoid.Parent then
 			return false
 		end
+		-- raza 3: cu 2, drumul trece razant pe lângă colțurile ogrăzilor rotite (satul de vale) și NPC-ul se agață
 		local path = PathfindingService:CreatePath({
-			AgentRadius = 2,
+			AgentRadius = 3,
 			AgentHeight = 6,
 			AgentCanJump = false,
 			WaypointSpacing = 6,
@@ -84,7 +85,13 @@ function Walker.pathTo(
 			else
 				stuck += 1
 				if stuck >= 2 then
-					break -- replanifică de unde a rămas
+					-- un pas înapoi, departe de obstacol, apoi replanifică de acolo
+					local away = root.Position - waypoints[index].Position
+					away = Vector3.new(away.X, 0, away.Z)
+					if away.Magnitude > 0.1 then
+						Walker.moveTo(humanoid, root.Position + away.Unit * 4, PATH_STEP_TIMEOUT)
+					end
+					break
 				end
 			end
 		end

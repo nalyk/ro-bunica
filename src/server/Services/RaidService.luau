@@ -25,6 +25,8 @@ local DayNightService = require(script.Parent.DayNightService)
 local Messenger = require(script.Parent.Messenger)
 local Actors = require(script.Parent.Parent.Actors)
 local Busy = require(script.Parent.Parent.Busy)
+local ChainAlarm = require(Shared.Domain.ChainAlarm)
+local World = require(Shared.Config.World)
 local FamilyService = require(script.Parent.FamilyService)
 local Upgrades = require(Shared.Domain.Upgrades)
 
@@ -387,6 +389,19 @@ local function addPrompt(owner: Owner, key: string, model: Model)
 	end)
 end
 
+local chain = ChainAlarm.new()
+local gateCache: { Vector3 }? = nil
+local function gates(): { Vector3 }
+	if not gateCache then
+		local list = {}
+		for _, plot in PlotService.plots do
+			table.insert(list, (plot.geometry.cframe * CFrame.new(0, 0, -World.plotSize.Z / 2)).Position)
+		end
+		gateCache = list
+	end
+	return gateCache :: { Vector3 }
+end
+
 local function checkCarries()
 	for actor, carry in carries do
 		local root = rootOf(actor)
@@ -405,6 +420,17 @@ local function checkCarries()
 		end
 		local t = os.clock()
 		local position = root.Position
+		-- alarma în lanț: ogrăzile pe lângă care trece hoțul cu creatura în brațe (câinii latră, proprietarul află)
+		for _, index in
+			ChainAlarm.update(chain, tostring(actor.id), position, gates(), carry.owner.plot.index, t)
+		do
+			local plot = PlotService.plots[index]
+			local neighbour = plot and plot.owner
+			plot.geometry.model:SetAttribute("BarkUntil", Workspace:GetServerTimeNow() + 4)
+			if neighbour and neighbour.player and neighbour ~= thief then
+				Messenger.notify(neighbour.player, "notify.ChainAlarm", { thief.name })
+			end
+		end
 		if t - carry.lastTime >= SPEED_WINDOW then
 			local plausible = Raid.isMovementPlausible(
 				carry.lastPosition,

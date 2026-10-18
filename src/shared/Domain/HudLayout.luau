@@ -21,6 +21,7 @@ export type TouchLayout = {
 	notice: Rect, -- capsula mesajelor: un singur mesaj odată, sus la centru, peste cer (nu primește atingeri)
 	menu: Rect, -- meniul „Mai mult”, sub butonul lui
 	scoreboard: Rect, -- tabela de scor a mini-jocurilor: o bandă sub capsula mesajelor
+	quick: Rect, -- butonul mesajelor rapide: pe dreapta, deasupra muniției
 }
 
 local HudLayout = {}
@@ -113,6 +114,8 @@ function HudLayout.touch(
 	local scoreboard =
 		{ x = notice.x, y = notice.y + notice.h + 4, w = notice.w, h = if compact then 28 else 34 }
 
+	local quick = { x = w - MARGIN - button, y = ammo.y - gap - button, w = button, h = button }
+
 	local more = actions[#actions]
 	local menu = { x = more.x, y = more.y + more.h + gap, w = 210, h = menuItems * (button + gap) + gap }
 
@@ -131,6 +134,7 @@ function HudLayout.touch(
 		notice = notice,
 		menu = menu,
 		scoreboard = scoreboard,
+		quick = quick,
 	}
 end
 

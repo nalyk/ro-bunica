@@ -13,6 +13,7 @@ export type CreatureRecord = {
 	lastPet: number?, -- ultima mângâiere (timpul serverului)
 	hybrid: string?, -- hibrid: a doua creatură (Domain/Hybrid)
 	hybridName: string?,
+	listed: string?, -- pusă la bazar (id-ul ofertei); se șterge la intrarea în joc
 }
 
 export type PlantRecord = {
@@ -51,6 +52,7 @@ export type Profile = {
 	outfit: string?, -- ținuta purtată
 	food: { [string]: number }, -- hrana pentru creaturi (plăcinte de la Plăcintărie)
 	hybrids: { [string]: boolean }, -- hibrizii descoperiți (Domain/Hybrid.key)
+	codes: { [string]: boolean }, -- codurile folosite (Domain/Codes)
 	uidCounter: number,
 	passes: { [string]: boolean }, -- permisele Robux deja aplicate (efectele permanente, o singură dată)
 	receipts: { string }, -- PurchaseId-urile procesate (anti-dublare la ProcessReceipt)
@@ -109,6 +111,7 @@ function DataTemplate.new(): Profile
 		outfits = {},
 		food = {},
 		hybrids = {},
+		codes = {},
 	}
 end
 

@@ -456,6 +456,17 @@ local function updateDogs(now: number)
 			end
 		end
 	end
+	-- alarma în lanț de pe server: un hoț cu creatura în brațe a trecut pe lângă ogradă (BarkUntil)
+	local serverNow = Workspace:GetServerTimeNow()
+	for _, d in dogs do
+		local barkUntil = d.plot:GetAttribute("BarkUntil")
+		if typeof(barkUntil) == "number" and barkUntil > serverNow then
+			if now >= d.cooldown then
+				triggered = triggered or d
+			end
+			d.until_ = math.max(d.until_, now + (barkUntil - serverNow))
+		end
+	end
 	-- lanțul: câinii de pe aceeași uliță se iau după el, cu întârziere după depărtare
 	if triggered then
 		triggered.cooldown = now + Ambient.dog.barkCooldown

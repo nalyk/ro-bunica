@@ -1465,10 +1465,11 @@ step("15r. Rutiera: jucătorul urcă acasă, alege centrul și coboară acolo", 
 	DayNightService.forcePhase("Day")
 	-- rutiera ajunge acasă: sare în timp până la oprirea de lângă poarta jucătorului
 	local home = "plot" .. me.plot.index
-	RutieraService.warp(RutieraService.secondsTo(home) + 1)
-	task.wait(0.5)
-	local vehicle = RutieraService.vehicle() :: Model
-	call("walkTo", (vehicle:GetPivot() * CFrame.new(7, 0, 0)).Position, 3)
+	-- jucătorul așteaptă la drum, în fața porții; rutiera vine și stă 4 s în stație
+	leaveHome(me.plot)
+	call("walkTo", roadPoint(me.plot))
+	RutieraService.warp(RutieraService.secondsTo(home) + 0.5)
+	task.wait(0.4)
 	check(RutieraService.board(myActor), "jucătorul nu a putut urca")
 	check(
 		waitFor(function()
@@ -1586,6 +1587,13 @@ step(
 		Actors.removeBot(friend)
 		-- pescuitul: la iaz apare butonul undiței
 		local pond = Village.sites.iaz
+		-- peste pârâu doar pe pod: drumul mare, capătul de nord al podului, cel de sud, apoi malul iazului
+		local VillageLayout = require(Shared.Domain.VillageLayout)
+		local road = VillageLayout.lower(Village.bridges[2])
+		local bridge = road - Vector3.new(0, 0, Village.riverOffset)
+		call("walkTo", road + Vector3.new(0, 3, 0), 4)
+		call("walkTo", bridge + Vector3.new(0, 3, Village.riverWidth / 2 + 3), 3)
+		call("walkTo", bridge + Vector3.new(0, 3, -(Village.riverWidth / 2 + 3)), 3)
 		call("walkTo", pond + Vector3.new(0, 3, 38), 4)
 		check(
 			waitFor(function()
@@ -1602,11 +1610,13 @@ step("15u. Decorul, garderoba și recordurile (pe calculator și pe telefon)", f
 	me.profile.lei += 20000
 	services.StateService.markDirty(player)
 	task.wait(0.5)
-	local decor = call("openPanel", "DecorPanel")
+	call("openPanel", "DecorPanel")
+	local decor = call("debugState", "DecorPanel")
 	check(decor.rows >= 20, "catalogul decorului are prea puține rânduri: " .. decor.rows)
 	log("SNAP decor")
 	call("closePanel", "DecorPanel")
-	local wardrobe = call("openPanel", "WardrobePanel")
+	call("openPanel", "WardrobePanel")
+	local wardrobe = call("debugState", "WardrobePanel")
 	check(wardrobe.rows >= 13, "garderoba: ținutele și titlurile lipsesc")
 	log("SNAP garderoba")
 	call("closePanel", "WardrobePanel")
@@ -1625,6 +1635,34 @@ step("15u. Decorul, garderoba și recordurile (pe calculator și pe telefon)", f
 	call("closePanel", "DecorPanel")
 	call("phone")
 end)
+
+step(
+	"15v. Mesajele rapide: butonul pe telefon (nu atinge săritura sau joystick-ul), bula deasupra capului",
+	function()
+		local HudLayout = require(Shared.Domain.HudLayout)
+		call("phone", 667, 339)
+		local state = call("debugState", "QuickChatWheel")
+		local rect = { x = state.rect[1], y = state.rect[2], w = state.rect[3], h = state.rect[3] }
+		local layout = HudLayout.touch(667, 339, nil, HudLayout.TOUCH_ACTIONS, HudLayout.MENU_ITEMS)
+		check(rect.w >= HudLayout.MIN_TOUCH, "butonul mesajelor e prea mic: " .. rect.w)
+		check(
+			not HudLayout.overlaps(rect, layout.jump) and not HudLayout.overlaps(rect, layout.thumb),
+			"butonul mesajelor stă peste săritură sau joystick"
+		)
+		call("phone")
+		call("fire", "QuickChat", "bravo")
+		check(
+			waitFor(function()
+				local character = player.Character
+				return character ~= nil
+					and string.find(tostring(character:GetAttribute("Quick")), "^bravo:") ~= nil
+			end, 3),
+			"bula mesajului nu apare"
+		)
+		task.wait(0.5)
+		log("SNAP mesaj-rapid")
+	end
+)
 
 step("16. Fără erori de script (server și client)", function()
 	local serverErrors = {}

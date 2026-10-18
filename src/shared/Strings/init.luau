@@ -1,12 +1,18 @@
 --!strict
--- Localizare. RU, ES și PT-BR se scriu de mână (vezi GDD); până atunci cad pe engleză.
+-- Localizare în 5 limbi: RO, EN, RU, ES, PT-BR (scrise de mână, vezi GDD). O cheie lipsă cade pe engleză.
 
 local ro = require(script.ro)
 local en = require(script.en)
+local ru = require(script.ru)
+local es = require(script.es)
+local pt = require(script.pt)
 
 local LANGUAGES: { [string]: { [string]: string } } = {
 	ro = ro,
 	en = en,
+	ru = ru,
+	es = es,
+	pt = pt,
 }
 
 local Strings = {}

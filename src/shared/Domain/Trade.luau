@@ -70,6 +70,9 @@ function Trade.checkOffer(profile: Profile, uids: { string }, lei: number): (boo
 		if record.soul then
 			return false, "Soul"
 		end
+		if (record :: any).listed then
+			return false, "Listed"
+		end
 	end
 	return true, nil
 end

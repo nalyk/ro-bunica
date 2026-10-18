@@ -13,6 +13,7 @@ local Economy = require(Shared.Domain.Economy)
 local ClientState = require(script.Parent.ClientState)
 local Theme = require(script.Parent.Theme)
 local UI = require(script.Parent.UI)
+local CodesPanel = require(script.Parent.CodesPanel)
 local CreaturePreview = require(script.Parent.CreaturePreview)
 
 local ShopPanel = {}
@@ -141,6 +142,19 @@ function ShopPanel.start()
 		}),
 		18
 	)
+	-- căsuța de coduri a tantii de la magazin
+	UI.button({
+		Name = "CodesButton",
+		AnchorPoint = Vector2.new(1, 1),
+		Position = UDim2.new(1, -14, 1, -8),
+		Size = UDim2.fromOffset(96, 34),
+		Text = "🎟 " .. ClientState.t("code.short"),
+		swatch = "plum",
+		Parent = panel,
+	}, function()
+		CodesPanel.toggle()
+	end)
+	restockLabel.Size = UDim2.new(1, -124, 0, 26)
 	ClientState.onShopChanged(function()
 		builtFor = "" -- stoc nou (sau aprovizionare): rândurile se refac la următoarea afișare
 		update()

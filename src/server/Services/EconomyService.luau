@@ -113,9 +113,20 @@ local function guard(player: Player): Owner?
 	return PlotService.getOwner(player)
 end
 
+-- O creatură pusă la bazar (marcată `listed`) nu se vinde și nu se mută până nu e retrasă
+local function isListed(owner: any, uid: string): boolean
+	local index = Inventory.findCellar(owner.profile, uid)
+	local record = index and owner.profile.cellar[index]
+	return record ~= nil and (record :: any).listed ~= nil
+end
+
 local function onSell(player: Player, uid: unknown)
 	local owner = guard(player)
 	if not owner or typeof(uid) ~= "string" or RaidService.isCarried(uid) then
+		return
+	end
+	if isListed(owner, uid) then
+		Messenger.notify(player, "notify.Listed")
 		return
 	end
 	local key = Inventory.findPedestal(owner.profile, uid)
@@ -155,6 +166,10 @@ end
 local function onMoveToPedestal(player: Player, uid: unknown)
 	local owner = guard(player)
 	if not owner or typeof(uid) ~= "string" then
+		return
+	end
+	if isListed(owner, uid) then
+		Messenger.notify(player, "notify.Listed")
 		return
 	end
 	local key = Inventory.moveToPedestal(owner.profile, uid, nil)

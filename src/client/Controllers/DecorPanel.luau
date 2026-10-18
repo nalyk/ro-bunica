@@ -95,7 +95,13 @@ end
 
 -- Pentru playtest
 function DecorPanel.debugState(): { [string]: any }
-	return { visible = panel.Visible, rows = #scroll:GetChildren() - 1, placing = DecorPlacer.active() }
+	local rows = 0
+	for _, child in scroll:GetChildren() do
+		if child:IsA("GuiButton") then
+			rows += 1
+		end
+	end
+	return { visible = panel.Visible, rows = rows, placing = DecorPlacer.active() }
 end
 
 function DecorPanel.start()

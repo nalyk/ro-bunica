@@ -99,6 +99,34 @@ describe("HudLayout.touch", function()
 		)
 	end
 
+	for _, screen in SCREENS do
+		it(screen.name .. ": butonul mesajelor rapide, de deget, fără suprapuneri", function()
+			local layout = HudLayout.touch(screen.w, screen.h, nil, 5, 4)
+			local quick = layout.quick
+			expect(quick ~= nil).toBe(true)
+			expect(math.min(quick.w, quick.h) >= HudLayout.MIN_TOUCH).toBe(true)
+			expect(HudLayout.inside(quick, screen.w, screen.h)).toBe(true)
+			local others = {
+				layout.rage,
+				layout.pin,
+				layout.ammo,
+				layout.seeds,
+				layout.jump,
+				layout.status,
+				layout.info,
+				layout.notice,
+				layout.scoreboard,
+				layout.thumb,
+			}
+			for _, rect in layout.actions do
+				table.insert(others, rect)
+			end
+			for _, rect in others do
+				expect(HudLayout.overlaps(quick, rect)).toBe(false)
+			end
+		end)
+	end
+
 	it("folosește săritura reală când o primește", function()
 		local jump = { x = 500, y = 200, w = 72, h = 72 }
 		local layout = HudLayout.touch(667, 339, jump, 5, 4)

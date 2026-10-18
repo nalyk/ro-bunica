@@ -9,6 +9,7 @@ local Net = require(Shared.Net)
 local Hora = require(Shared.Config.Hora)
 local GameState = require(Shared.GameState)
 local Ritual = require(Shared.Domain.Ritual)
+local Rhythm = require(Shared.Domain.Rhythm)
 local RandomUtil = require(Shared.Domain.Random)
 local RateLimiter = require(Shared.Domain.RateLimiter)
 local WeatherService = require(script.Parent.WeatherService)
@@ -51,6 +52,46 @@ function HoraService.stopDancing(actor: Actor)
 	setAttribute(actor, false)
 end
 
+-- Hora pe ritm: pașii pe bătaie (o bătaie la 0,5 s, după ceasul serverului). Cine face 4 pași buni la rând
+-- are seria; dacă toți din cerc o au, „cercul perfect” cheamă vremea cea mai rară.
+local STEP_BEAT = 0.5
+local PERFECT_STREAK = 4
+local streaks: { [Actor]: number } = {}
+local stepLimiter = RateLimiter.new(8, 1)
+
+function HoraService.step(actor: Actor, pressTime: number): string
+	if not dancingUntil[actor] then
+		return "Ratat"
+	end
+	local pressed = math.clamp(pressTime, now() - 0.35, now())
+	local beat = math.floor(pressed / STEP_BEAT + 0.5) * STEP_BEAT
+	local judgement = Rhythm.judge(beat, pressed)
+	streaks[actor] = if judgement == "Ratat" then 0 else (streaks[actor] or 0) + 1
+	return judgement
+end
+
+function HoraService.streak(actor: Actor): number
+	return streaks[actor] or 0
+end
+
+-- Pentru teste: cine dansează acum, câți sunt în cerc, de când se ține ritualul
+function HoraService.debugState(): { [string]: any }
+	local list = {}
+	for actor, untilTime in dancingUntil do
+		local root = Actors.root(actor)
+		table.insert(
+			list,
+			string.format(
+				"%s:%.0f s:%s",
+				actor.name,
+				untilTime - now(),
+				if root then string.format("(%.0f,%.0f)", root.Position.X, root.Position.Z) else "fără corp"
+			)
+		)
+	end
+	return { dancers = list, readyIn = readyAt - now(), since = ritualState.since }
+end
+
 function HoraService.readyAt(): number
 	return readyAt
 end
@@ -84,7 +125,15 @@ local function tick()
 	if not done then
 		return
 	end
-	local eventId = RandomUtil.weighted(Hora.rewards :: any, math.random) :: string
+	local perfect = #ids > 0
+	for actor in dancingUntil do
+		if table.find(ids, actor.id) and (streaks[actor] or 0) < PERFECT_STREAK then
+			perfect = false
+		end
+	end
+	local eventId = if perfect
+		then "Rainbow"
+		else RandomUtil.weighted(Hora.rewards :: any, math.random) :: string
 	WeatherService.trigger(eventId, true)
 	readyAt = t + Hora.cooldownSeconds
 	GameState.set("HoraReadyAt", readyAt)
@@ -98,7 +147,17 @@ end
 
 function HoraService.start()
 	GameState.set("HoraReadyAt", 0)
-	Net.get("Hora").OnServerEvent:Connect(function(player)
+	Net.get("Hora").OnServerEvent:Connect(function(player, action, pressTime)
+		if action == "step" and typeof(pressTime) == "number" then
+			if not stepLimiter:allow(player.UserId, os.clock()) then
+				return
+			end
+			local actor = Actors.forPlayer(player)
+			if actor then
+				HoraService.step(actor, pressTime)
+			end
+			return
+		end
 		if not limiter:allow(player.UserId, os.clock()) then
 			return
 		end
@@ -117,6 +176,7 @@ function HoraService.start()
 	end)
 	Actors.onRemoving(function(actor)
 		dancingUntil[actor] = nil
+		streaks[actor] = nil
 	end)
 	while true do
 		task.wait(TICK)

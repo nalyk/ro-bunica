@@ -15,4 +15,5 @@ return table.freeze({
 	bunicaGiggle = id(9114398138), -- Females Giggle 2
 	alarm = id(9113041590), -- Acme Whistle
 	bunicaSneeze = id(9119304267), -- Sneeze Three Times 2
+	dogBark = id(9114370187), -- Farm Animals Dog Barking Rooster Crows 1
 })

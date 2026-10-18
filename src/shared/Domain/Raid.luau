@@ -20,6 +20,7 @@ export type StealContext = {
 	distance: number,
 	creatureOnPedestal: boolean,
 	creatureIsSoul: boolean?, -- creaturile de suflet nu se fură (Domain/Soul)
+	inMinigame: boolean?, -- hoțul e într-un mini-joc: nu fură (Domain/Minigame)
 }
 
 local Raid = {}
@@ -47,6 +48,8 @@ function Raid.canSteal(ctx: StealContext): (boolean, string?)
 		return false, "NotDisplayed"
 	elseif ctx.creatureIsSoul then
 		return false, "Soul"
+	elseif ctx.inMinigame then
+		return false, "Busy"
 	elseif ctx.distance > RaidConfig.promptMaxDistance then
 		return false, "TooFar"
 	elseif not ctx.ownerIsNpc and ctx.now < ctx.ownerShieldUntil then

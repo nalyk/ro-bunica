@@ -75,6 +75,8 @@ local function progress(phase: string): number
 	return 1 - math.clamp((endsAt - now) / duration, 0, 1)
 end
 
+local fogBlend = 0
+
 local function apply(dt: number)
 	local phase = GameState.get(GameState.Attributes.Phase) or "Day"
 	if phase ~= lastPhase then
@@ -105,10 +107,13 @@ local function apply(dt: number)
 	Lighting.OutdoorAmbient = look.outdoor
 	Lighting.ColorShift_Top = colorTop
 	Lighting.ColorShift_Bottom = look.colorBottom
-	atmosphere.Color = fog
+	-- ceața satului (întâmplarea „Ceața”): crește lin până la ținta de pe server
+	local fogTarget = GameState.get(GameState.Attributes.Fog)
+	fogBlend += math.clamp((if type(fogTarget) == "number" then fogTarget else 0) - fogBlend, -dt / 3, dt / 3)
+	atmosphere.Color = fog:Lerp(Color3.fromRGB(196, 200, 206), fogBlend * 0.8)
 	atmosphere.Decay = look.decay
-	atmosphere.Haze = look.haze
-	atmosphere.Density = look.density
+	atmosphere.Haze = look.haze + fogBlend * 6
+	atmosphere.Density = look.density + (0.72 - look.density) * fogBlend
 	correction.TintColor = tintColor
 	correction.Saturation = saturation
 	correction.Contrast = look.contrast

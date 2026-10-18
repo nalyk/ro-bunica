@@ -602,9 +602,9 @@
     "moderation": "Approved"
   },
   "world.FloareaSoarelui": {
-    "id": "119230594197402",
+    "id": "119659802573930",
     "type": "Model",
-    "sha": "7c3199003beb5bad",
+    "sha": "77e0e806ca1f2567",
     "file": "build/art/world.FloareaSoarelui.glb",
     "moderation": "Approved"
   },
@@ -616,9 +616,9 @@
     "moderation": "Approved"
   },
   "world.GardLow": {
-    "id": "121405013072093",
+    "id": "130621974094525",
     "type": "Model",
-    "sha": "815a09c16f10af82",
+    "sha": "e2b2908eac9b9321",
     "file": "build/art/world.GardLow.glb",
     "moderation": "Approved"
   },
@@ -665,9 +665,9 @@
     "moderation": "Approved"
   },
   "world.Strat": {
-    "id": "79843349937534",
+    "id": "120394716901147",
     "type": "Model",
-    "sha": "4d6477993d2b0bb0",
+    "sha": "ac392e462b381f90",
     "file": "build/art/world.Strat.glb",
     "moderation": "Approved"
   },

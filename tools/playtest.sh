@@ -10,9 +10,14 @@ FRAMES="${1:-/tmp/bunica-playtest-frames}"
 PLACES="$HOME/.var/app/org.vinegarhq.Vinegar/data/places"
 LOGS="$HOME/.var/app/org.vinegarhq.Vinegar/data/vinegar/appdata/Roblox/logs"
 export DISPLAY=:99
-TIMEOUT=720
+TIMEOUT=2400 # scenariul complet (satul de vale, întâmplările) trece de 20 de minute
 
+UNTIL_FILE=tests/playtest/Shared/Until.luau
+if [ -n "${PLAYTEST_UNTIL:-}" ]; then
+	printf -- '--!strict\n-- Pasul după care playtest-ul se oprește (PLAYTEST_UNTIL=9 tools/playtest.sh); nil = toate. Scris de playtest.sh.\nreturn "%s" :: string?\n' "$PLAYTEST_UNTIL" > "$UNTIL_FILE"
+fi
 rojo build playtest.project.json -o build/bunica-playtest.rbxl >/dev/null
+printf -- '--!strict\n-- Pasul după care playtest-ul se oprește (PLAYTEST_UNTIL=9 tools/playtest.sh); nil = toate. Scris de playtest.sh.\nreturn nil :: string?\n' > "$UNTIL_FILE"
 mkdir -p "$PLACES" "$FRAMES"
 rm -f "$FRAMES"/*.png
 NAME="playtest-$(date +%s).rbxl"

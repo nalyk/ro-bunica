@@ -13,6 +13,8 @@ GameState.Attributes = table.freeze({
 	Weather = "Weather", -- id eveniment sau ""
 	WeatherEndsAt = "WeatherEndsAt",
 	ShopRestockAt = "ShopRestockAt",
+	Season = "Season", -- "Primavara" | "Vara" | "Toamna" | "Iarna" (Domain/Seasons)
+	Fog = "Fog", -- 0–1: ceața (întâmplarea „Ceața”), densitatea atmosferei pe client
 })
 
 local folder: Folder? = nil

@@ -35,6 +35,7 @@ export type Owner = {
 	joinedAt: number,
 	removing: boolean?, -- true cât rulează callback-urile de plecare
 	stolenTonight: number?, -- furturi reușite de la această ogradă în noaptea curentă
+	standIn: boolean?, -- bot care ține locul unui jucător (teste, tutorial): ia parte la întâmplări
 }
 
 local NPC_NAMES =
@@ -312,6 +313,7 @@ function PlotService.assignBot(plot: Plot, actor: Actors.Actor): Owner
 		plot = plot,
 		shieldUntil = 0,
 		joinedAt = os.clock(),
+		standIn = true,
 	}
 	assign(plot, owner)
 	return owner

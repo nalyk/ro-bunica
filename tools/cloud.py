@@ -49,12 +49,20 @@ def request(env: dict, method: str, url: str, body: bytes | None = None, content
     req.add_header("x-api-key", env["ROBLOX_API_KEY"])
     if content_type:
         req.add_header("Content-Type", content_type)
-    try:
-        with urllib.request.urlopen(req, timeout=120) as response:
-            return json.loads(response.read() or b"{}")
-    except urllib.error.HTTPError as error:
-        detail = error.read().decode("utf-8", "replace")
-        sys.exit(f"HTTP {error.code} la {method} {url}\n{detail}")
+    for attempt in range(8):
+        try:
+            with urllib.request.urlopen(req, timeout=120) as response:
+                return json.loads(response.read() or b"{}")
+        except urllib.error.HTTPError as error:
+            detail = error.read().decode("utf-8", "replace")
+            if error.code in (429, 502, 503) and attempt < 7:
+                time.sleep(5 * (attempt + 1))  # limita de cereri: așteaptă și reîncearcă
+                req = urllib.request.Request(url, data=body, method=method)
+                req.add_header("x-api-key", env["ROBLOX_API_KEY"])
+                if content_type:
+                    req.add_header("Content-Type", content_type)
+                continue
+            sys.exit(f"HTTP {error.code} la {method} {url}\n{detail}")
 
 
 def publish(env: dict, place_file: str, version_type: str = "Saved") -> int:
@@ -99,8 +107,8 @@ def build_test_place() -> str:
     return out
 
 
-E2E_SHARD = 4  # spec-uri pe sarcină: o sarcină Open Cloud are cel mult 5 minute
-E2E_PARALLEL = 4
+E2E_SHARD = 3  # spec-uri pe sarcină: o sarcină Open Cloud are cel mult 5 minute
+E2E_PARALLEL = 3
 
 
 def e2e_specs() -> list:

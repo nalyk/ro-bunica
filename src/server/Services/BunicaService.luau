@@ -60,6 +60,17 @@ local STATE_ICONS: { [string]: string } = {
 
 local BunicaService = {}
 
+-- Cât de departe vede Bunica (1 = normal). Ceața o scade la jumătate (Happenings/Ceata).
+local sightMultiplier = 1
+
+function BunicaService.setSight(multiplier: number)
+	sightMultiplier = math.clamp(multiplier, 0.1, 2)
+end
+
+function BunicaService.sight(): number
+	return sightMultiplier
+end
+
 local bunicas: { [number]: Bunica } = {} -- după indexul ogrăzii
 local enabled = true
 
@@ -272,7 +283,7 @@ local function throwAt(owner: Owner, bunica: Bunica, targetRoot: BasePart, perfe
 			speed = speed,
 			gravity = Defense.slipper.gravity,
 			hitRadius = Defense.slipper.hitRadius + (if perfect then 1.5 else 0),
-			maxRange = config.sightRange + 15,
+			maxRange = config.sightRange * sightMultiplier + 15,
 			maxLifetime = 3,
 			stunSeconds = Defense.slipper.stunSeconds,
 			knockbackSpeed = Defense.slipper.knockbackSpeed,
@@ -369,7 +380,10 @@ local function tick(dt: number)
 
 		local visible: BasePart? = nil
 		for _, intruder in intruders do
-			if (intruder.root.Position - bunica.home.Position).Magnitude <= config.sightRange then
+			if
+				(intruder.root.Position - bunica.home.Position).Magnitude
+				<= config.sightRange * sightMultiplier
+			then
 				visible = intruder.root
 				break
 			end

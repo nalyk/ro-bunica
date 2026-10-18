@@ -1,0 +1,28 @@
+local PropHunt = require(Shared.Domain.PropHunt)
+
+describe("PropHunt", function()
+	it("deghizările sunt obiecte din ogradă", function()
+		for _, name in { "Galeata", "Oala", "Dovleac", "Butuc", "Claie" } do
+			expect(table.find(PropHunt.disguises, name) ~= nil).toBe(true)
+		end
+	end)
+	it("ascunșii primesc un punct la fiecare 10 s nedescoperiți", function()
+		expect(PropHunt.hiderPoints(9)).toBe(0)
+		expect(PropHunt.hiderPoints(10)).toBe(1)
+		expect(PropHunt.hiderPoints(65)).toBe(6)
+	end)
+	it("râsul aduce puncte, dar se aude (risc)", function()
+		expect(PropHunt.LAUGH_POINTS > 0).toBe(true)
+		expect(PropHunt.LAUGH_COOLDOWN >= 5).toBe(true)
+	end)
+	it("căutătorul: puncte pe prins; lovitura greșită costă timp", function()
+		expect(PropHunt.seekerPoints(3)).toBe(3 * PropHunt.CATCH_POINTS)
+		expect(PropHunt.WRONG_HIT_SECONDS > 0).toBe(true)
+	end)
+	it("alege căutătorul pe rând, nu mereu același", function()
+		local ids = { 10, 20, 30 }
+		expect(PropHunt.pickSeeker(ids, 1)).toBe(10)
+		expect(PropHunt.pickSeeker(ids, 2)).toBe(20)
+		expect(PropHunt.pickSeeker(ids, 4)).toBe(10)
+	end)
+end)

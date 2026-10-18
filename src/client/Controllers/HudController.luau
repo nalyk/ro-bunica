@@ -26,6 +26,7 @@ local CellarPanel = require(script.Parent.CellarPanel)
 local UpgradePanel = require(script.Parent.UpgradePanel)
 local NotebookPanel = require(script.Parent.NotebookPanel)
 local FriendsPanel = require(script.Parent.FriendsPanel)
+local MinigameController = require(script.Parent.MinigameController)
 local StorePanel = require(script.Parent.StorePanel)
 local SlipperController = require(script.Parent.SlipperController)
 
@@ -36,9 +37,9 @@ HudController.actions = {} :: { [string]: () -> () }
 HudController.buttons = {} :: { [string]: GuiObject }
 
 -- Ordinea butoanelor: în coloana de desktop și în rândul tactil (+ „Mai mult”, cu restul în meniu)
-local DESKTOP_ACTIONS = { "shop", "cellar", "hora", "upgrades", "notebook", "friends" }
+local DESKTOP_ACTIONS = { "shop", "cellar", "hora", "upgrades", "notebook", "games", "friends" }
 local TOUCH_ACTIONS = { "shop", "cellar", "upgrades", "notebook", "more" }
-local MENU_ITEMS = { "hora", "friends", "store" }
+local MENU_ITEMS = { "games", "hora", "friends", "store" }
 assert(
 	#TOUCH_ACTIONS == HudLayout.TOUCH_ACTIONS and #MENU_ITEMS == HudLayout.MENU_ITEMS,
 	"HudLayout: numărul de butoane"
@@ -267,7 +268,7 @@ local function hideMenu()
 	end
 end
 
-local COLUMN_HEIGHT = 636 -- 6 butoane rotunde (100) cu spațiu între ele
+local COLUMN_HEIGHT = 742 -- 7 butoane rotunde (100) cu spațiu între ele
 
 local function buildActions(screen: Frame)
 	column = Instance.new("Frame")
@@ -329,6 +330,13 @@ local function buildActions(screen: Frame)
 				swatch = "ie",
 				action = FriendsPanel.toggle,
 			},
+			games = {
+				icon = "",
+				emoji = "🎲",
+				text = "minigame.title",
+				swatch = "sky",
+				action = MinigameController.toggle,
+			},
 		}
 	for order, id in DESKTOP_ACTIONS do
 		local def = defs[id]
@@ -344,7 +352,7 @@ local function buildActions(screen: Frame)
 		HudController.buttons[id] = button
 	end
 
-	-- „Mai mult” (doar pe ecran tactil) și meniul lui: Horă, Prieteni, Magazin, cu etichete
+	-- „Mai mult” (doar pe ecran tactil) și meniul lui: Mini-jocuri, Horă, Prieteni, Magazin, cu etichete
 	local _, moreHolder = roundButton("", "•••", ClientState.t("ui.more"), "stone", function()
 		menu.Visible = not menu.Visible
 		if menu.Visible then
@@ -367,6 +375,7 @@ local function buildActions(screen: Frame)
 		hora = { icon = "hora", text = "ui.hora", swatch = "plum", action = hora },
 		friends = { icon = "family", text = "ui.friends", swatch = "ie", action = FriendsPanel.toggle },
 		store = { icon = "lei", text = "ui.store", swatch = "wheat", action = StorePanel.toggle },
+		games = { icon = "", text = "minigame.title", swatch = "sky", action = MinigameController.toggle },
 	}
 	for order, id in MENU_ITEMS do
 		local def = menuDefs[id]

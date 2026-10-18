@@ -9,6 +9,7 @@ local Shared = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
 local World = require(Shared.Config.World)
 local VillageLayout = require(Shared.Domain.VillageLayout)
 local VillageBuilder = require(script.Parent.VillageBuilder)
+local SiteBuilder = require(script.Parent.SiteBuilder)
 local Hora = require(Shared.Config.Hora)
 local ArtLibrary = require(Shared.Visual.ArtLibrary)
 local ArtFade = require(script.Parent.ArtFade)
@@ -162,6 +163,7 @@ local function decor(props: { [string]: any }): Part
 	props.CanCollide = false
 	props.CanQuery = false
 	props.CanTouch = false
+	props.CastShadow = false
 	return part(props)
 end
 
@@ -383,6 +385,7 @@ local function buildPlot(
 ): PlotGeometry
 	local model = Instance.new("Model")
 	model.Name = "Plot" .. index
+	model.ModelStreamingMode = Enum.ModelStreamingMode.Atomic -- ograda vine întreagă pe client (streaming)
 	model:SetAttribute("PlotIndex", index)
 
 	part({
@@ -597,6 +600,7 @@ local function buildHearth(parent: Instance)
 			end
 		end
 	end
+	hearth.ModelStreamingMode = Enum.ModelStreamingMode.Persistent -- reper: se vede de oriunde
 	hearth.Parent = parent
 end
 
@@ -608,6 +612,7 @@ function WorldBuilder.build(): { PlotGeometry }
 	local layout = VillageLayout.build()
 	WorldBuilder.layout = layout
 	VillageBuilder.build(layout, village)
+	SiteBuilder.build(layout.sites, village)
 	buildHearth(village)
 
 	-- Spawn-ul neutru (înainte de încărcarea profilului), pe drum, departe de fântână

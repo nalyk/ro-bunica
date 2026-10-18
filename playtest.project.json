@@ -42,6 +42,13 @@
       "Loading": {
         "$path": "src/first"
       }
+    },
+    "Workspace": {
+      "$properties": {
+        "StreamingEnabled": true,
+        "StreamingTargetRadius": 1024,
+        "StreamingMinRadius": 256
+      }
     }
   }
 }

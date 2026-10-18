@@ -14,6 +14,7 @@ return function(only: { string }?): Spec.Results
 	task.wait(1) -- lasă serviciile să pornească (generarea lumii, vecinii NPC)
 	-- Rezultatele nu depind de ora rulării: evenimentul de sâmbătă pornește doar din teste (forceStart)
 	services.LiveEventService.setScheduled(false)
+	services.VillageClockService.setEnabled(false) -- întâmplările pornesc doar din teste
 	local specs = {}
 	for _, child in script.Parent:GetChildren() do
 		if

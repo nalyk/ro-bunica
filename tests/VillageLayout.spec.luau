@@ -87,6 +87,10 @@ describe("VillageLayout", function()
 		for _, path in layout.shortcuts do
 			table.insert(all, path)
 		end
+		for _, trail in layout.trails do
+			table.insert(all, trail)
+		end
+		expect(#layout.trails >= 4).toBe(true)
 		for _, road in all do
 			for k = 1, #road.points - 1 do
 				local a, b = road.points[k], road.points[k + 1]
@@ -103,6 +107,14 @@ describe("VillageLayout", function()
 					end
 				end
 			end
+		end
+	end)
+
+	it("orientarea fiecărui loc e un număr valid (nu NaN), cu fața spre centru", function()
+		for _, site in layout.sites do
+			local look = site.LookVector
+			expect(look.X == look.X and look.Z == look.Z).toBe(true)
+			expect(math.abs(look.Magnitude - 1) < 1e-3).toBe(true)
 		end
 	end)
 

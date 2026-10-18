@@ -20,13 +20,14 @@ export type TouchLayout = {
 	seeds: Rect, -- bara de semințe, banda liberă de jos
 	notice: Rect, -- capsula mesajelor: un singur mesaj odată, sus la centru, peste cer (nu primește atingeri)
 	menu: Rect, -- meniul „Mai mult”, sub butonul lui
+	scoreboard: Rect, -- tabela de scor a mini-jocurilor: o bandă sub capsula mesajelor
 }
 
 local HudLayout = {}
 
 HudLayout.MIN_TOUCH = 44
 HudLayout.TOUCH_ACTIONS = 5 -- Semințe, Beci, Ograda, Caietul, Mai mult
-HudLayout.MENU_ITEMS = 3 -- Horă, Prieteni, Magazin
+HudLayout.MENU_ITEMS = 4 -- Mini-jocuri, Horă, Prieteni, Magazin
 HudLayout.STATUS_SIZE = { w = 436, h = 64 } -- grupul banilor și al zilei la scara 1 (desktop)
 local MARGIN = 8
 
@@ -109,6 +110,9 @@ function HudLayout.touch(
 	local noticeW = math.min(w - 2 * MARGIN, if compact then 440 else 560)
 	local notice = { x = (w - noticeW) / 2, y = noticeTop, w = noticeW, h = if compact then 52 else 64 }
 
+	local scoreboard =
+		{ x = notice.x, y = notice.y + notice.h + 4, w = notice.w, h = if compact then 28 else 34 }
+
 	local more = actions[#actions]
 	local menu = { x = more.x, y = more.y + more.h + gap, w = 210, h = menuItems * (button + gap) + gap }
 
@@ -126,6 +130,7 @@ function HudLayout.touch(
 		seeds = seeds,
 		notice = notice,
 		menu = menu,
+		scoreboard = scoreboard,
 	}
 end
 

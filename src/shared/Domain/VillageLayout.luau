@@ -21,6 +21,7 @@ export type Layout = {
 	river: { Vector3 },
 	bridges: { CFrame },
 	shortcuts: { Road },
+	trails: { Road }, -- potecile de dincolo de pârâu (gara, iazul, lanul): în afara echității raidurilor
 	sites: { [string]: CFrame },
 }
 
@@ -159,10 +160,31 @@ function VillageLayout.build(): Layout
 	end
 	local sites: { [string]: CFrame } = {}
 	for name, position in Village.sites :: { [string]: Vector3 } do
-		sites[name] = CFrame.lookAt(position, Vector3.new(hub.X, position.Y, hub.Z))
+		local toHub = Vector3.new(hub.X - position.X, 0, hub.Z - position.Z)
+		-- centrul însuși privește spre drumul mare (sud), restul spre centru
+		sites[name] = if toHub.Magnitude < 1
+			then CFrame.lookAt(position, position - Vector3.new(0, 0, 1))
+			else CFrame.lookAt(position, position + toHub)
 	end
+	-- potecile de la sud de pârâu: de la capătul sudic al fiecărui pod la locurile de acolo
+	local trails: { Road } = {}
+	local south = {}
+	for _, bridge in bridges do
+		table.insert(south, bridge.Position - Vector3.new(0, 0, Village.riverWidth / 2 + 4))
+	end
+	local function trail(name: string, from: Vector3, siteName: string)
+		local target = Village.sites[siteName] :: Vector3
+		local flat = Vector3.new(target.X, 0, target.Z)
+		local toward = (from - flat).Unit
+		table.insert(trails, { name = name, points = { from, flat + toward * 16 }, width = 6 })
+	end
+	trail("potecaPorumb", south[1], "lanPorumb")
+	trail("potecaGaraVest", south[1], "gara")
+	trail("potecaGaraEst", south[2], "gara")
+	trail("potecaIaz", south[2], "iaz")
 	return {
 		roads = roads,
+		trails = trails,
 		plots = plots,
 		hub = CFrame.new(hub),
 		river = river,

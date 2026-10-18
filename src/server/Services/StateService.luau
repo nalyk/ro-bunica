@@ -48,6 +48,9 @@ local function snapshot(player: Player): { [string]: any }?
 		upgrades = profile.upgrades,
 		shieldUntil = owner.shieldUntil,
 		incomePerSecond = Economy.totalIncome(profile.pedestals, 1),
+		fish = profile.fish, -- pescuitul (FishingController)
+		eggs = profile.eggs, -- ouăle de ciocnit
+		records = profile.records,
 	}
 	for _, provider in providers do
 		provider(player, state)

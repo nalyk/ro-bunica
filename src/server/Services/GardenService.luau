@@ -101,12 +101,29 @@ local function hatch(owner: Owner, key: string): boolean
 	return true
 end
 
+-- Creștere mai rapidă pentru o ogradă, o vreme (plăcintele livrate la Plăcintărie: 10 minute × 1,25)
+local boosts: { [Owner]: { untilTime: number, factor: number } } = {}
+
+function GardenService.boost(owner: Owner, seconds: number, factor: number)
+	boosts[owner] = { untilTime = os.clock() + seconds, factor = factor }
+end
+
+function GardenService.boostFactor(owner: Owner): number
+	local boost = boosts[owner]
+	if boost and os.clock() < boost.untilTime then
+		return boost.factor
+	end
+	boosts[owner] = nil
+	return 1
+end
+
 local function tick(dt: number)
-	local speed = WeatherService.growthSpeed()
+	local weather = WeatherService.growthSpeed()
 	for _, owner in PlotService.owners() do
 		if owner.kind ~= "Player" then
 			continue
 		end
+		local speed = weather * GardenService.boostFactor(owner)
 		local changed = false
 		for key, plant in owner.profile.beds do
 			if Growth.isReady(plant) or Growth.advance(plant, dt, speed) then

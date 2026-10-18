@@ -19,10 +19,16 @@ local NAMES = {
 	"ClientReady", -- () clientul și-a conectat ascultătorii; serverul retrimite starea
 	"Trade", -- (action: "request" | "respond" | "offer" | "accept" | "cancel", a, b) schimburile
 	"Notebook", -- (action: "claimQuest" | "claimBonus" | "rebirth", arg: number?) Caietul Bunicii
+	"Rutiera", -- C→S ("board" | "alight" | "destination", stop: string?); S→C ({ riding: boolean, destination: string? })
+	"Fishing", -- C→S ("cast" | "reel" | "sell", a, b); S→C ({ state: "waiting" | "bite" | "result", ... })
+	"MinigameAction", -- ("open" | "join" | "act", arg) mini-jocurile (MinigameService)
+	"HappeningAction", -- (payload: any) acțiunea jucătorului în întâmplarea activă (VillageClockService)
 	"SetSoul", -- (uid: string, on: boolean) creatură de suflet (nu se fură, nu se schimbă)
 	"FamilyMode", -- (mode: "Family" | "Rival") alegerea față de prietenii de pe server
 	"Greeted", -- () ecranul de încărcare s-a închis: Bunica îl întâmpină (o dată pe sesiune)
 	-- S→C
+	"Minigame", -- ({ id, site, state: "enroll" | "countdown" | "running" | "results" | "cancelled", ... })
+	"Happening", -- ({ id, state: "warn" | "active" | "end", startsAt?, endsAt?, location? }) ceasul satului
 	"State", -- (snapshot: PlayerState) starea completă a jucătorului
 	"Notify", -- (key: string, args: {any}?) mesaj personal
 	"Announce", -- (key: string, args: {any}?) mesaj pentru tot serverul

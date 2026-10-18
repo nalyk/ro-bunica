@@ -201,7 +201,7 @@ def write_luau():
     lines = ["--!strict", "-- GENERAT de tools/art.py — nu edita de mână.",
              "-- Modelele din art/: asset-ul încărcat, culorile sloturilor (MeshPart-uri numite după slot),",
              "-- conturul („ink”) și mărimea. Lipsa unei chei = jocul folosește forma procedurală.", "",
-             "export type Art = { assetId: number, palette: { [string]: Color3 }, ink: Color3?, size: Vector3 }",
+             "export type Art = { assetId: number, palette: { [string]: Color3 }, ink: Color3?, size: Vector3, tris: number }",
              "", "return table.freeze({"]
     for key in all_keys():
         meta_path = os.path.join(OUT, key + ".json")
@@ -212,7 +212,7 @@ def write_luau():
         ink = color3(meta["ink"]) if meta.get("ink") else "nil"
         sx, sy, sz = meta["size"]
         lines.append(f'\t["{key}"] = {{ assetId = {lock[key]["id"]}, palette = {{ {pal} }}, ink = {ink}, '
-                     f"size = Vector3.new({sx}, {sy}, {sz}) }},")
+                     f"size = Vector3.new({sx}, {sy}, {sz}), tris = {int(meta.get('tris') or 0)} }},")
     lines += ["} :: { [string]: Art })", ""]
     with open(LUAU, "w") as handle:
         handle.write("\n".join(lines))

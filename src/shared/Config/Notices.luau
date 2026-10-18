@@ -25,6 +25,15 @@ local byKey: { [string]: Priority } = {
 	["notify.Family"] = "hint",
 	["notify.NightLimit"] = "hint",
 	["notify.Soul"] = "hint",
+	["notify.NoFight"] = "hint",
+	["fishing.far"] = "hint",
+	["fishing.egg"] = "reward",
+	["notify.Busy"] = "hint",
+	["happening.coneHit"] = "hint",
+	["happening.mumaSeed"] = "reward",
+	["happening.trainSeed"] = "reward",
+	["rutiera.carrying"] = "hint",
+	["rutiera.full"] = "hint",
 	["notify.SoulMax"] = "hint",
 	["notify.TradeSoul"] = "hint",
 	["notify.Full"] = "hint",
@@ -58,6 +67,10 @@ function Notices.priority(key: string): Priority
 	local known = byKey[key]
 	if known then
 		return known :: Priority
+	end
+	-- întâmplările satului: anunțul și pornirea sunt urgente (toată lumea trebuie să afle); răsplata e reward
+	if string.sub(key, 1, 10) == "happening." and key ~= "happening.reward" then
+		return "urgent"
 	end
 	local fallback: Priority = if string.sub(key, 1, 9) == "announce." then "ambient" else "reward"
 	return fallback

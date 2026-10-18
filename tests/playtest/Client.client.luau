@@ -425,6 +425,20 @@ function ops.closePanel(controller: string): boolean
 	return true
 end
 
+-- Starea de depanare a unui controller (debugState)
+function ops.debugState(controller: string): { [string]: any }
+	local module = (require :: any)(controllers:WaitForChild(controller))
+	return module.debugState()
+end
+
+-- Viața satului: câte animale și săteni sunt, câți câini latră acum
+function ops.ambient(): { [string]: number }
+	local module = (require :: any)(controllers:WaitForChild("AmbientLifeController"))
+	local counts = module.counts()
+	counts.barking = module.barking()
+	return counts
+end
+
 function ops.query(): { [string]: any }
 	local state = ClientState.state
 	local humanoid = character():FindFirstChildOfClass("Humanoid")

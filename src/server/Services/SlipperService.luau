@@ -18,6 +18,8 @@ local PlotService = require(script.Parent.PlotService)
 local StateService = require(script.Parent.StateService)
 local DayNightService = require(script.Parent.DayNightService)
 local RaidService = require(script.Parent.RaidService)
+local Zones = require(script.Parent.Parent.World.Zones)
+local Busy = require(script.Parent.Parent.Busy)
 local Messenger = require(script.Parent.Messenger)
 local Actors = require(script.Parent.Parent.Actors)
 local FamilyService = require(script.Parent.FamilyService)
@@ -140,7 +142,11 @@ function SlipperService.launch(
 		pierces = kind == "RollingPin",
 		alreadyHit = {},
 		hits = 0,
-		defends = if thrower then FamilyService.familyOwners(owner) else { owner },
+		-- în mini-joc, papucul e al jocului: nu apără ogrăzi (lovește doar țintele înregistrate)
+		defends = if thrower and Busy.is(thrower)
+			then {}
+			elseif thrower then FamilyService.familyOwners(owner)
+			else { owner },
 	}
 	table.insert(projectiles, projectile)
 	Net.get("Projectile"):FireAllClients({
@@ -234,6 +240,38 @@ function SlipperService.bestThrow(): BestThrow?
 	return bestThrow
 end
 
+-- Ținte în afara ogrăzilor (lupii, Muma Pădurii, ținte de mini-joc): oricine aruncă le poate lovi.
+type Target = { model: Model, radius: number, onHit: (thrower: Actor?, kind: string) -> () }
+local targets: { [Model]: Target } = {}
+
+function SlipperService.registerTarget(
+	model: Model,
+	onHit: (thrower: Actor?, kind: string) -> (),
+	radius: number?
+)
+	targets[model] = { model = model, radius = radius or 2.5, onHit = onHit }
+end
+
+function SlipperService.unregisterTarget(model: Model)
+	targets[model] = nil
+end
+
+local function hitTargets(projectile: Projectile, from: Vector3, to: Vector3): boolean
+	for model, target in targets do
+		if not model.Parent then
+			targets[model] = nil
+			continue
+		end
+		local at = model:GetPivot().Position
+		if Slipper.hits(from, to, at, projectile.params.hitRadius, target.radius) then
+			projectile.hits += 1
+			task.spawn(target.onHit, projectile.thrower, projectile.kind)
+			return true
+		end
+	end
+	return false
+end
+
 local function step(dt: number)
 	for index = #projectiles, 1, -1 do
 		local projectile = projectiles[index]
@@ -261,6 +299,9 @@ local function step(dt: number)
 				continue
 			end
 			local root = Actors.root(actor)
+			if root and not RaidService.isCarrying(actor) and Zones.noFight(root.Position) then
+				continue -- la adăpost în centru (doar cine nu cară o creatură furată)
+			end
 			if
 				root
 				and Slipper.hits(
@@ -277,6 +318,9 @@ local function step(dt: number)
 					break
 				end
 			end
+		end
+		if not finished and next(targets) ~= nil and hitTargets(projectile, projectile.last, position) then
+			finished = true
 		end
 		projectile.last = position
 		if finished then
@@ -300,6 +344,9 @@ function SlipperService.throwAs(actor: Actor, target: Vector3, kind: "Slipper" |
 	local root = Actors.root(actor)
 	if not owner or not root then
 		return false
+	end
+	if Zones.noFight(root.Position) then
+		return false -- în centrul satului nu se aruncă
 	end
 	local params: ProjectileParams
 	if kind == "RollingPin" then
@@ -349,7 +396,13 @@ local function onThrow(player: Player, target: unknown, kind: unknown)
 	if not throwLimiter:allow(player.UserId, os.clock()) then
 		return
 	end
-	SlipperService.throwAs(Actors.forPlayer(player), target :: Vector3, kind :: any)
+	local actor = Actors.forPlayer(player)
+	local root = Actors.root(actor)
+	if root and Zones.noFight(root.Position) then
+		Messenger.notify(player, "notify.NoFight")
+		return
+	end
+	SlipperService.throwAs(actor, target :: Vector3, kind :: any)
 end
 
 -- Avansează proiectilele (rulat pe Heartbeat; expus pentru teste).

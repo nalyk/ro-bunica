@@ -82,6 +82,21 @@ function ShopService.restockFor(player: Player)
 	sendStock(player)
 end
 
+-- O sămânță la un preț special (negustorul de la rutieră, trenul). Întoarce true dacă s-a vândut.
+function ShopService.offer(owner: PlotService.Owner, seedId: string, price: number): boolean
+	if not Creatures.byId[seedId] or owner.profile.lei < price then
+		if owner.player then
+			Messenger.notify(owner.player, "notify.NotEnoughLei")
+		end
+		return false
+	end
+	owner.profile.seeds[seedId] = (owner.profile.seeds[seedId] or 0) + 1
+	EconomyService.addLei(owner, -price)
+	Analytics.sink(owner.player, owner.profile, price, "Merchant", seedId)
+	StateService.markDirty(owner.player)
+	return true
+end
+
 local function onBuy(player: Player, seedId: unknown)
 	if typeof(seedId) ~= "string" or not buyLimiter:allow(player.UserId, os.clock()) then
 		return

@@ -96,7 +96,7 @@
  "world.Strat": {
   "remote": "world/v2_Strat_40k.glb",
   "height": 1.0,
-  "tris": 6000
+  "tris": 3000
  },
  "world.Beci": {
   "remote": "world/Beci_40k.glb",
@@ -116,7 +116,7 @@
  "world.FloareaSoarelui": {
   "remote": "world/FloareaSoarelui_40k.glb",
   "height": 6,
-  "tris": 6000
+  "tris": 2500
  },
  "world.Tabla": {
   "remote": "world/Tabla_40k.glb",
@@ -131,7 +131,7 @@
  "world.GardLow": {
   "remote": "world/low_Gard_3k.glb",
   "height": 4,
-  "tris": 19000
+  "tris": 1200
  },
  "world.PedestalLow": {
   "remote": "world/low_Pedestal_3k.glb",

@@ -19,6 +19,8 @@ local Walk = (require :: any)(walkModule)
 
 local serverFolder = ServerScriptService:WaitForChild("Server")
 local services = (require :: any)(serverFolder:WaitForChild("Boot")).start()
+-- ceasul satului nu pornește întâmplări singur în timpul scenariului (pasul 15s le pornește direct)
+services.VillageClockService.setEnabled(false)
 local Actors = (require :: any)(serverFolder:WaitForChild("Actors"))
 local PlotService = services.PlotService
 local RaidService = services.RaidService
@@ -88,7 +90,25 @@ local function call(op: string, ...: any): any
 end
 
 local passed, total = 0, 0
+local untilModule: any = ReplicatedStorage:WaitForChild("PlaytestShared"):WaitForChild("Until")
+local untilStep = require(untilModule) :: string?
+local halted = false
 local function step(name: string, fn: () -> ())
+	if halted then
+		return
+	end
+	if untilStep and string.match(name, "^(%w+)%.") and not string.find(name, "^16%.") then
+		local prefix = string.match(name, "^(%w+)%.") :: string
+		local function number(s: string): number
+			return tonumber(string.match(s, "^%d+")) or 0
+		end
+		if
+			number(prefix) > number(untilStep) or (number(prefix) == number(untilStep) and prefix > untilStep)
+		then
+			halted = true
+			return
+		end
+	end
 	total += 1
 	local ok, err = pcall(fn :: any)
 	if ok then
@@ -158,6 +178,22 @@ local function leaveHome(plot: any)
 	local cf = plot.geometry.cframe
 	call("walkTo", (cf * CFrame.new(0, 3, -World.plotSize.Z / 2 + 5)).Position, 3)
 	call("walkTo", (cf * CFrame.new(0, 3, -World.plotSize.Z / 2 - 6)).Position, 3)
+end
+
+-- Intră pe poarta unei ogrăzi (de pe drum)
+local function enterYard(plot: any)
+	local cf = plot.geometry.cframe
+	call("walkTo", (cf * CFrame.new(0, 3, -World.plotSize.Z / 2 - 6)).Position, 3)
+	call("walkTo", (cf * CFrame.new(0, 3, -World.plotSize.Z / 2 + 5)).Position, 3)
+end
+
+-- Din ograda `from` în ograda `to`, pe porți și pe drum (în satul de vale drumurile sunt curbe: o linie dreaptă
+-- între porți poate trece prin gardul altei ogrăzi, iar pathfinding-ul agentului nu ocolește singur gardul)
+local function travel(from: any, to: any)
+	leaveHome(from)
+	call("walkTo", roadPoint(from))
+	call("walkTo", roadPoint(to))
+	enterYard(to)
 end
 
 local function nearestNpcPlots(home: any): { any }
@@ -561,8 +597,7 @@ step("8. Jucătorul fură de la vecinul NPC", function()
 	local victim = victimPlot.owner
 	local key = firstPedestal(victim) :: string
 	stolenUid = victim.profile.pedestals[key].uid
-	call("walkTo", roadPoint(me.plot))
-	call("walkTo", roadPoint(victimPlot))
+	travel(me.plot, victimPlot)
 	local distance = call("walkTo", approach(victim, key))
 	check(distance < 6, "nu a ajuns la creatură (rămas " .. math.floor(distance) .. ")")
 	local model = CreatureService.modelAt(victim, key) :: Model
@@ -578,8 +613,7 @@ step("8. Jucătorul fură de la vecinul NPC", function()
 end)
 
 step("9. Jucătorul depune creatura furată în beciul lui", function()
-	call("walkTo", roadPoint(victimPlot))
-	call("walkTo", roadPoint(me.plot))
+	travel(victimPlot, me.plot)
 	call("walkTo", me.plot.geometry.deposit.Position + Vector3.new(0, 3, 0), 2)
 	check(
 		waitFor(function()
@@ -814,12 +848,17 @@ step("15c. Hora: jucătorul dansează la fântână cu doi vecini și cheamă o 
 	for i = 1, 2 do
 		local angle = i * math.pi
 		local position = Hora.center + Vector3.new(math.cos(angle) * 6, 3, math.sin(angle) * 6)
-		local dancer = Actors.createBot("Dansator" .. i, CFrame.new(position))
-		HoraService.setDancing(dancer, 30)
-		table.insert(dancers, dancer)
+		table.insert(dancers, Actors.createBot("Dansator" .. i, CFrame.new(position)))
 	end
+	-- iese pe poartă (din curte, pathfinding-ul nu ocolește singur gardul), apoi pe drum la fântână
+	leaveHome(me.plot)
+	call("walkTo", roadPoint(me.plot))
 	local distance = call("walkTo", Hora.center + Vector3.new(0, 3, 6), 3)
 	check(distance < 6, "jucătorul nu a ajuns la fântână (rămas " .. math.floor(distance) .. ")")
+	-- vecinii încep hora când ajunge jucătorul (drumul prin sat poate dura mai mult decât un dans)
+	for _, dancer in dancers do
+		HoraService.setDancing(dancer, 30)
+	end
 	call("fire", "Hora")
 	task.wait(1)
 	log("SNAP hora")
@@ -828,7 +867,33 @@ step("15c. Hora: jucătorul dansează la fântână cu doi vecini și cheamă o 
 			local weather = GameState.get("Weather")
 			return weather == "GoldHarvest" or weather == "Rainbow"
 		end, 8),
-		"Hora nu a chemat vremea rară"
+		"Hora nu a chemat vremea rară: "
+			.. (function()
+				local parts = {}
+				for _, dancer in dancers do
+					local root = Actors.root(dancer)
+					table.insert(
+						parts,
+						if root
+							then string.format(
+								"(%.0f, %.0f, %.0f)",
+								root.Position.X,
+								root.Position.Y,
+								root.Position.Z
+							)
+							else "fără corp"
+					)
+				end
+				local position = call("query").position
+				table.insert(
+					parts,
+					string.format("jucătorul (%.0f, %.0f, %.0f)", position.X, position.Y, position.Z)
+				)
+				local state = HoraService.debugState()
+				table.insert(parts, "dansatori: " .. table.concat(state.dancers, ", "))
+				table.insert(parts, string.format("cooldown %.0f s", state.readyIn))
+				return table.concat(parts, " ")
+			end)()
 	)
 	for _, dancer in dancers do
 		Actors.removeBot(dancer)
@@ -992,6 +1057,9 @@ step("15h. Fără papuc, vecinul duce Epicul acasă, iar jucătorul îl poate fu
 	local npc = NpcThiefService.freeNeighbour(me)
 	check(npc, "niciun vecin liber")
 	NpcThiefService.markActive(player)
+	-- „fără papuc”: nici al jucătorului, nici al Bunicii lui (pornită la pasul 15; în satul de vale drumul
+	-- vecinului e mai lung și Bunica ar apuca să-l lovească)
+	BunicaService.setEnabled(false)
 	local outcome = NpcThiefService.attempt(me, npc)
 	check(outcome == "Stolen", "rezultat: " .. tostring(outcome))
 	local key = Inventory.findPedestal(npc.profile, uid)
@@ -1011,13 +1079,7 @@ step("15h. Fără papuc, vecinul duce Epicul acasă, iar jucătorul îl poate fu
 	)
 	-- Furtul înapoi, pe căile reale: jucătorul merge la vecin și ține apăsat pe Epic. Bunica vecinului ar
 	-- arunca papucul în jucătorul intrat noaptea în ograda ei (pasul 15 o pornește): aici verificăm doar furtul
-	BunicaService.setEnabled(false)
-	call("walkTo", roadPoint(me.plot))
-	call("walkTo", roadPoint(npc.plot))
-	-- intră pe poarta vecinului (pathfinding-ul agentului nu ocolește singur gardul până la poartă)
-	local gate = npc.plot.geometry.cframe
-	call("walkTo", (gate * CFrame.new(0, 3, -World.plotSize.Z / 2 - 6)).Position, 3)
-	call("walkTo", (gate * CFrame.new(0, 3, -World.plotSize.Z / 2 + 5)).Position, 3)
+	travel(me.plot, npc.plot)
 	local distance = call("walkTo", approach(npc, key :: string))
 	if distance >= 6 then
 		-- piedestalul deblocat acum poate fi încadrat de alte creaturi: încearcă și dinspre casă
@@ -1066,8 +1128,7 @@ step("15h. Fără papuc, vecinul duce Epicul acasă, iar jucătorul îl poate fu
 		"furtul înapoi nu a început"
 	)
 	RaidService.drop(myActor)
-	call("walkTo", roadPoint(npc.plot))
-	call("walkTo", roadPoint(me.plot))
+	travel(npc.plot, me.plot)
 	DayNightService.forcePhase("Day")
 end)
 
@@ -1357,6 +1418,132 @@ step("15o. Satul de vale: de sus, pe uliță, în centru", function()
 	photograph("sat-centru", hub + Vector3.new(0, 3, 0), hub + Vector3.new(28, 14, -34))
 	local river = VillageLayout.lower(120) - Vector3.new(0, 0, Village.riverOffset)
 	photograph("sat-parau", river, river + Vector3.new(-30, 16, 40))
+end)
+
+step("15p. Locurile satului: câte o captură pentru fiecare", function()
+	DayNightService.forcePhase("Day")
+	local VillageLayout = require(Shared.Domain.VillageLayout)
+	local sites = workspace.Village:FindFirstChild("Sites")
+	check(sites, "locurile lipsesc")
+	for _, key in VillageLayout.SITE_KEYS do
+		local model = (sites :: Instance):FindFirstChild(key) :: Model?
+		check(model and model.PrimaryPart, "lipsește locul " .. key)
+		local base = ((model :: Model).PrimaryPart :: BasePart).CFrame
+		-- din fața locului (−Z privește spre centru), puțin de sus
+		photograph(
+			"loc-" .. key,
+			(base * CFrame.new(0, 4, 0)).Position,
+			(base * CFrame.new(18, 22, -48)).Position
+		)
+	end
+end)
+
+step(
+	"15q. Viața satului: gâște, găini, câini, săteni, berze; noaptea câinii latră la un străin",
+	function()
+		local counts = call("ambient")
+		check(counts.geese >= 6 and counts.hens >= 16 and counts.dogs == 8, "animalele lipsesc")
+		check(counts.villagers == 3 and counts.storks >= 3, "sătenii sau berzele lipsesc")
+		DayNightService.forcePhase("Night")
+		local npc = victimPlot
+		local stranger =
+			Actors.createBot("Strain", npc.geometry.cframe * CFrame.new(0, 3, -World.plotSize.Z / 2 - 6))
+		check(
+			waitFor(function()
+				return call("ambient").barking >= 2
+			end, 6),
+			"câinii nu latră (în lanț) la străinul de la poartă"
+		)
+		log("SNAP caini-latra")
+		Actors.removeBot(stranger)
+		DayNightService.forcePhase("Day")
+	end
+)
+
+step("15r. Rutiera: jucătorul urcă acasă, alege centrul și coboară acolo", function()
+	local RutieraService = services.RutieraService
+	DayNightService.forcePhase("Day")
+	-- rutiera ajunge acasă: sare în timp până la oprirea de lângă poarta jucătorului
+	local home = "plot" .. me.plot.index
+	RutieraService.warp(RutieraService.secondsTo(home) + 1)
+	task.wait(0.5)
+	local vehicle = RutieraService.vehicle() :: Model
+	call("walkTo", (vehicle:GetPivot() * CFrame.new(7, 0, 0)).Position, 3)
+	check(RutieraService.board(myActor), "jucătorul nu a putut urca")
+	check(
+		waitFor(function()
+			local state = call("debugState", "RutieraController")
+			return state.riding and state.visible
+		end, 4),
+		"panoul „Unde cobori?” nu a apărut"
+	)
+	task.wait(0.5)
+	log("SNAP rutiera")
+	call("fire", "Rutiera", "destination", "centru")
+	task.wait(0.5)
+	RutieraService.warp(RutieraService.secondsTo("centru") - 1)
+	check(
+		waitFor(function()
+			return not RutieraService.isRiding(myActor)
+		end, 6),
+		"jucătorul nu a coborât la centru"
+	)
+	local position = call("query").position
+	local flat = Vector3.new(position.X - Hora.center.X, 0, position.Z - Hora.center.Z)
+	check(flat.Magnitude < 30, "a coborât departe de centru: " .. math.floor(flat.Magnitude))
+end)
+
+step("15s. Ceasul satului: anunțul, semnul de deasupra locului și întâmplările (capturi)", function()
+	local Clock = services.VillageClockService
+	Clock.setEnabled(false)
+	Clock.stop()
+	DayNightService.forcePhase("Day")
+	check(Clock.begin("Gaste", 30), "Gâștele nu pornesc")
+	check(
+		waitFor(function()
+			local state = call("debugState", "HappeningController")
+			return state.id == "Gaste" and state.marker
+		end, 4),
+		"clientul nu vede întâmplarea (semnul de deasupra locului)"
+	)
+	photograph("intamplare-gaste", Hora.center + Vector3.new(0, 2, 0), Hora.center + Vector3.new(30, 26, -50))
+	Clock.stop()
+	check(Clock.begin("Negustor", 30), "Negustorul nu pornește")
+	local merchant = Clock.active().data.merchant:GetPivot().Position
+	call("walkTo", merchant + Vector3.new(4, 3, 0), 3)
+	check(
+		waitFor(function()
+			return call("debugState", "HappeningController").shop == true
+		end, 4),
+		"oferta negustorului nu apare lângă el"
+	)
+	log("SNAP negustor")
+	task.wait(1)
+	Clock.stop()
+	check(Clock.begin("Nunta", 30), "Nunta nu pornește")
+	task.wait(3)
+	local Nunta = require(serverFolder:WaitForChild("Happenings"):WaitForChild("Nunta")) :: any
+	local center = Nunta.center(Clock.active())
+	photograph("intamplare-nunta", center + Vector3.new(0, 3, 0), center + Vector3.new(-20, 14, -26))
+	Clock.stop()
+	DayNightService.forcePhase("Night")
+	check(Clock.begin("Lupi", 30), "Lupii nu pornesc")
+	task.wait(6)
+	local Village = require(Shared.Config.Village)
+	local stana = Village.sites.stana
+	photograph("intamplare-lupi", stana + Vector3.new(0, 4, 0), stana + Vector3.new(30, 40, -60))
+	Clock.stop()
+	check(Clock.begin("MumaPadurii", 30), "Muma Pădurii nu pornește")
+	task.wait(3)
+	local muma = Clock.active().data.muma:GetPivot().Position
+	photograph("intamplare-muma", muma + Vector3.new(0, 6, 0), muma + Vector3.new(16, 14, -24))
+	Clock.stop()
+	DayNightService.forcePhase("Day")
+	check(Clock.begin("Tren", 30), "Trenul nu pornește")
+	task.wait(13)
+	local gara = Village.sites.gara
+	photograph("intamplare-tren", gara + Vector3.new(0, 4, -8), gara + Vector3.new(40, 20, 30))
+	Clock.stop()
 end)
 
 step("16. Fără erori de script (server și client)", function()

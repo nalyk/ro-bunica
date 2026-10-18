@@ -47,6 +47,9 @@ export type Profile = {
 		bonusClaimed: boolean,
 	},
 	rebirths: number, -- renașteri făcute (+50% venit fiecare)
+	eggs: { [string]: number }, -- ouăle pentru ciocnit (Domain/EggDuel): colecția câștigată
+	records: { [string]: number }, -- recordurile personale la mini-jocuri (Șotron, Moara)
+	fish: { [string]: number }, -- peștii prinși la iaz (Config/Fish): de vândut sau hrană pentru creaturi
 }
 
 local DataTemplate = {}
@@ -79,6 +82,9 @@ function DataTemplate.new(): Profile
 		collection = {},
 		quests = { day = -1, list = {}, bonusClaimed = false },
 		rebirths = 0,
+		eggs = { Alb = 3 },
+		records = {},
+		fish = {},
 	}
 end
 

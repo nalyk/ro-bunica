@@ -24,7 +24,7 @@ end
 describe("HudLayout.touch", function()
 	for _, screen in SCREENS do
 		it(screen.name .. ": nimic interactiv peste săritură sau în zona joystick-ului", function()
-			local layout = HudLayout.touch(screen.w, screen.h, nil, 5, 3)
+			local layout = HudLayout.touch(screen.w, screen.h, nil, 5, 4)
 			for _, rect in interactive(layout) do
 				expect(HudLayout.overlaps(rect, layout.jump)).toBe(false)
 				expect(HudLayout.overlaps(rect, layout.thumb)).toBe(false)
@@ -51,7 +51,7 @@ describe("HudLayout.touch", function()
 			end
 		end)
 		it(screen.name .. ": totul în ecran, fără suprapuneri, butoane de minimum 44 px", function()
-			local layout = HudLayout.touch(screen.w, screen.h, nil, 5, 3)
+			local layout = HudLayout.touch(screen.w, screen.h, nil, 5, 4)
 			local all = interactive(layout)
 			table.insert(all, layout.ammo)
 			table.insert(all, layout.info)
@@ -69,9 +69,39 @@ describe("HudLayout.touch", function()
 		end)
 	end
 
+	for _, screen in SCREENS do
+		it(
+			screen.name .. ": tabela de scor a mini-jocurilor, sub mesaje, fără să acopere HUD-ul",
+			function()
+				local layout = HudLayout.touch(screen.w, screen.h, nil, 5, 4)
+				local board = layout.scoreboard
+				expect(board ~= nil).toBe(true)
+				expect(HudLayout.inside(board, screen.w, screen.h)).toBe(true)
+				expect(board.h >= 24 and board.w >= 280).toBe(true)
+				expect(board.y + board.h <= screen.h * 0.5).toBe(true)
+				local hud = {
+					layout.rage,
+					layout.pin,
+					layout.ammo,
+					layout.seeds,
+					layout.jump,
+					layout.status,
+					layout.info,
+					layout.notice,
+				}
+				for _, rect in layout.actions do
+					table.insert(hud, rect)
+				end
+				for _, rect in hud do
+					expect(HudLayout.overlaps(board, rect)).toBe(false)
+				end
+			end
+		)
+	end
+
 	it("folosește săritura reală când o primește", function()
 		local jump = { x = 500, y = 200, w = 72, h = 72 }
-		local layout = HudLayout.touch(667, 339, jump, 5, 3)
+		local layout = HudLayout.touch(667, 339, jump, 5, 4)
 		expect(layout.jump).toBe(jump)
 		expect(layout.rage.x + layout.rage.w <= jump.x).toBe(true)
 	end)

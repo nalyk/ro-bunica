@@ -39,7 +39,7 @@ function Walk.to(character: Model, target: Vector3, tolerance: number?): number
 			break
 		end
 		local path = PathfindingService:CreatePath({
-			AgentRadius = 2,
+			AgentRadius = 3, -- cu 2, drumul trece razant pe lângă colțurile ogrăzilor rotite și personajul se agață
 			AgentHeight = 5,
 			AgentCanJump = true,
 			WaypointSpacing = 6,
@@ -73,13 +73,33 @@ function Walk.to(character: Model, target: Vector3, tolerance: number?): number
 			else
 				stuck += 1
 				if stuck >= 2 or os.clock() - started > TOTAL_BUDGET then
-					break -- replanifică de unde a rămas
+					-- un pas înapoi, departe de obstacol, apoi replanifică de acolo
+					local away = root.Position - waypoint.Position
+					away = Vector3.new(away.X, 0, away.Z)
+					if away.Magnitude > 0.1 then
+						moveTo(humanoid, root.Position + away.Unit * 4)
+					end
+					break
 				end
 			end
 		end
 	end
 	if flatDistance(root.Position, target) > limit then
 		moveTo(humanoid, target)
+	end
+	if flatDistance(root.Position, target) > limit then
+		print(
+			string.format(
+				"[PLAYTEST] walk %s blocat la (%.0f, %.0f, %.0f), ținta (%.0f, %.0f, %.0f)",
+				character.Name,
+				root.Position.X,
+				root.Position.Y,
+				root.Position.Z,
+				target.X,
+				target.Y,
+				target.Z
+			)
+		)
 	end
 	return flatDistance(root.Position, target)
 end

@@ -24,6 +24,7 @@ local StateService = require(script.Parent.StateService)
 local DayNightService = require(script.Parent.DayNightService)
 local Messenger = require(script.Parent.Messenger)
 local Actors = require(script.Parent.Parent.Actors)
+local Busy = require(script.Parent.Parent.Busy)
 local FamilyService = require(script.Parent.FamilyService)
 local Upgrades = require(Shared.Domain.Upgrades)
 
@@ -93,6 +94,11 @@ local function setSpeedModifier(actor: Actor, name: string, multiplier: number?)
 	if next(current.mods) == nil then
 		speeds[actor] = nil
 	end
+end
+
+-- Pentru întâmplări (ciupitul gâștei, urzicile): un modificator de viteză cu nume, combinat cu celelalte
+function RaidService.setSpeedModifier(actor: Actor, name: string, multiplier: number?)
+	setSpeedModifier(actor, name, multiplier)
 end
 
 -- Viteza maximă legitimă cu creatura în brațe (baza × încetinirea de cărat; Grivei doar scade viteza)
@@ -312,6 +318,7 @@ function RaidService.tryStart(actor: Actor, owner: Owner, key: string)
 		distance = (root.Position - model:GetPivot().Position).Magnitude,
 		creatureOnPedestal = not carriedUids[record.uid],
 		creatureIsSoul = record.soul == true,
+		inMinigame = Busy.is(actor),
 	})
 	if not ok then
 		debugLog("furt refuzat " .. actor.name .. ": " .. tostring(reason))
@@ -322,6 +329,7 @@ function RaidService.tryStart(actor: Actor, owner: Owner, key: string)
 			or reason == "Family"
 			or reason == "NightLimit"
 			or reason == "Soul"
+			or reason == "Busy"
 		then
 			Messenger.notify(actor.player, "notify." .. reason)
 		end

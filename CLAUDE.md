@@ -10,6 +10,7 @@ Joc Roblox construit de un singur om cu agenți AI. Răspunde în română.
 4. `docs/VISION.md` — direcția strategică (cercetarea din 2026-10-12): cei trei piloni și pașii 1–7. Aprobați pentru lucru: pașii 1–6; pasul 7 (Configs/Experiments/Analytics/Server Authority) doar la cerere.
 5. `docs/PRESENTATION.md` — modele, UI/UX și sunet (cercetarea din 2026-10-16): direcția artistică, fluxul Blender → Open Cloud și pașii P1–P5. Vocea Bunicii: `docs/VOICE.md`.
 6. `docs/RESEARCH_SAT_VIU.md` — satul viu (cercetarea din 2026-10-18): satele reale măsurate, așezarea echitabilă, locurile-jucărie, ceasul satului, mini-jocurile, furtul fără lacrimi, pachetele A/B/C. Opțiuni, nu plan aprobat.
+7. `docs/RESEARCH_PLATFORMA.md` — platforma Roblox (auditul din 2026-10-18): ce API-uri folosim, ce lipsește (creștere, live ops, grafică PBR, senzație, monetizare, AI) și ordinea propusă. Opțiuni, nu plan aprobat.
 
 Reguli:
 

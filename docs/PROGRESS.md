@@ -208,7 +208,10 @@ Omul a cerut tot pachetul C din `docs/RESEARCH_SAT_VIU.md`, „full featured”.
 - **M8, limbile:** rusă, spaniolă și portugheză (Brazilia) complete (508 texte fiecare, scrise de mână, cu nume locale pentru creaturi); testul cere fiecare cheie din engleză, cu aceleași argumente. Numele creaturii cu mutația în ordinea limbii (`fmt.creature`: în ES și PT adjectivul vine după nume).
 - **M9, modelele satului:** 32 de concepte Codex (planșa în `art/concepts/world` și `art/concepts/village`), 31 de modele TRELLIS (Rutiera a rămas fără memorie pe GPU; reîncercată separat). Legate în `SiteBuilder` (magazinul, stația, moara, biserica fără cruce, gara, coliba stânii, tarabele, cuptorul, căpițele, pătulul, sperietoarea, butucii, cireșii, oile), în poduri (doar la vedere; podeaua veche, invizibilă, rămâne pentru mers), în figurile întâmplărilor (`Kit.SCULPTED`: negustorul, Mărioara, Muma Pădurii, mirii, lăutarii), în viața satului (gâște, găini, săteni), la lupi, gâștele întâmplării și cocoș (găina, mai mare, cu creastă și coadă: generatorul de imagini refuză cocoșii). Unde lipsește un model, rămâne construcția procedurală. Bugetul satului: 1,19M triunghiuri (≤ 1,2M).
 
-**Urmează:** M10 (chestionarul de maturitate și Experience Events: textele în `docs/PLATFORM.md`, trimiterea o face omul; review-ul final, publicarea).
+**M10 (sarcinile 36–37):**
+- Chestionarul de maturitate și Experience Events: răspunsurile și textele sunt în `docs/PLATFORM.md`; trimiterea le schimbă ce vede publicul, deci o face omul din Creator Dashboard.
+- Review-ul final independent al ramurii (dfa57c0..3656e64): o problemă critică (NaN la vânzarea peștilor → lei NaN, cumpărături gratuite) și cinci importante (Secretele la bazar, mini-jocuri fără efort, refresh scump la bazar, tarabele rămase la 12, duplicare la preluarea sesiunii), toate reparate cu teste (commit bfdbe42; unit 299, e2e 91/91). Minorii amânați sunt în ledger: negustorul NPC nu actualizează clasamentul, renașterea lasă oferte moarte, actor recreat la ieșire, titlul „Dansatoarea” farmabil, ouăle de Paște reapar imediat, limitatoarele nu uită jucătorii.
+- Rutiera a rămas procedurală (TRELLIS rămâne fără memorie pe acest concept); Casa de cultură procedurală (interiorul e folosit de Discotecă).
 
 ## Acoperișul casei (2026-10-18)
 

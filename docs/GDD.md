@@ -258,6 +258,20 @@ Un panou cu trei file, deschis din butonul „Caietul”. Valorile sunt în `Con
 - Rețeta Secretă nu se schimbă: e un trofeu.
 - Creaturile primite la schimb nu intră în Caiet: caietul ține ce ai crescut sau furat tu, ca recompensele de descoperire să nu poată fi „cultivate” prin conturi noi.
 
+## 12d. Satul viu (implementat 2026-10-18, pachetul C din `docs/RESEARCH_SAT_VIU.md`)
+
+Tradiția e doar „flavor”: jocul trebuie să fie interesant pentru copiii de azi.
+
+- **Satul de vale:** ogrăzile de-a lungul unui drum mare, pârâu cu poduri, dealuri, 17 locuri-jucărie (centrul cu fântâna și hora, magazinul, stația cu mozaic, Casa de cultură cu Discoteca, terenul școlii, iazul, livada, lanul de porumb cu labirint, via, stâna, moara, biserica, marginea codrului, gara, bazarul, bucătăria de vară, claia). Centrul e zonă fără bătaie. Rutiera trece pe la fiecare ogradă și duce jucătorii prin sat.
+- **Ceasul satului:** o întâmplare la 6–8 minute, anunțată cu 30 s înainte: gâștele scăpate, ploaia de cireșe, negustorul cu semințe ieftine, nunta (horă cu cortegiul), ceața, lupii la stână (co-op), Muma Pădurii (mini-boss), trenul de la Ungheni.
+- **Mini-jocurile** (12, la locul lor): prinde cocoșul, șotronul, ciocnitul ouălor, oina cu papuci, ascunselea în porumb, Păcală se ascunde, cursa cu roaba, obby-ul morii, zdrobitul strugurilor, Discoteca, plăcintăria (co-op), „Țară, țară, vrem ostași”. Plătesc doar cine joacă; podiumul cere un adversar; cel mult 600 de lei pe oră din mini-jocuri. Plus pescuitul la iaz și recordurile pe avizier.
+- **Statutul:** decorul ogrăzii pe lei (22 de obiecte), garderoba Bunicii (6 ținute), titluri din statistici, creaturile de suflet (cel mult 3, nu se fură), îngrijirea creaturilor (+10% venit), hibrizii cu nume pronunțabile.
+- **Bazarul:** tarabă cu până la 4 creaturi din beci, preț 25%–10× din valoare; creatura stă în beci până se vinde; Secretele și sufletele nu se vând. Duminica 12 tarabe și negustori NPC.
+- **Comunicarea:** 12 mesaje rapide în 5 limbi, bula deasupra capului; alarma în lanț (câinii vecinilor latră la hoțul care cară).
+- **Codurile** tantii de la magazin: o folosire pe profil (`Config/Codes`).
+- **Calendarul:** Mărțișor (1–14 martie, straturi mai repede), Paștele ortodox (ouă prin sat, ou încondeiat la ciocnit), Drăgaica (coronița pe acoperiș), Culesul (știuletele roșu), hramul satului (o zi pe lună, pe server: nu se fură), Iarna (colinde la vecini, Capra și Ursul, masca de Malanca, gheață pe iaz).
+- **Limbile:** RO, EN, RU, ES, PT-BR, toate textele scrise de mână.
+
 ## 12c. Ritmul săptămânal
 
 - **Update în fiecare sâmbătă la 17:00 UTC** (o creatură sau o mutație nouă).

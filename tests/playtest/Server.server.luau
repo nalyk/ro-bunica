@@ -758,10 +758,9 @@ step("11. Botul reușește un furt; jucătorul e anunțat și primește scut", f
 end)
 
 step("12. Scutul blochează un nou furt", function()
-	local key = firstPedestal(me) :: string
-	botWalk(roadPoint(botPlot))
-	botWalk(roadPoint(me.plot))
-	botWalk(approach(me, key))
+	local key = firstPedestal(me) :: string -- botul e adus direct lângă piedestal: scutul ține 60 s, iar drumul prin sat poate dura aproape tot atât
+	(Actors.characterOf(bot) :: Model):PivotTo(CFrame.new(approach(me, key)))
+	task.wait(0.5)
 	RaidService.tryStart(bot, me, key)
 	check(not RaidService.isCarrying(bot), "furtul a trecut prin scut")
 end)

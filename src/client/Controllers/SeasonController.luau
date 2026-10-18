@@ -67,7 +67,7 @@ local function refresh()
 		end
 	end
 	local season = GameState.get(GameState.Attributes.Season)
-	setIce(season == "Iarna")
+	setIce(season == "Iarna" or active.Iarna == true) -- iarna din calendar sau sărbătoarea de iarnă (15 dec – 14 ian)
 end
 
 local function homeNear(root: BasePart): boolean

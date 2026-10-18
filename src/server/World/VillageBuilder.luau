@@ -318,6 +318,11 @@ local function scatter(layout: VillageLayout.Layout, parent: Instance)
 		p.Material = Enum.Material.Concrete
 		p.Parent = folder
 		if k % 3 == 0 then
+			-- stâlpul cu cuib se vede de oriunde (berzele de pe el sunt semnul satului)
+			local nest = Instance.new("Model")
+			nest.Name = "StalpBarza"
+			nest.ModelStreamingMode = Enum.ModelStreamingMode.Persistent
+			p.Parent = nest
 			softPart(
 				"Cuib",
 				Enum.PartType.Cylinder,
@@ -325,9 +330,10 @@ local function scatter(layout: VillageLayout.Layout, parent: Instance)
 				pole * CFrame.new(0, 16.4, 0) * CFrame.Angles(0, 0, math.pi / 2),
 				Color3.fromRGB(120, 92, 60),
 				Enum.Material.Grass,
-				folder
+				nest
 			)
 			p:SetAttribute("Stork", true)
+			nest.Parent = folder
 		end
 	end
 	folder.Parent = parent

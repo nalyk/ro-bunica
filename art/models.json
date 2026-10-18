@@ -163,5 +163,165 @@
   "remote": "props/v2_Grivei_40k.glb",
   "height": 3.2,
   "tris": 19000
+ },
+ "world.Moara": {
+  "remote": "site/Moara_40k.glb",
+  "height": 20,
+  "tris": 19000
+ },
+ "world.Biserica": {
+  "remote": "site/Biserica_40k.glb",
+  "height": 22,
+  "tris": 19000
+ },
+ "world.Magazin": {
+  "remote": "site/Magazin_40k.glb",
+  "height": 11,
+  "tris": 19000
+ },
+ "world.Statie": {
+  "remote": "site/Statie_40k.glb",
+  "height": 6.5,
+  "tris": 12000
+ },
+ "world.CasaCultura": {
+  "remote": "site/CasaCultura_40k.glb",
+  "height": 12,
+  "tris": 19000
+ },
+ "world.Gara": {
+  "remote": "site/Gara_40k.glb",
+  "height": 11,
+  "tris": 19000
+ },
+ "world.Taraba": {
+  "remote": "site/Taraba_40k.glb",
+  "height": 7,
+  "tris": 10000
+ },
+ "world.Cuptor": {
+  "remote": "site/Cuptor_40k.glb",
+  "height": 5,
+  "tris": 8000
+ },
+ "world.Stana": {
+  "remote": "site/Stana_40k.glb",
+  "height": 7,
+  "tris": 14000
+ },
+ "world.Claie": {
+  "remote": "site/Claie_40k.glb",
+  "height": 7,
+  "tris": 6000
+ },
+ "world.Patul": {
+  "remote": "site/Patul_40k.glb",
+  "height": 7,
+  "tris": 10000
+ },
+ "world.Sperietoare": {
+  "remote": "site/Sperietoare_40k.glb",
+  "height": 6,
+  "tris": 6000
+ },
+ "world.Roaba": {
+  "remote": "site/Roaba_40k.glb",
+  "height": 2.4,
+  "tris": 5000
+ },
+ "world.Puntea": {
+  "remote": "site/Puntea_40k.glb",
+  "height": 3,
+  "tris": 6000
+ },
+ "world.Pod": {
+  "remote": "site/Pod_40k.glb",
+  "height": 4,
+  "tris": 8000
+ },
+ "world.Cires": {
+  "remote": "site/Cires_40k.glb",
+  "height": 11,
+  "tris": 8000
+ },
+ "world.ButucVie": {
+  "remote": "site/ButucVie_40k.glb",
+  "height": 5,
+  "tris": 6000
+ },
+ "world.Stiulete": {
+  "remote": "site/Stiulete_40k.glb",
+  "height": 0.9,
+  "tris": 2000
+ },
+ "char.Rutiera": {
+  "remote": "site/Rutiera_40k.glb",
+  "height": 7,
+  "tris": 14000
+ },
+ "char.Gasca": {
+  "remote": "site/Gasca_40k.glb",
+  "height": 2.4,
+  "tris": 5000
+ },
+ "char.Gaina": {
+  "remote": "site/Gaina_40k.glb",
+  "height": 1.7,
+  "tris": 5000
+ },
+ "char.Oaia": {
+  "remote": "site/Oaia_40k.glb",
+  "height": 2.8,
+  "tris": 6000
+ },
+ "char.Lupul": {
+  "remote": "site/Lupul_40k.glb",
+  "height": 3.2,
+  "tris": 7000
+ },
+ "char.MumaPadurii": {
+  "remote": "site/MumaPadurii_40k.glb",
+  "height": 6.2,
+  "tris": 12000
+ },
+ "char.Satean1": {
+  "remote": "site/Satean1_40k.glb",
+  "height": 5.8,
+  "tris": 12000
+ },
+ "char.Satean2": {
+  "remote": "site/Satean2_40k.glb",
+  "height": 5.6,
+  "tris": 12000
+ },
+ "char.Satean3": {
+  "remote": "site/Satean3_40k.glb",
+  "height": 5.4,
+  "tris": 12000
+ },
+ "char.Marioara": {
+  "remote": "site/Marioara_40k.glb",
+  "height": 5.6,
+  "tris": 12000
+ },
+ "char.Negustorul": {
+  "remote": "site/Negustorul_40k.glb",
+  "height": 6,
+  "tris": 12000
+ },
+ "char.Mireasa": {
+  "remote": "site/Mireasa_40k.glb",
+  "height": 5.8,
+  "tris": 12000
+ },
+ "char.Mirele": {
+  "remote": "site/Mirele_40k.glb",
+  "height": 6,
+  "tris": 12000
+ },
+ "char.Lautar": {
+  "remote": "site/Lautar_40k.glb",
+  "height": 5.9,
+  "tris": 12000
  }
 }

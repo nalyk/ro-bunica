@@ -402,15 +402,26 @@ local function build(village: Instance)
 		end
 	end
 	-- berzele: pe stâlpii cu cuib și una în zbor peste sat
+	-- (cu streaming, stâlpii depărtați sosesc mai târziu: fiecare primește barza când apare, o singură dată)
 	local scatter = village:WaitForChild("Scatter", 30)
-	for i, pole in (scatter and scatter:GetChildren() or {}) :: { Instance } do
-		if pole:IsA("BasePart") and pole:GetAttribute("Stork") then
+	local nested: { [Vector3]: boolean } = {}
+	local function addStork(item: Instance)
+		local pole = if item:IsA("Model") then item:WaitForChild("Stalp", 10) or item else item
+		if pole:IsA("BasePart") and pole:GetAttribute("Stork") and not nested[pole.Position] then
+			nested[pole.Position] = true
+			local phase = #storks + 1
 			local cf = CFrame.new(pole.Position + Vector3.new(0, pole.Size.Y / 2 + 0.6, 0))
-				* CFrame.Angles(0, i, 0)
+				* CFrame.Angles(0, phase, 0)
 			local s = stork()
 			place(s, cf)
-			table.insert(storks, { model = s, cf = cf, phase = i })
+			table.insert(storks, { model = s, cf = cf, phase = phase })
 		end
+	end
+	if scatter then
+		for _, pole in scatter:GetChildren() do
+			addStork(pole)
+		end
+		scatter.ChildAdded:Connect(addStork)
 	end
 	flyer = stork()
 end

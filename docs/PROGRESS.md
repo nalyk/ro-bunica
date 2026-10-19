@@ -1,6 +1,6 @@
 # BUNICA — Progres
 
-Ultima actualizare: 2026-10-18
+Ultima actualizare: 2026-10-19
 
 ## Făcut
 
@@ -260,6 +260,18 @@ Auditul e în `docs/RESEARCH_PLATFORMA.md`, planul și progresul în `docs/super
   - scândura de streașină și tavanul de scânduri dedesubt (capetele grinzilor vechi ies prin el);
   - hornul alb cu căciulă de țiglă.
 - **Rezultat:** 3 MeshPart-uri (body 9.401, roof 8.504, trim 138 triunghiuri), asset 80628472824283. Verificat cu randări cu backface culling și cu capturi din joc (pasul 15m: sub streașină, din colț, de sus; casa are piesele body, roof și trim). Playtest 36/36.
+
+## Unde am rămas (2026-10-19, sesiune închisă)
+
+- **Live:** commit 7acee96 (busola, harta, poteca), publicat; e2e 102/102, playtest 49/49, CI verde.
+- **Procese oprite** la cererea omului: Studio (Vinegar/Wine), Xvfb `:99`, sesiunile tmux `studio` și `xvfb`. Pe ai-esempla nu rula nimic de-al nostru (vLLM rămâne neatins). Repornire playtest: `tmux new-session -d -s xvfb "Xvfb :99 -screen 0 1600x900x24 -nolisten tcp"`, apoi `tools/playtest.sh <dir>` (pornește Studio singur).
+- **De făcut, în ordine:**
+  1. Managed Pricing pe cele 7 produse: Creator Dashboard → Monetization → Managed Pricing → Manage items → produsele → Enable → „My experience implements the appropriate checks” (verificările sunt live din 1c28e12). Blocat doar de extensia Chrome deconectată.
+  2. Starea abonamentului `EXP-4024965016297013811` (era „In Review/Inactive”).
+  3. Evenimentele de sâmbătă și bazarul de duminică: de recreat săptămânal (după 24–25 oct.).
+  4. Lustru pe hartă: etichetele locurilor se suprapun în centrul satului (grupul dens).
+  5. Vocea Bunicii în EN/ES/PT (`docs/VOICE.md`).
+  6. Ferestre luminoase noaptea: doar cu mască pictată de mână (masca automată din atlasul TRELLIS e nesigură).
 
 ## Lansare publică (2026-10-16)
 

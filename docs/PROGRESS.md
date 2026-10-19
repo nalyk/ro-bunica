@@ -273,6 +273,13 @@ Auditul e în `docs/RESEARCH_PLATFORMA.md`, planul și progresul în `docs/super
   5. Vocea Bunicii în EN/ES/PT (`docs/VOICE.md`).
   6. Ferestre luminoase noaptea: doar cu mască pictată de mână (masca automată din atlasul TRELLIS e nesigură).
 
+## Creștere fără bani (2026-10-19, început, oprit de om)
+
+- Omul: niciun ban pe reclame, Claude face tot; textele publice trec prin humanizer-trilingual. Live: 3 vizite, 0 jucători.
+- Browserul: Reddit, Facebook, X, Instagram și YouTube Studio sunt blocate pentru agent; TikTok, Discord și DevForum nu sunt logate. Rămân Creator Dashboard (video și miniaturi pe pagină, textele paginii în PT/ES/RU, evenimentele săptămânale) și DevForum (prin SSO Roblox).
+- Filmarea: Studio pe Xvfb randează software (~5 cadre/s) și umple memoria. Varianta cu GPU: sway headless + Xwayland `:0` (randare Intel directă, verificată). Înainte de pornire se închid toate procesele Wine, altfel Studio moștenește vechiul DISPLAY `:99`.
+- Următorul pas: Studio pe `:0`, locul de filmare cu regizor cinematic, trailerul, 3 miniaturi, apoi Dashboard-ul.
+
 ## Lansare publică (2026-10-16)
 
 - Jocul e public: https://www.roblox.com/games/5300295145 („Don't Steal from Bunica!”, gen Simulation / Incremental Simulator). Pagina: descriere EN și RO, iconița (Bunica cu papucul), două imagini (afiș + toate creaturile) pe prima pagină și pe pagina jocului, titlul și imaginile în română. Imaginile sunt compuse de `tools/store_art.py` din straturile ecranului de încărcare.
